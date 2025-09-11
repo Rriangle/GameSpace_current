@@ -1,0 +1,75 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace GameSpace.Models;
+
+public partial class User
+{
+    public int UserId { get; set; }
+
+    public string UserName { get; set; } = null!;
+
+    public string UserAccount { get; set; } = null!;
+
+    public string UserPassword { get; set; } = null!;
+
+    public bool UserEmailConfirmed { get; set; }
+
+    public bool UserPhoneNumberConfirmed { get; set; }
+
+    public bool UserTwoFactorEnabled { get; set; }
+
+    public int UserAccessFailedCount { get; set; }
+
+    public bool UserLockoutEnabled { get; set; }
+
+    public DateTime? UserLockoutEnd { get; set; }
+
+    public virtual ICollection<Bookmark> Bookmarks { get; set; } = new List<Bookmark>();
+
+    public virtual ICollection<ChatMessage> ChatMessageReceivers { get; set; } = new List<ChatMessage>();
+
+    public virtual ICollection<ChatMessage> ChatMessageSenders { get; set; } = new List<ChatMessage>();
+
+    public virtual ICollection<GroupBlock> GroupBlockBlockedByNavigations { get; set; } = new List<GroupBlock>();
+
+    public virtual ICollection<GroupBlock> GroupBlockUsers { get; set; } = new List<GroupBlock>();
+
+    public virtual ICollection<GroupChat> GroupChats { get; set; } = new List<GroupChat>();
+
+    public virtual ICollection<GroupMember> GroupMembers { get; set; } = new List<GroupMember>();
+
+    public virtual ICollection<Group> Groups { get; set; } = new List<Group>();
+
+    public virtual MemberSalesProfile? MemberSalesProfile { get; set; }
+
+    public virtual ICollection<NotificationRecipient> NotificationRecipients { get; set; } = new List<NotificationRecipient>();
+
+    public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+
+    public virtual ICollection<PlayerMarketOrderInfo> PlayerMarketOrderInfoBuyers { get; set; } = new List<PlayerMarketOrderInfo>();
+
+    public virtual ICollection<PlayerMarketOrderInfo> PlayerMarketOrderInfoSellers { get; set; } = new List<PlayerMarketOrderInfo>();
+
+    public virtual ICollection<PlayerMarketProductInfo> PlayerMarketProductInfos { get; set; } = new List<PlayerMarketProductInfo>();
+
+    public virtual ICollection<Post> Posts { get; set; } = new List<Post>();
+
+    public virtual ICollection<Reaction> Reactions { get; set; } = new List<Reaction>();
+
+    public virtual ICollection<Relation> RelationFriends { get; set; } = new List<Relation>();
+
+    public virtual ICollection<Relation> RelationUsers { get; set; } = new List<Relation>();
+
+    public virtual ICollection<ThreadPost> ThreadPosts { get; set; } = new List<ThreadPost>();
+
+    public virtual ICollection<Thread> Threads { get; set; } = new List<Thread>();
+
+    public virtual UserIntroduce? UserIntroduce { get; set; }
+
+    public virtual UserRight? UserRight { get; set; }
+
+    public virtual UserSalesInformation? UserSalesInformation { get; set; }
+
+    public virtual ICollection<UserToken> UserTokens { get; set; } = new List<UserToken>();
+}

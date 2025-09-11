@@ -1,0 +1,36 @@
+﻿@{
+    ViewData["Title"] = "聊天測試（1 對 1）";
+    var meIdStr = Context.Request.Cookies["gs_id"] ?? "0";
+}
+<link href="~/lib/social_hub/css/chat.css" rel="stylesheet" />
+<link href="~/lib/social_hub/css/chat-1to1.css" rel="stylesheet" />
+
+<meta name="me-id" content="@meIdStr" />
+
+<div class="chat-layout" style="display:flex; gap:12px; height:70vh;">
+    <!-- 聯絡人 -->
+    <aside class="contacts" style="width:260px; border:1px solid #ddd; border-radius:8px; overflow:auto;">
+        <div class="p-2"><strong>聯絡人</strong></div>
+        <ul id="contactList" class="list-unstyled m-0"></ul>
+    </aside>
+
+    <!-- 對話 -->
+    <section class="dialog" style="flex:1; border:1px solid #ddd; border-radius:8px; display:flex; flex-direction:column;">
+        <div id="peerTitle" class="p-2 border-bottom">尚未選擇對象</div>
+        <div id="messages" class="flex-grow-1" style="overflow:auto; padding:8px;"></div>
+        <form id="chatForm" class="p-2 border-top" style="display:flex; gap:8px;">
+            <input id="messageInput" class="form-control" placeholder="輸入訊息..." autocomplete="off" />
+            <button class="btn btn-primary" type="submit" disabled id="sendBtn">送出</button>
+        </form>
+    </section>
+</div>
+
+<!-- 安全：穩定取得 AntiForgery Token -->
+<form id="__af" method="post" style="display:none;">
+    @Html.AntiForgeryToken()
+</form>
+
+@section Scripts {
+    <script src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
+    <script src="~/lib/social_hub/js/chat-1to1.js"></script>
+}
