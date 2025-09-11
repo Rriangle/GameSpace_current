@@ -1,10 +1,12 @@
-﻿// ---- 服務命名空間（一般 using）----
+// ---- 服務命名空間（一般 using）----
 using GameSpace.Areas.social_hub.Services;
 using GameSpace.Data;
 using GameSpace.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
+using Serilog;
+using Microsoft.OpenApi.Models;
 // ---- 型別別名（避免方案裡若有重複介面/命名空間不一致，導致 DI 對不到）----
 using IMuteFilterAlias = GameSpace.Areas.social_hub.Services.IMuteFilter;
 using INotificationServiceAlias = GameSpace.Areas.social_hub.Services.INotificationService;
@@ -21,6 +23,13 @@ namespace GameSpace
 		public static async Task Main(string[] args) // ⬅ 改成 async
 		{
 			var builder = WebApplication.CreateBuilder(args);
+
+			// Configure Serilog
+			builder.Host.UseSerilog((context, configuration) =>
+				configuration.ReadFrom.Configuration(context.Configuration)
+					.Enrich.FromLogContext()
+					.WriteTo.Console()
+					.WriteTo.File("logs/gamespace-.txt", rollingInterval: RollingInterval.Day));
 
 			// Add services to the container.
 			var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
@@ -42,6 +51,18 @@ namespace GameSpace
 
 			// MVC
 			builder.Services.AddControllersWithViews();
+
+			// Health checks
+			builder.Services.AddHealthChecks()
+				.AddDbContextCheck<ApplicationDbContext>("identity_db")
+				.AddDbContextCheck<GameSpacedatabaseContext>("gamespace_db");
+
+			// Swagger/OpenAPI
+			builder.Services.AddEndpointsApiExplorer();
+			builder.Services.AddSwaggerGen(c =>
+			{
+				c.SwaggerDoc("v1", new OpenApiInfo { Title = "GameSpace API", Version = "v1" });
+			});
 
 			// ===== social_hub 相關服務註冊 =====
 			builder.Services.AddMemoryCache();
@@ -91,6 +112,16 @@ namespace GameSpace
 			app.UseHttpsRedirection();
 			app.UseStaticFiles();
 
+			// Swagger in development
+			if (app.Environment.IsDevelopment())
+			{
+				app.UseSwagger();
+				app.UseSwaggerUI(c =>
+				{
+					c.SwaggerEndpoint("/swagger/v1/swagger.json", "GameSpace API v1");
+				});
+			}
+
 			app.UseRouting();
 
 			app.UseAuthentication(); // Identity
@@ -110,6 +141,18 @@ namespace GameSpace
 
 			// 註冊 SignalR hub（使用完整型別名稱，避免命名空間衝突）
 			app.MapHub<GameSpace.Areas.social_hub.Hubs.ChatHub>("/social_hub/chatHub");
+
+			// Health check endpoints
+			app.MapHealthChecks("/healthz");
+			app.MapHealthChecks("/healthz/db", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+			{
+				ResponseWriter = async (context, report) =>
+				{
+					context.Response.ContentType = "application/json";
+					var result = new { status = report.Status.ToString() };
+					await context.Response.WriteAsync(System.Text.Json.JsonSerializer.Serialize(result));
+				}
+			});
 
 			await app.RunAsync(); // ⬅ 搭配 async Main
 		}
