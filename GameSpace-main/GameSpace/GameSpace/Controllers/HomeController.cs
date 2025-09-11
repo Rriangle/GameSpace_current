@@ -27,12 +27,11 @@ namespace GameSpace.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-		}
-		public IActionResult Dashboard()
-		{
-			return View(); // ·|¦Û°Ê§ä Views/Home/Dashboard.cshtml
-		}
+        }
 
-
-	}
+        public IActionResult Dashboard()
+        {
+            return View(); // Returns Views/Home/Dashboard.cshtml
+        }
+    }
 }

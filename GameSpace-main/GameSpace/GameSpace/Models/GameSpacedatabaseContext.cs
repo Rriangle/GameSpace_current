@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
@@ -981,7 +981,7 @@ public partial class GameSpacedatabaseContext : DbContext
                 .HasColumnName("order_date");
             entity.Property(e => e.OrderStatus)
                 .HasMaxLength(30)
-                .HasDefaultValue("未出貨")
+                .HasDefaultValue("Not Shipped")
                 .HasColumnName("order_status");
             entity.Property(e => e.OrderTotal)
                 .HasColumnType("decimal(18, 2)")
@@ -989,7 +989,7 @@ public partial class GameSpacedatabaseContext : DbContext
             entity.Property(e => e.PaymentAt).HasColumnName("payment_at");
             entity.Property(e => e.PaymentStatus)
                 .HasMaxLength(30)
-                .HasDefaultValue("未付款")
+                .HasDefaultValue("Not Paid")
                 .HasColumnName("payment_status");
             entity.Property(e => e.ShippedAt).HasColumnName("shipped_at");
             entity.Property(e => e.UserId).HasColumnName("User_ID");
