@@ -17,7 +17,7 @@ namespace GameSpace.Areas.MiniGame.Controllers
             _context = context;
         }
 
-        // GET: MiniGame/MiniGame
+        // GET: MiniGame/MiniGame - 取得小遊戲列表
         public async Task<IActionResult> Index()
         {
             var userId = GetCurrentUserId();
@@ -29,43 +29,43 @@ namespace GameSpace.Areas.MiniGame.Controllers
             return View(games);
         }
 
-        // POST: MiniGame/MiniGame/Start
+        // POST: MiniGame/MiniGame/Start - 開始新遊戲
         [HttpPost]
         public async Task<IActionResult> Start()
         {
             var userId = GetCurrentUserId();
             var today = DateTime.UtcNow.Date;
 
-            // Check daily game limit (3 games per day)
+            // 檢查每日遊戲限制（每天 3 場遊戲）
             var todayGames = await _context.MiniGame
                 .CountAsync(g => g.UserID == userId && g.StartTime.Date == today);
 
             if (todayGames >= 3)
             {
-                return Json(new { success = false, message = "Daily game limit reached" });
+                return Json(new { success = false, message = "已達到每日遊戲限制" });
             }
 
-            // Get user's pet
+            // 取得使用者的寵物
             var pet = await _context.Pet
                 .FirstOrDefaultAsync(p => p.UserID == userId);
 
             if (pet == null)
             {
-                return Json(new { success = false, message = "Pet not found" });
+                return Json(new { success = false, message = "找不到寵物" });
             }
 
-            // Check pet health
+            // 檢查寵物健康狀態
             if (pet.Health <= 0)
             {
-                return Json(new { success = false, message = "Pet is not healthy enough to play" });
+                return Json(new { success = false, message = "寵物健康狀態不足以遊玩" });
             }
 
-            // Create new game session
+            // 建立新遊戲會話
             var game = new MiniGame
             {
                 UserID = userId,
                 PetID = pet.PetID,
-                Level = 1, // Start at level 1
+                Level = 1, // 從第 1 級開始
                 MonsterCount = 6,
                 SpeedMultiplier = 1.00m,
                 Result = "Unknown",
@@ -84,10 +84,10 @@ namespace GameSpace.Areas.MiniGame.Controllers
             _context.MiniGame.Add(game);
             await _context.SaveChangesAsync();
 
-            return Json(new { success = true, message = "Game started", gameId = game.PlayID });
+            return Json(new { success = true, message = "遊戲已開始", gameId = game.PlayID });
         }
 
-        // POST: MiniGame/MiniGame/End
+        // POST: MiniGame/MiniGame/End - 結束遊戲
         [HttpPost]
         public async Task<IActionResult> End(int gameId, string result)
         {
@@ -96,14 +96,14 @@ namespace GameSpace.Areas.MiniGame.Controllers
 
             if (game == null)
             {
-                return Json(new { success = false, message = "Game not found" });
+                return Json(new { success = false, message = "找不到遊戲" });
             }
 
-            // Update game result
+            // 更新遊戲結果
             game.Result = result;
             game.EndTime = DateTime.UtcNow;
 
-            // Calculate rewards based on result
+            // 根據結果計算獎勵
             if (result == "Win")
             {
                 game.ExpGained = 100;
@@ -123,7 +123,7 @@ namespace GameSpace.Areas.MiniGame.Controllers
                 game.CleanlinessDelta = -20;
             }
 
-            // Update pet attributes
+            // 更新寵物屬性
             var pet = await _context.Pet
                 .FirstOrDefaultAsync(p => p.PetID == game.PetID);
 
@@ -135,7 +135,7 @@ namespace GameSpace.Areas.MiniGame.Controllers
                 pet.Cleanliness = Math.Max(0, Math.Min(100, pet.Cleanliness + game.CleanlinessDelta));
                 pet.Experience += game.ExpGained;
 
-                // Check for level up
+                // 檢查是否升級
                 var requiredExp = CalculateRequiredExp(pet.Level);
                 if (pet.Experience >= requiredExp)
                 {
@@ -147,7 +147,7 @@ namespace GameSpace.Areas.MiniGame.Controllers
                 }
             }
 
-            // Update user wallet
+            // 更新使用者錢包
             if (game.PointsChanged > 0)
             {
                 var wallet = await _context.User_Wallet
@@ -160,7 +160,7 @@ namespace GameSpace.Areas.MiniGame.Controllers
 
             await _context.SaveChangesAsync();
 
-            return Json(new { success = true, message = "Game ended", result = result, expGained = game.ExpGained, pointsGained = game.PointsChanged });
+            return Json(new { success = true, message = "遊戲已結束", result = result, expGained = game.ExpGained, pointsGained = game.PointsChanged });
         }
 
         private int CalculateRequiredExp(int level)
@@ -218,13 +218,13 @@ namespace GameSpace.Areas.MiniGame.Controllers
             
             await _context.SaveChangesAsync();
             
-            return Json(new { success = true, message = "Game ended successfully" });
+            return Json(new { success = true, message = "遊戲成功結束" });
         }
 
         private int GetCurrentUserId()
         {
-            // TODO: Implement proper user ID retrieval from authentication
-            return 1; // Placeholder
+            // TODO: 實作從身份驗證中取得使用者 ID 的適當方法
+            return 1; // 暫時的佔位符
         }
     }
 }

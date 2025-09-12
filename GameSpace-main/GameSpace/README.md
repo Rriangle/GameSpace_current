@@ -1,41 +1,41 @@
-# GameSpace Project
+# GameSpace 專案
 
-A comprehensive gaming platform with mini-games, user management, and social features.
+一個包含小遊戲、使用者管理和社交功能的綜合遊戲平台。
 
-## Prerequisites
+## 先決條件
 
 - .NET 8.0 SDK
-- SQL Server (LocalDB, Express, or Full)
-- Visual Studio 2022 or VS Code
+- SQL Server（LocalDB、Express 或完整版）
+- Visual Studio 2022 或 VS Code
 
-## Manual Database Setup
+## 手動資料庫設定
 
-### 1. Create Database
+### 1. 建立資料庫
 
 ```sql
--- Connect to your SQL Server instance
--- Create the database
+-- 連接到您的 SQL Server 實例
+-- 建立資料庫
 CREATE DATABASE GameSpace;
 GO
 
--- Use the database
+-- 使用資料庫
 USE GameSpace;
 GO
 ```
 
-### 2. Run Schema Script
+### 2. 執行結構腳本
 
 ```bash
-# Navigate to the schema directory
+# 導航到結構目錄
 cd schema
 
-# Execute the database.sql script
+# 執行 database.sql 腳本
 sqlcmd -S (localdb)\MSSQLLocalDB -d GameSpace -i database.sql
 ```
 
-### 3. Update Connection Strings
+### 3. 更新連線字串
 
-Update `appsettings.json` with your connection string:
+使用您的連線字串更新 `appsettings.json`：
 
 ```json
 {
@@ -46,37 +46,37 @@ Update `appsettings.json` with your connection string:
 }
 ```
 
-## Running the Application
+## 執行應用程式
 
-1. **Restore Packages**
+1. **還原套件**
    ```bash
    dotnet restore
    ```
 
-2. **Build the Application**
+2. **建置應用程式**
    ```bash
    dotnet build
    ```
 
-3. **Run the Application**
+3. **執行應用程式**
    ```bash
    dotnet run
    ```
 
-4. **Access the Application**
-   - Open browser to `https://localhost:5001`
-   - MiniGame Area: `https://localhost:5001/MiniGame`
+4. **存取應用程式**
+   - 在瀏覽器中開啟 `https://localhost:5001`
+   - MiniGame 區域：`https://localhost:5001/MiniGame`
 
-## Project Structure
+## 專案結構
 
 ```
 GameSpace/
 ├── Areas/
-│   ├── MiniGame/          # Mini-game functionality
-│   ├── social_hub/        # Social features
+│   ├── MiniGame/          # 小遊戲功能
+│   ├── social_hub/        # 社交功能
 │   └── ...
-├── Controllers/           # Main controllers
-├── Models/               # Data models
+├── Controllers/           # 主要控制器
+├── Models/               # 資料模型
 ├── Data/                 # Database contexts
 ├── Views/                # Main views
 └── schema/               # Database schema files

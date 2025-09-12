@@ -22,19 +22,19 @@ namespace GameSpace.Controllers
             try
             {
                 await _dataSeedingService.SeedDataAsync();
-                return Ok(new { message = "Data seeding completed successfully" });
+                return Ok(new { message = "資料種子已成功完成" });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = "Data seeding failed", error = ex.Message });
+                return BadRequest(new { message = "資料種子失敗", error = ex.Message });
             }
         }
 
         [HttpGet("status")]
         public async Task<IActionResult> GetSeedingStatus()
         {
-            // This would check the current data counts
-            return Ok(new { message = "Data seeding status endpoint" });
+            // 這會檢查目前的資料數量
+            return Ok(new { message = "資料種子狀態端點" });
         }
     }
 }

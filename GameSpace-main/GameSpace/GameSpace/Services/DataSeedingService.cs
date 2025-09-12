@@ -13,7 +13,7 @@ namespace GameSpace.Services
         public DataSeedingService(GameSpacedatabaseContext context)
         {
             _context = context;
-            _random = new Random(12345); // Fixed seed for reproducibility
+            _random = new Random(12345); // 固定種子以確保可重現性
         }
 
         public async Task SeedDataAsync()

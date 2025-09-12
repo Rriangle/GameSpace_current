@@ -18,7 +18,7 @@ namespace GameSpace.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            return Ok(new { status = "ok", timestamp = DateTime.UtcNow });
+            return Ok(new { status = "正常", timestamp = DateTime.UtcNow });
         }
 
         [HttpGet("db")]
@@ -26,13 +26,13 @@ namespace GameSpace.Controllers
         {
             try
             {
-                // Test database connectivity
+                // 測試資料庫連線
                 await _context.Database.CanConnectAsync();
-                return Ok(new { status = "ok", database = "connected", timestamp = DateTime.UtcNow });
+                return Ok(new { status = "正常", database = "已連線", timestamp = DateTime.UtcNow });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { status = "error", database = "disconnected", error = ex.Message, timestamp = DateTime.UtcNow });
+                return StatusCode(500, new { status = "錯誤", database = "未連線", error = ex.Message, timestamp = DateTime.UtcNow });
             }
         }
     }

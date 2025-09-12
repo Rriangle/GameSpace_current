@@ -1,4 +1,4 @@
-﻿// Areas/social_hub/Services/MuteFilter.cs
+// Areas/social_hub/Services/MuteFilter.cs - 穢語過濾服務
 using GameSpace.Data;
 using GameSpace.Models;
 using Microsoft.EntityFrameworkCore;

@@ -1,41 +1,41 @@
 @model IEnumerable<GameSpace.Models.MiniGame>
 
 @{
-    ViewData["Title"] = "Mini Games";
+    ViewData["Title"] = "小遊戲";
 }
 
 <div class="row">
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h3>Mini Games</h3>
+                <h3>小遊戲</h3>
             </div>
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-4">
                         <div class="card">
                             <div class="card-body text-center">
-                                <h5 class="card-title">Memory Game</h5>
-                                <p class="card-text">Test your memory with this fun game!</p>
-                                <a href="@Url.Action("StartGame", new { gameType = "Memory" })" class="btn btn-primary">Play Now</a>
+                                <h5 class="card-title">記憶遊戲</h5>
+                                <p class="card-text">用這個有趣的遊戲測試你的記憶力！</p>
+                                <a href="@Url.Action("StartGame", new { gameType = "Memory" })" class="btn btn-primary">立即遊玩</a>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="card">
                             <div class="card-body text-center">
-                                <h5 class="card-title">Puzzle Game</h5>
-                                <p class="card-text">Solve puzzles to earn points!</p>
-                                <a href="@Url.Action("StartGame", new { gameType = "Puzzle" })" class="btn btn-primary">Play Now</a>
+                                <h5 class="card-title">拼圖遊戲</h5>
+                                <p class="card-text">解決拼圖來獲得點數！</p>
+                                <a href="@Url.Action("StartGame", new { gameType = "Puzzle" })" class="btn btn-primary">立即遊玩</a>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="card">
                             <div class="card-body text-center">
-                                <h5 class="card-title">Quiz Game</h5>
-                                <p class="card-text">Answer questions to win rewards!</p>
-                                <a href="@Url.Action("StartGame", new { gameType = "Quiz" })" class="btn btn-primary">Play Now</a>
+                                <h5 class="card-title">問答遊戲</h5>
+                                <p class="card-text">回答問題來贏得獎勵！</p>
+                                <a href="@Url.Action("StartGame", new { gameType = "Quiz" })" class="btn btn-primary">立即遊玩</a>
                             </div>
                         </div>
                     </div>
@@ -49,18 +49,18 @@
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h4>Recent Games</h4>
+                <h4>最近遊戲</h4>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th>Game Type</th>
-                                <th>Start Time</th>
-                                <th>End Time</th>
-                                <th>Score</th>
-                                <th>Points Earned</th>
+                                <th>遊戲類型</th>
+                                <th>開始時間</th>
+                                <th>結束時間</th>
+                                <th>分數</th>
+                                <th>獲得點數</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -69,7 +69,7 @@
                                 <tr>
                                     <td>@item.GameType</td>
                                     <td>@item.StartTime.ToString("yyyy-MM-dd HH:mm:ss")</td>
-                                    <td>@(item.EndTime?.ToString("yyyy-MM-dd HH:mm:ss") ?? "In Progress")</td>
+                                    <td>@(item.EndTime?.ToString("yyyy-MM-dd HH:mm:ss") ?? "進行中")</td>
                                     <td>@item.Score</td>
                                     <td>@item.Point</td>
                                 </tr>
