@@ -1,23 +1,23 @@
 @model IEnumerable<GameSpace.Models.UserSignInStat>
 
 @{
-    ViewData["Title"] = "Sign In History";
+    ViewData["Title"] = "簽到歷史";
 }
 
 <div class="row">
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h3>Sign In History</h3>
+                <h3>簽到歷史</h3>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th>Sign In Time</th>
-                                <th>Points Earned</th>
-                                <th>Status</th>
+                                <th>簽到時間</th>
+                                <th>獲得點數</th>
+                                <th>狀態</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -29,11 +29,11 @@
                                     <td>
                                         @if (item.Point > 0)
                                         {
-                                            <span class="badge bg-success">Success</span>
+                                            <span class="badge bg-success">成功</span>
                                         }
                                         else
                                         {
-                                            <span class="badge bg-warning">No Points</span>
+                                            <span class="badge bg-warning">無點數</span>
                                         }
                                     </td>
                                 </tr>

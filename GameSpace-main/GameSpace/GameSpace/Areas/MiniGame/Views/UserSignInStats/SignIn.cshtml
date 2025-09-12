@@ -1,5 +1,5 @@
 @{
-    ViewData["Title"] = "Daily Sign In";
+    ViewData["Title"] = "每日簽到";
     Layout = "~/Areas/MiniGame/Views/Shared/_Layout.cshtml";
 }
 
@@ -7,36 +7,36 @@
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h3>Daily Sign In</h3>
+                <h3>每日簽到</h3>
             </div>
             <div class="card-body">
                 <div class="text-center">
-                    <h4>Welcome back!</h4>
-                    <p>Sign in daily to earn points and rewards!</p>
+                    <h4>歡迎回來！</h4>
+                    <p>每日簽到以獲得點數和獎勵！</p>
                     
                     <div class="mb-4">
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="card bg-primary text-white">
                                     <div class="card-body text-center">
-                                        <h5>Day 1</h5>
-                                        <p>10 Points</p>
+                                        <h5>第 1 天</h5>
+                                        <p>10 點數</p>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="card bg-success text-white">
                                     <div class="card-body text-center">
-                                        <h5>Day 2</h5>
-                                        <p>20 Points</p>
+                                        <h5>第 2 天</h5>
+                                        <p>20 點數</p>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="card bg-warning text-white">
                                     <div class="card-body text-center">
-                                        <h5>Day 3+</h5>
-                                        <p>30 Points</p>
+                                        <h5>第 3 天+</h5>
+                                        <p>30 點數</p>
                                     </div>
                                 </div>
                             </div>
@@ -44,7 +44,7 @@
                     </div>
                     
                     <form asp-action="SignIn" method="post">
-                        <button type="submit" class="btn btn-success btn-lg">Sign In Today</button>
+                        <button type="submit" class="btn btn-success btn-lg">今日簽到</button>
                     </form>
                 </div>
             </div>

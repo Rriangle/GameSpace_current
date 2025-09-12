@@ -1,5 +1,5 @@
 @{
-    ViewData["Title"] = "Start Game";
+    ViewData["Title"] = "開始遊戲";
     Layout = "~/Areas/MiniGame/Views/Shared/_Layout.cshtml";
 }
 
@@ -7,32 +7,32 @@
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h3>Start New Game</h3>
+                <h3>開始新遊戲</h3>
             </div>
             <div class="card-body">
                 <form asp-action="StartGame" method="post">
                     <div class="mb-3">
-                        <label class="form-label">Game Type</label>
+                        <label class="form-label">遊戲類型</label>
                         <select name="gameType" class="form-control" required>
-                            <option value="">Select a game type</option>
-                            <option value="Memory">Memory Game</option>
-                            <option value="Puzzle">Puzzle Game</option>
-                            <option value="Quiz">Quiz Game</option>
-                            <option value="Action">Action Game</option>
-                            <option value="Strategy">Strategy Game</option>
+                            <option value="">選擇遊戲類型</option>
+                            <option value="Memory">記憶遊戲</option>
+                            <option value="Puzzle">拼圖遊戲</option>
+                            <option value="Quiz">問答遊戲</option>
+                            <option value="Action">動作遊戲</option>
+                            <option value="Strategy">策略遊戲</option>
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Difficulty</label>
+                        <label class="form-label">難度</label>
                         <select name="difficulty" class="form-control">
-                            <option value="Easy">Easy</option>
-                            <option value="Medium">Medium</option>
-                            <option value="Hard">Hard</option>
+                            <option value="Easy">簡單</option>
+                            <option value="Medium">中等</option>
+                            <option value="Hard">困難</option>
                         </select>
                     </div>
                     <div class="d-flex justify-content-between">
-                        <a href="@Url.Action("Index")" class="btn btn-secondary">Back to Games</a>
-                        <button type="submit" class="btn btn-primary">Start Game</button>
+                        <a href="@Url.Action("Index")" class="btn btn-secondary">返回遊戲</a>
+                        <button type="submit" class="btn btn-primary">開始遊戲</button>
                     </div>
                 </form>
             </div>

@@ -46,11 +46,11 @@ namespace GameSpace.Services
             {
                 users.Add(new User
                 {
-                    UserName = $"User{i:D3}",
+                    UserName = $"使用者{i:D3}",
                     UserEmail = $"user{i}@example.com",
                     UserPhone = GeneratePhoneNumber(),
                     UserBirthday = GenerateRandomDate(),
-                    UserGender = _random.Next(2) == 0 ? "Male" : "Female",
+                    UserGender = _random.Next(2) == 0 ? "男性" : "女性",
                     UserAddress = GenerateAddress(),
                     UserCreateTime = DateTime.Now.AddDays(-_random.Next(365)),
                     UserUpdateTime = DateTime.Now.AddDays(-_random.Next(30))
@@ -72,7 +72,7 @@ namespace GameSpace.Services
                 pets.Add(new Pet
                 {
                     UserID = i,
-                    PetName = $"Pet{i:D3}",
+                    PetName = $"寵物{i:D3}",
                     PetLevel = _random.Next(1, 100),
                     PetExp = _random.Next(0, 1000),
                     PetHappiness = _random.Next(0, 101),
@@ -409,9 +409,9 @@ namespace GameSpace.Services
 
         private string GenerateAddress()
         {
-            var cities = new[] { "Taipei", "New Taipei", "Taoyuan", "Taichung", "Tainan", "Kaohsiung" };
-            var districts = new[] { "Zhongzheng", "Xinyi", "Songshan", "Wanhua", "Datong" };
-            return $"{cities[_random.Next(cities.Length)]} {districts[_random.Next(districts.Length)]} District";
+            var cities = new[] { "台北市", "新北市", "桃園市", "台中市", "台南市", "高雄市" };
+            var districts = new[] { "中正區", "信義區", "松山區", "萬華區", "大同區" };
+            return $"{cities[_random.Next(cities.Length)]}{districts[_random.Next(districts.Length)]}";
         }
 
         private string GenerateToken()

@@ -1,28 +1,28 @@
 @model GameSpace.Models.Pet
 
 @{
-    ViewData["Title"] = "My Pet";
+    ViewData["Title"] = "我的寵物";
 }
 
 <div class="row">
     <div class="col-md-8">
         <div class="card">
             <div class="card-header">
-                <h3>My Pet</h3>
+                <h3>我的寵物</h3>
             </div>
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6">
-                        <h4>Pet Information</h4>
-                        <p><strong>Name:</strong> @Model.PetName</p>
-                        <p><strong>Level:</strong> @Model.PetLevel</p>
-                        <p><strong>Experience:</strong> @Model.PetExp</p>
-                        <p><strong>Happiness:</strong> @Model.PetHappiness</p>
+                        <h4>寵物資訊</h4>
+                        <p><strong>名稱：</strong> @Model.PetName</p>
+                        <p><strong>等級：</strong> @Model.PetLevel</p>
+                        <p><strong>經驗值：</strong> @Model.PetExp</p>
+                        <p><strong>快樂度：</strong> @Model.PetHappiness</p>
                     </div>
                     <div class="col-md-6">
-                        <h4>Actions</h4>
-                        <a href="@Url.Action("Feed")" class="btn btn-primary">Feed Pet</a>
-                        <a href="@Url.Action("Play")" class="btn btn-success">Play with Pet</a>
+                        <h4>動作</h4>
+                        <a href="@Url.Action("Feed")" class="btn btn-primary">餵食寵物</a>
+                        <a href="@Url.Action("Play")" class="btn btn-success">與寵物遊玩</a>
                     </div>
                 </div>
             </div>
@@ -31,7 +31,7 @@
     <div class="col-md-4">
         <div class="card">
             <div class="card-header">
-                <h4>Pet Status</h4>
+                <h4>寵物狀態</h4>
             </div>
             <div class="card-body">
                 <div class="progress mb-2">
@@ -39,7 +39,7 @@
                         @Model.PetHappiness%
                     </div>
                 </div>
-                <small class="text-muted">Happiness Level</small>
+                <small class="text-muted">快樂度等級</small>
             </div>
         </div>
     </div>

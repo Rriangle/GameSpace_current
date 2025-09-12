@@ -1,5 +1,5 @@
 @{
-    ViewData["Title"] = "Play Game";
+    ViewData["Title"] = "遊玩遊戲";
     Layout = "~/Areas/MiniGame/Views/Shared/_Layout.cshtml";
 }
 
@@ -7,19 +7,19 @@
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h3>Playing Game</h3>
+                <h3>正在遊玩遊戲</h3>
             </div>
             <div class="card-body">
                 <div class="text-center">
-                    <h4>Game in Progress</h4>
-                    <p>Your game is currently running. Good luck!</p>
+                    <h4>遊戲進行中</h4>
+                    <p>您的遊戲正在進行中。祝您好運！</p>
                     
                     <div class="mb-4">
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="card">
                                     <div class="card-body text-center">
-                                        <h5>Score</h5>
+                                        <h5>分數</h5>
                                         <p class="h3 text-primary" id="score">0</p>
                                     </div>
                                 </div>
@@ -27,7 +27,7 @@
                             <div class="col-md-4">
                                 <div class="card">
                                     <div class="card-body text-center">
-                                        <h5>Time</h5>
+                                        <h5>時間</h5>
                                         <p class="h3 text-success" id="time">60</p>
                                     </div>
                                 </div>
@@ -35,7 +35,7 @@
                             <div class="col-md-4">
                                 <div class="card">
                                     <div class="card-body text-center">
-                                        <h5>Level</h5>
+                                        <h5>等級</h5>
                                         <p class="h3 text-warning" id="level">1</p>
                                     </div>
                                 </div>
@@ -44,9 +44,9 @@
                     </div>
                     
                     <div class="mb-4">
-                        <button class="btn btn-primary btn-lg" onclick="startGame()">Start Game</button>
-                        <button class="btn btn-success btn-lg" onclick="pauseGame()">Pause</button>
-                        <button class="btn btn-danger btn-lg" onclick="endGame()">End Game</button>
+                        <button class="btn btn-primary btn-lg" onclick="startGame()">開始遊戲</button>
+                        <button class="btn btn-success btn-lg" onclick="pauseGame()">暫停</button>
+                        <button class="btn btn-danger btn-lg" onclick="endGame()">結束遊戲</button>
                     </div>
                     
                     <div class="mb-4">
@@ -94,7 +94,7 @@ function endGame() {
     })
     .then(response => response.json())
     .then(data => {
-        alert('Game ended! Final score: ' + score);
+        alert('遊戲結束！最終分數：' + score);
         window.location.href = '/MiniGame/MiniGame';
     });
 }

@@ -1,7 +1,7 @@
 @model IEnumerable<GameSpace.Models.WalletHistory>
 
 @{
-    ViewData["Title"] = "Wallet History";
+    ViewData["Title"] = "錢包歷史";
     Layout = "~/Areas/MiniGame/Views/Shared/_Layout.cshtml";
 }
 
@@ -9,17 +9,17 @@
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h3>Wallet History</h3>
+                <h3>錢包歷史</h3>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th>Transaction Type</th>
-                                <th>Amount</th>
-                                <th>Description</th>
-                                <th>Transaction Time</th>
+                                <th>交易類型</th>
+                                <th>金額</th>
+                                <th>描述</th>
+                                <th>交易時間</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -29,15 +29,15 @@
                                     <td>
                                         @if (item.TransactionType == "Earn")
                                         {
-                                            <span class="badge bg-success">@item.TransactionType</span>
+                                            <span class="badge bg-success">獲得</span>
                                         }
                                         else if (item.TransactionType == "Spend")
                                         {
-                                            <span class="badge bg-danger">@item.TransactionType</span>
+                                            <span class="badge bg-danger">消費</span>
                                         }
                                         else if (item.TransactionType == "Bonus")
                                         {
-                                            <span class="badge bg-warning">@item.TransactionType</span>
+                                            <span class="badge bg-warning">獎勵</span>
                                         }
                                         else
                                         {

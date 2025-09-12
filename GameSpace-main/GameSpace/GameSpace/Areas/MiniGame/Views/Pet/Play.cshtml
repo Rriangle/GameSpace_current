@@ -1,7 +1,7 @@
 @model GameSpace.Models.Pet
 
 @{
-    ViewData["Title"] = "Play with Pet";
+    ViewData["Title"] = "與寵物遊玩";
     Layout = "~/Areas/MiniGame/Views/Shared/_Layout.cshtml";
 }
 
@@ -9,15 +9,15 @@
     <div class="col-md-8">
         <div class="card">
             <div class="card-header">
-                <h3>Play with @Model.PetName</h3>
+                <h3>與 @Model.PetName 遊玩</h3>
             </div>
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6">
                         <h4>@Model.PetName</h4>
-                        <p><strong>Level:</strong> @Model.PetLevel</p>
-                        <p><strong>Experience:</strong> @Model.PetExp</p>
-                        <p><strong>Happiness:</strong> @Model.PetHappiness%</p>
+                        <p><strong>等級：</strong> @Model.PetLevel</p>
+                        <p><strong>經驗值：</strong> @Model.PetExp</p>
+                        <p><strong>快樂度：</strong> @Model.PetHappiness%</p>
                     </div>
                     <div class="col-md-6">
                         <div class="progress mb-2">
@@ -25,22 +25,22 @@
                                 @Model.PetHappiness%
                             </div>
                         </div>
-                        <small class="text-muted">Happiness Level</small>
+                        <small class="text-muted">快樂度等級</small>
                     </div>
                 </div>
                 <hr>
                 <form asp-action="Play" method="post">
                     <div class="mb-3">
-                        <label class="form-label">Select Game</label>
+                        <label class="form-label">選擇遊戲</label>
                         <select name="gameType" class="form-control">
-                            <option value="fetch">Fetch (+15 Happiness, +5 Exp)</option>
-                            <option value="hide">Hide and Seek (+20 Happiness, +10 Exp)</option>
-                            <option value="trick">Trick Training (+25 Happiness, +15 Exp)</option>
+                            <option value="fetch">接球遊戲（+15 快樂度，+5 經驗值）</option>
+                            <option value="hide">捉迷藏（+20 快樂度，+10 經驗值）</option>
+                            <option value="trick">技巧訓練（+25 快樂度，+15 經驗值）</option>
                         </select>
                     </div>
                     <div class="d-flex justify-content-between">
-                        <a href="@Url.Action("Index")" class="btn btn-secondary">Back to Pet</a>
-                        <button type="submit" class="btn btn-success">Play Game</button>
+                        <a href="@Url.Action("Index")" class="btn btn-secondary">返回寵物</a>
+                        <button type="submit" class="btn btn-success">開始遊戲</button>
                     </div>
                 </form>
             </div>
@@ -49,21 +49,21 @@
     <div class="col-md-4">
         <div class="card">
             <div class="card-header">
-                <h4>Play Activities</h4>
+                <h4>遊玩活動</h4>
             </div>
             <div class="card-body">
                 <div class="list-group">
                     <div class="list-group-item">
-                        <h6>Fetch</h6>
-                        <small>Throw a ball and watch your pet bring it back!</small>
+                        <h6>接球遊戲</h6>
+                        <small>丟球並看著您的寵物把它撿回來！</small>
                     </div>
                     <div class="list-group-item">
-                        <h6>Hide and Seek</h6>
-                        <small>Hide and let your pet find you!</small>
+                        <h6>捉迷藏</h6>
+                        <small>躲起來讓您的寵物找到您！</small>
                     </div>
                     <div class="list-group-item">
-                        <h6>Trick Training</h6>
-                        <small>Teach your pet new tricks!</small>
+                        <h6>技巧訓練</h6>
+                        <small>教您的寵物新技巧！</small>
                     </div>
                 </div>
             </div>
