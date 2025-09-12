@@ -1,0 +1,72 @@
+@model GameSpace.Models.Pet
+
+@{
+    ViewData["Title"] = "Play with Pet";
+    Layout = "~/Areas/MiniGame/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3>Play with @Model.PetName</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>@Model.PetName</h4>
+                        <p><strong>Level:</strong> @Model.PetLevel</p>
+                        <p><strong>Experience:</strong> @Model.PetExp</p>
+                        <p><strong>Happiness:</strong> @Model.PetHappiness%</p>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="progress mb-2">
+                            <div class="progress-bar" role="progressbar" style="width: @(Model.PetHappiness)%" aria-valuenow="@Model.PetHappiness" aria-valuemin="0" aria-valuemax="100">
+                                @Model.PetHappiness%
+                            </div>
+                        </div>
+                        <small class="text-muted">Happiness Level</small>
+                    </div>
+                </div>
+                <hr>
+                <form asp-action="Play" method="post">
+                    <div class="mb-3">
+                        <label class="form-label">Select Game</label>
+                        <select name="gameType" class="form-control">
+                            <option value="fetch">Fetch (+15 Happiness, +5 Exp)</option>
+                            <option value="hide">Hide and Seek (+20 Happiness, +10 Exp)</option>
+                            <option value="trick">Trick Training (+25 Happiness, +15 Exp)</option>
+                        </select>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <a href="@Url.Action("Index")" class="btn btn-secondary">Back to Pet</a>
+                        <button type="submit" class="btn btn-success">Play Game</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h4>Play Activities</h4>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    <div class="list-group-item">
+                        <h6>Fetch</h6>
+                        <small>Throw a ball and watch your pet bring it back!</small>
+                    </div>
+                    <div class="list-group-item">
+                        <h6>Hide and Seek</h6>
+                        <small>Hide and let your pet find you!</small>
+                    </div>
+                    <div class="list-group-item">
+                        <h6>Trick Training</h6>
+                        <small>Teach your pet new tricks!</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

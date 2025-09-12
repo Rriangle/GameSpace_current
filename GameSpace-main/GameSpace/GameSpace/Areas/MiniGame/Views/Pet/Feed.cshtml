@@ -1,0 +1,64 @@
+@model GameSpace.Models.Pet
+
+@{
+    ViewData["Title"] = "Feed Pet";
+    Layout = "~/Areas/MiniGame/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3>Feed Your Pet</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>@Model.PetName</h4>
+                        <p><strong>Level:</strong> @Model.PetLevel</p>
+                        <p><strong>Experience:</strong> @Model.PetExp</p>
+                        <p><strong>Happiness:</strong> @Model.PetHappiness%</p>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="progress mb-2">
+                            <div class="progress-bar" role="progressbar" style="width: @(Model.PetHappiness)%" aria-valuenow="@Model.PetHappiness" aria-valuemin="0" aria-valuemax="100">
+                                @Model.PetHappiness%
+                            </div>
+                        </div>
+                        <small class="text-muted">Happiness Level</small>
+                    </div>
+                </div>
+                <hr>
+                <form asp-action="Feed" method="post">
+                    <div class="mb-3">
+                        <label class="form-label">Select Food</label>
+                        <select name="foodType" class="form-control">
+                            <option value="basic">Basic Food (+10 Happiness)</option>
+                            <option value="premium">Premium Food (+25 Happiness)</option>
+                            <option value="deluxe">Deluxe Food (+50 Happiness)</option>
+                        </select>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <a href="@Url.Action("Index")" class="btn btn-secondary">Back to Pet</a>
+                        <button type="submit" class="btn btn-primary">Feed Pet</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h4>Pet Care Tips</h4>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-heart text-danger"></i> Feed your pet regularly</li>
+                    <li><i class="fas fa-gamepad text-primary"></i> Play games to increase happiness</li>
+                    <li><i class="fas fa-star text-warning"></i> Higher level pets need better food</li>
+                    <li><i class="fas fa-clock text-info"></i> Check on your pet daily</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

@@ -141,6 +141,91 @@ namespace GameSpace.Areas.MiniGame.Controllers
             return Json(new { success = true, message = "Pet rested successfully", stamina = pet.Stamina });
         }
 
+        public async Task<IActionResult> Feed()
+        {
+            var userId = GetCurrentUserId();
+            var pet = await _context.Pet
+                .FirstOrDefaultAsync(p => p.UserID == userId);
+
+            if (pet == null)
+            {
+                return NotFound();
+            }
+
+            return View(pet);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Feed(string foodType)
+        {
+            var userId = GetCurrentUserId();
+            var pet = await _context.Pet
+                .FirstOrDefaultAsync(p => p.UserID == userId);
+
+            if (pet == null)
+            {
+                return NotFound();
+            }
+
+            // Apply food effects based on type
+            int happinessIncrease = foodType switch
+            {
+                "basic" => 10,
+                "premium" => 25,
+                "deluxe" => 50,
+                _ => 10
+            };
+
+            pet.PetHappiness = Math.Min(100, pet.PetHappiness + happinessIncrease);
+            pet.PetUpdateTime = DateTime.Now;
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Play()
+        {
+            var userId = GetCurrentUserId();
+            var pet = await _context.Pet
+                .FirstOrDefaultAsync(p => p.UserID == userId);
+
+            if (pet == null)
+            {
+                return NotFound();
+            }
+
+            return View(pet);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Play(string gameType)
+        {
+            var userId = GetCurrentUserId();
+            var pet = await _context.Pet
+                .FirstOrDefaultAsync(p => p.UserID == userId);
+
+            if (pet == null)
+            {
+                return NotFound();
+            }
+
+            // Apply game effects based on type
+            var (happinessIncrease, expIncrease) = gameType switch
+            {
+                "fetch" => (15, 5),
+                "hide" => (20, 10),
+                "trick" => (25, 15),
+                _ => (15, 5)
+            };
+
+            pet.PetHappiness = Math.Min(100, pet.PetHappiness + happinessIncrease);
+            pet.PetExp += expIncrease;
+            pet.PetUpdateTime = DateTime.Now;
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
         private int GetCurrentUserId()
         {
             // TODO: Implement proper user ID retrieval from authentication

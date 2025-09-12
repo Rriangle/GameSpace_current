@@ -85,6 +85,33 @@ namespace GameSpace.Areas.OnlineStore.Controllers
             return Json(new { success = true, message = "Coupon purchased successfully" });
         }
 
+        [HttpPost]
+        public async Task<IActionResult> PurchaseEvoucher(int evoucherId)
+        {
+            var userId = GetCurrentUserId();
+            var evoucher = await _context.Evoucher.FindAsync(evoucherId);
+
+            if (evoucher == null || evoucher.EvoucherStatus != "Active")
+            {
+                return BadRequest("Evoucher not available");
+            }
+
+            // Check user's wallet balance
+            var wallet = await _context.User_Wallet
+                .FirstOrDefaultAsync(w => w.User_Id == userId);
+
+            if (wallet == null || wallet.User_Point < evoucher.EvoucherPrice)
+            {
+                return BadRequest("Insufficient points");
+            }
+
+            // Process purchase (placeholder implementation)
+            wallet.User_Point -= evoucher.EvoucherPrice;
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, message = "Evoucher purchased successfully" });
+        }
+
         private int GetCurrentUserId()
         {
             // Placeholder - would get from authentication context

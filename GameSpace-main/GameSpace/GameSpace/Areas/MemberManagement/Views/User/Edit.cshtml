@@ -1,0 +1,66 @@
+@model GameSpace.Models.User
+
+@{
+    ViewData["Title"] = "Edit User";
+    Layout = "~/Areas/MemberManagement/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3>Edit User</h3>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit" method="post">
+                    <input type="hidden" asp-for="UserID" />
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="UserName" class="form-label">User Name</label>
+                                <input asp-for="UserName" class="form-control" />
+                                <span asp-validation-for="UserName" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="UserEmail" class="form-label">Email</label>
+                                <input asp-for="UserEmail" class="form-control" />
+                                <span asp-validation-for="UserEmail" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="UserPhone" class="form-label">Phone</label>
+                                <input asp-for="UserPhone" class="form-control" />
+                                <span asp-validation-for="UserPhone" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="UserGender" class="form-label">Gender</label>
+                                <select asp-for="UserGender" class="form-control">
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <span asp-validation-for="UserGender" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="UserAddress" class="form-label">Address</label>
+                        <textarea asp-for="UserAddress" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="UserAddress" class="text-danger"></span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <a href="@Url.Action("Details", new { id = Model.UserID })" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
