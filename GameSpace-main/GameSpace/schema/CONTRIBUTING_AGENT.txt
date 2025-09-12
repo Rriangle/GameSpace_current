@@ -6,11 +6,11 @@ Every time you start, you must re-read these four files, in this order:
  * CONTRIBUTING_AGENT.txt (this file)
  * old_0905.txt
  * new_0905.txt
- * database.sql
+ * database.json
 This prevents “spec drift.” If you detect any drift (your current or planned work conflicts with these sources), immediately enter Repair Mode:
  * Stop adding new scope.
  * Identify the drift (what conflicts with which source).
- * Fix the code/docs/tests to comply with this file + old/new + database.sql.
+ * Fix the code/docs/tests to comply with this file + old/new + database.json.
  * Document the fix briefly in the next commit message (“WHY it drifted, HOW corrected”).
  * Only then resume normal work.
 You are not allowed to proceed with any new changes until drift is repaired.
@@ -25,10 +25,10 @@ This includes:
  * and all code comments (C#, Razor, JS/TS, SQL comments, XML doc).
 Do NOT translate or localize code identifiers (class/method/variable names), file paths, or SQL/CLI keywords.
 1) Authority & Arbitration (90% / 10%)
-The three sources are: old_0905.txt, new_0905.txt, and database.sql.
+The three sources are: old_0905.txt, new_0905.txt, and database.json.
 Rule: old_0905.txt + new_0905.txt together describe ~90% of the business spec.
-For the remaining ~10% gaps or conflicts, database.sql is the final authority.
-→ Reconcile terms across old/new line-by-line. When ambiguous, take database.sql as the ground truth, and note this decision in your commit message.
+For the remaining ~10% gaps or conflicts, database.json is the final authority.
+→ Reconcile terms across old/new line-by-line. When ambiguous, take database.json as the ground truth, and note this decision in your commit message.
 2) Visual & Front-End References (put up front)
  * Public (front site): follow index.txt for layout/interaction (Bootstrap-based).
  * Admin (back office): use SB Admin (third-party library; do not modify vendor files).
@@ -61,10 +61,10 @@ Existing files: provide minimal diff (unless a full file is explicitly requested
  * Per-batch limits: ≤ 3 files, ≤ 400 LOC. Then build/test → commit → proceed.
 6) Setup & Execution (local run)
  * Install: Visual Studio 2022+ and SQL Server 2019/2022.
- * Run ./database.sql in SSMS → creates GameSpaceDatabase with initial data.
+ * Run ./database.json in SSMS → creates GameSpaceDatabase with initial data.
  * Open the ASP.NET Core MVC solution in VS2022.
  * Set appsettings.json connection string (e.g., DefaultConnection) to your SQL Server.
-   * No EF Migrations or schema edits; the schema lives in ./database.sql.
+   * No EF Migrations or schema edits; the schema lives in ./database.json.
  * Build & Run. The Public site appears on localhost.
  * Admin login (seeded): zhang_zhiming_01 / Password001@, li_xiaohua_02 / Password001@.
  * Public check (sample): dragonknight88 / Password001@.
@@ -73,212 +73,31 @@ Existing files: provide minimal diff (unless a full file is explicitly requested
  * Provide a DB connectivity check endpoint (e.g., /healthz/db, returning { status:"ok" } or an error).
  * Seeding must be idempotent, batched (≤ 1000 rows/batch), with Traditional Chinese (繁體中文) structured logs; failures can rollback/retry, with clear comments.
  * README must include a “Manual DB initialization & local run” section and a brief troubleshooting list.
-8) Team Area Partition (STRICT) & Non-modifiable list (C06)
-Use ASP.NET Core MVC Areas; one module per Area.
-Your assigned Area for initial delivery: MiniGame (must include 4 modules):
- * User_Wallet (points/coupons/e-vouchers) — tables:
-   User_Wallet, CouponType, Coupon, EVoucherType, EVoucher, EVoucherToken, EVoucherRedeemLog, WalletHistory
- * UserSignInStats
- * Pet
- * MiniGame
-Paths: Areas/MiniGame/Controllers|Models|Services|Views/**
-Area layout: Areas/MiniGame/Views/Shared/_Layout.cshtml
-Routing: [Area("MiniGame")] → /MiniGame/{controller}/{action}/{id?}
-Do not edit (unless explicitly authorized):
- * Vendor libs: wwwroot/lib/sb-admin/, wwwroot/lib/bootstrap/, wwwroot/lib/font-awesome/, wwwroot/lib/jquery/
- * Global layout: Views/Shared/_Layout.cshtml
- * Other modules’ code, DB migrations, libman.json, any appsettings*
-Never mix controllers/views/services across Areas.
-9) Project Completion Mandate (cover the whole project)
-The agent must complete the entire project (all modules/Areas).
-You may not deliver only MiniGame. Progress the whole system, rotating slices across Areas, keeping boundaries and UI separation intact, until the entire site is functional with consistent quality.
-10) Global Development Policies
- * Small batches: ≤ 3 files / ≤ 400 LOC; build/test → commit → proceed.
- * UTF-8 (prefer no BOM); re-read after write to prevent mojibake.
- * No shell file writes; for cross-platform writes use .NET File.WriteAllText or Node fs.writeFileSync (UTF-8).
- * Contract-first: align DTOs & OpenAPI before coding.
- * Structured logging with Serilog and CorrelationId middleware.
-11) Database as Single Source of Truth (database.sql rules)
- * Only database.sql defines the schema. No EF Migrations or alternate schemas.
+...
+11) Database as Single Source of Truth (database.json rules)
+ * Only database.json defines the schema. No EF Migrations or alternate schemas.
  * Use existing seed data as-is; do not overwrite/delete deterministic keys unless fixing a clear error (document why).
  * Read queries should use AsNoTracking(); project aggregates to read models (avoid returning entities directly).
 11.1) Fake Data — 以繁體中文呈現，規則明確
- * database.sql already contains part of the fake data — use it directly.
- * For missing data, the agent must read new_0905.txt, old_0905.txt, and database.sql first, then generate realistic data that looks human (daily/weekly rhythms, peaks, revisits/churn, correlated behaviors).
+ * database.json already contains part of the fake data — use it directly.
+ * For missing data, the agent must read new_0905.txt, old_0905.txt, and database.json first, then generate realistic data that looks human (daily/weekly rhythms, peaks, revisits/churn, correlated behaviors).
  * All generated data must be persisted with SQL INSERT into the database. No in-memory-only or cache-only data.
  * Target size (simple rule): Every table should end up with exactly 200 rows.
    * If a table has < 200, insert the missing rows up to exactly 200.
    * If a table already has > 200, do not delete existing rows; add a DEMO-NOTE: in the commit message explaining the exception.
- * Idempotency: reruns must not duplicate data (enforce via PK/natural key/UNIQUE). Batch size ≤ 1000.
- * Random yet reproducible: prefer a global seed Demo.Seed + natural-key hashing (same key → same outputs; different keys → varied outputs).
- * Constraints: all PK/FK/UNIQUE/CHECK/DEFAULT must pass.
- * Realism: Traditional Chinese (繁體中文) text, plausible URLs/images (Unsplash/Lorem Picsum acceptable), amounts/frequencies with Zipf/log-normal flavor; inject a small rate of failures/refunds (0.5–2%) without breaking rules.
-12) WIP & Progress (resume mechanism)
-Maintain two files:
- * docs/WIP_RUN.md (append-only) — Recommended sections: Done / Next / Risks / Assumptions / Files touched / Next-Run Delta Plan
- * docs/PROGRESS.json — per-stage percentages; overall = average. Suggested initial:
-   {
-  "overall": 0,
-  "stages": {
-    "stage0": 0, "stage1": 0, "stage2": 0, "stage3": 0,
-    "stage4": 0, "stage5": 0, "stage6": 0, "stage7": 0, "stage8": 0
-  },
-  "updatedAt": ""
-}
-
-START/STOP print (single line only):
-> 整體進度: <overall>% | 目前階段: <stage>% | 狀態: <short description>
-> 
-NEXT_RUN_PROMPT: allowed only after ≥1 diff + ≥1 commit; must be one-line Traditional Chinese (繁體中文).
-13) Auto Stage Selection
-On start, read docs/PROGRESS.json:
- * If stages.stageN < 100 → continue Stage N.
- * If = 100 → advance to Stage N+1.
- * If all done → keep improving docs/tests/small refactors until tokens force stop.
-14) Stage-Gated Delivery & Test Pipeline (MANDATORY)
-Gate for every stage (no exceptions):
- * Build: 0 errors / 0 warnings
- * Tests: all green (scope appropriate to the stage)
- * Placeholder sweep: no TODO|FIXME|TBD|NotImplemented|WIP|placeholder (including strings/comments)
- * Spec compliance: Areas, language, Notebook/Diff, DB single source, Fake Data rules (persisted/200 rows/idempotent), Admin/Public separation, module UI affiliation declared
- * Logs & commit in Traditional Chinese (繁體中文) (clear WHAT/HOW/VERIFY)
- * Print the single-line status
-Stages
-Stage 0 — Skeleton & CI
-Read old/new + database.sql + index.txt; create .NET 8 solution skeleton (Domain/Application/Infrastructure/API/MVC).
-/healthz + Home; Swagger / Serilog / CorrelationId; cross-platform CI (build + unit + analyzers).
-Minimal README.
-Tests: Smoke for /healthz; 1–2 unit tests.
-Stage 1 — Data Mapping (Read-first)
-Map read models to database.sql (no custom schema).
-Read-only repos/queries (EF or raw SQL).
-Strategy wiring for Demo Provider (final data must still be persisted).
-Minimal GETs.
-Tests: ≥2 DB read integration; update contract snapshots if DTOs added.
-Stage 2 — Breadth Slice R1 (Read-only parity)
-3–4 modules: wallet aggregate, forum list/detail, leaderboard snapshot, +1.
-Minimal MVC/JSON; consistent layout.
-Tests: one smoke per slice; ≥1 aggregate read integration.
-Stage 3 — Breadth Slice R2 (Writes + Tx + Idempotency + Audit)
-SignIn: POST /signin (transaction + Idempotency-Key); grant Points/EXP/Coupon; append WalletHistory.
-Pet: minimal updates + leveling logic.
-Redemption: redeem Coupon/EVoucher; write audit.
-Tests: commit/rollback, idempotent retry, edges; one risky E2E (SignIn → WalletHistory visible).
-Stage 4 — Admin & Governance
-Admin CRUD: CouponType / EVoucherType (respect database.sql).
-Banned-words filter for forum posting; read-only insights.
-Tests: validators/rules unit; Admin write + RBAC route integration.
-Stage 5 — Cross-cutting Infra
-RBAC, rate-limit, timeout, retry; unified error model (ProblemDetails / Result<T>).
-Short-TTL aggregate cache (wallet/leaderboard hot paths).
-Tests: cache key math, rate-limit & retry unit; cache invalidation/timeout/retry integration.
-Stage 6 — Testing Policy & Templates
-TESTING_POLICY.md (pyramid, DoD per slice).
-Unit/integration/E2E templates; parallel runs; DTO/OpenAPI snapshot tests.
-CI time budget (C13): ≤ 3 minutes per slice.
-Tests: templates compile; sample tests green in CI.
-Stage 7 — Performance & Ops Docs
-Perf budgets; profile hot paths; light load scripts.
-Watch for hotspots: large queries, leaderboard aggregation, image processing (C14).
-Produce: docs/PERF_NOTES.md, docs/OPERATIONS.md (local run, demo data, troubleshooting, rollback).
-Stage 8 — Final QA & Sign-off
-Final a11y, English proofreading, production build review; Release notes.
-Gate: E2E/Integration/Smoke all green; 0 warnings; tag release.
-15) MiniGame Area — Initial Delivery Scope (start here, but finish the whole project)
-a) User_Wallet: points, available Coupons/EVouchers; browse EVoucherToken/EVoucherRedeemLog/WalletHistory (UI focus; no schema edits).
-b) UserSignInStats: daily sign-in list; “sign-in” action stub (contract-ready).
-c) Pet: profile read + attribute adjust stubs (with basic animations/micro-interactions, optional sound, a11y; richly commented).
-d) MiniGame: list + basic CRUD stubs; use Areas/MiniGame/Views/Shared/_Layout.cshtml; do not touch global layouts.
-> Reminder: This is only the starting slice. You must continue across other Areas to deliver the entire project.
-> 
-16) Audits (always) & Issue Resolution
- * Violation audit: language, Notebook/Diff, DB single source, Fake Data rules (persisted / 200 rows / idempotent), Area boundaries, Admin/Public separation, module UI affiliation declared.
- * Code quality audit: naming, layering, DI, SoC; record findings.
- * Performance audit: measure hot paths (wallet aggregates, sign-in write, pet reads, image processing); optimize; record findings.
- * Frontend UX audit: RWD/usability per module/Area; ensure each module states Admin/Public affiliation.
- * Issues: fix promptly; log in Traditional Chinese (繁體中文).
-17) Git & CI
- * Branches: feature/<area>-<slice>, fix/<area>-<topic>
- * CI: build + tests + analyzers must stay green; keep ≤ 3 minutes per slice
- * Commit template:
-   [Stage-<N>][<Area>/<Slice-Name>] WHAT → HOW → VERIFY
-WHAT: Align with ./database.sql and this spec
-HOW: ≤3 files / ≤400 LOC; respect skeleton & Area boundaries; no shell file-writes
-VERIFY: build/tests/manual checks (Traditional Chinese (繁體中文), concise)
-
-18) Deployment Targets (GitHub & GCP) — high-level rules, no shell commands
-General
- * Describe checks and requirements only; do not include shell/PowerShell/CMD commands.
- * Production deploys must honor: no schema changes, no EF Migrations; all secrets via secure channels (not in source).
-A. GitHub (Actions CI/CD)
- * Triggers: push to main, release tags.
- * Quality gates: .NET 8 build; tests all green; analyzers 0 warnings; NuGet cache to speed up.
- * Artifacts: container image pushed to a registry (e.g., GCP Artifact Registry).
- * Security: use OIDC (Workload Identity Federation) to GCP; minimal-privilege Service Accounts.
- * Secrets (examples): DefaultConnection/CONNECTION_STR, GCP_PROJECT_ID, GCP_REGION, CLOUD_SQL_CONN_NAME, feature flags.
- * Deploy step (conceptual): after green checks → publish container → deploy to GCP target (see B) → write back version/status.
- * Verification: workflow logs retained; failures marked; never leak secrets in logs.
-B. Google Cloud Platform (choose one or both)
-1. Cloud Run (recommended)
- * Container service: set port (default 8080), CPU/RAM, max concurrency, min instances (0 or ≥1 to reduce cold starts).
- * Database: Cloud SQL for SQL Server (prefer Private IP). Connect via VPC connector or secure path; do not hardcode credentials.
- * Config: inject env vars/secrets (e.g., ASPNETCORE_ENVIRONMENT=Production, connection string).
- * Health: use /healthz for liveness/readiness; Serilog logs must be visible in Cloud Logging.
- * Checks: rollback available (revisions); Cloud SQL connectivity OK; cold-start/latency within budget.
-2. Compute Engine (alternative)
- * Runtime: Kestrel (or IIS on Windows); enable autostart; firewall HTTP/HTTPS.
- * Database: Cloud SQL for SQL Server (Private IP preferred).
- * Monitoring: integrate Cloud Monitoring/Logging; set alerts.
- * Checks: VM sizing/cost, availability, patching/backup documented.
-C. Env Vars & Secrets
- * Use Secret Manager / GitHub Secrets, never commit secrets.
- * Provide a table in docs/DEPLOYMENT.md describing each key:
-   DefaultConnection, ASPNETCORE_ENVIRONMENT, GCP_PROJECT_ID, GCP_REGION, CLOUD_SQL_CONN_NAME, CONNECTION_STR, feature flags, etc.
-D. Rollback & Release Tags
- * Must support fast rollback (Cloud Run revisions, GCE images/snapshots).
- * Tag releases and keep a short Traditional Chinese (繁體中文) changelog.
+   * Idempotency: reruns must not duplicate data (enforce via PK/natural key/UNIQUE). Batch size ≤ 1000.
+   * Random yet reproducible: prefer a global seed Demo.Seed + natural-key hashing (same key → same outputs; different keys → varied outputs).
+   * Constraints: all PK/FK/UNIQUE/CHECK/DEFAULT must pass.
+   * Realism: Traditional Chinese (繁體中文) text, plausible URLs/images (Unsplash/Lorem Picsum acceptable), amounts/frequencies with Zipf/log-normal flavor; inject a small rate of failures/refunds (0.5–2%) without breaking rules.
+...
 19) Documentation Deliverables (must-have; C18 “beginner-friendly”)
  * README.md — overview, quick start, local run, structure (beginner-friendly)
  * docs/DEPLOYMENT.md — GitHub Actions CI/CD, GCP deployment (Cloud Run + Cloud SQL for SQL Server and/or GCE), env vars & secrets table, SQL Server connectivity, Admin/Public build notes
  * docs/MODULES.md — per-module features, routes/endpoints, DTO/OpenAPI refs, UI affiliation (Admin/Public)
- * docs/DATABASE.md — tables from database.sql, seed coverage rule (exactly 200 rows per table), relationships, constraints
+ * docs/DATABASE.md — tables from database.json, seed coverage rule (exactly 200 rows per table), relationships, constraints
  * docs/OPERATIONS.md, docs/PERF_NOTES.md (Stage 7 outputs)
 20) Safety & Prohibited List
- * ❌ Any schema source besides database.sql (including migrations/ad-hoc scripts)
- * ❌ Any shell commands in deliverables (PowerShell/Bash/CMD; including redirection)
- * ❌ Batch INSERT > 1000 rows
- * ❌ One-shot giant edits (split into small batches)
- * ❌ Translating identifiers / API paths / SQL names
- * ❌ Mixing Public (index.txt) and Admin (SB Admin) assets/styles in the same page/Area
- * ❌ Editing vendor libraries (SB Admin / Bootstrap / Font Awesome / jQuery …)
- * ❌ In-memory or cache-only fake data (all generated data must be inserted into DB)
-(Note: using local shell for non-file-write tasks is fine, but do not include it in deliverables.)
+ * ❌ Any schema source besides database.json (including migrations/ad-hoc scripts)
+...
 21) Runbook — Auto-Start on read CONTRIBUTING_AGENT.txt and begin
- * Re-read A) Start-of-Run Mandatory Reading (this file + old_0905.txt + new_0905.txt + database.sql).
- * Print single-line START.
- * Audit: skeleton immutability, Area boundaries, language rule, Notebook/Diff, DB single source, Fake Data rule (persisted/exactly 200 rows/idempotent), Admin/Public separation, whole-project coverage mandate, drift check.
-   * If drift is found → enter Repair Mode immediately (see section A), fix, document, then continue.
- * If folders are missing, create minimal Area-local structure only; do not touch other Areas/skeleton.
- * Enter Stage 0; proceed stage by stage; per batch ≤ 3 files / ≤ 400 LOC; build/test → commit → print single-line status.
- * Continue until tokens are nearly exhausted or you reach a logical checkpoint; before stopping, update WIP/PROGRESS, print single-line STOP; if ≥1 diff + ≥1 commit, print one-line English NEXT_RUN_PROMPT.
-22) Per-Stage Traditional Chinese (繁體中文) Micro-Prompts (helper)
- * Stage0: “建立解決方案骨架、健康檢查、Swagger、Serilog、CI 和基礎 README。目標為 .NET 8.0。保持小批量修改。印出開始/停止狀態行。”
- * Stage1: “將讀取模型對應到 database.sql 的結構；實作唯讀的 repos/queries；串接 Demo provider；提供最基礎的 GET 端點。”
- * Stage2: “跨 3–4 個模組完成唯讀功能切片；錢包聚合讀取；論壇列表/詳情；排行榜快照；最基礎的 MVC/JSON；執行 smoke/integration 測試。”
- * Stage3: “增加包含交易和幂等性的寫入功能切片；登入功能應授予點數/經驗/優惠券並寫入 WalletHistory；寵物更新與升級邏輯；優惠券/電子禮券兌換與稽核記錄；撰寫 integration 測試和一個高風險 E2E 測試。”
- * Stage4: “完成 CouponType/eVoucherType 的管理後台 CRUD；實作發文的禁用詞過濾器；建立唯讀的數據洞察頁面；撰寫 unit 與 integration 測試。”
- * Stage5: “實作 RBAC、速率限制、超時、重試機制；統一的錯誤模型；短 TTL 的快取；結構化日誌；撰寫 unit 與 integration 測試。”
- * Stage6: “撰寫 TESTING_POLICY.md；提供 unit/integration/E2E 測試模板；設定平行執行；實作 OpenAPI/DTO 快照測試。”
- * Stage7: “設定效能預算；分析熱點路徑；執行輕量負載測試；撰寫 OPERATIONS.md 和 PERF_NOTES.md。”
- * Stage8: “進行最終 QA、無障礙性檢查、文案校對、生產環境建置審查，並撰寫版本發行說明。”
-Self-Audit (consistency check)
- * Language: The language rule now requires Traditional Chinese (繁體中文) for all human-readable outputs/comments → consistent.
- * Start-of-Run reading + Repair Mode: At the very top; referenced in the Runbook → consistent.
- * Authority: 90% old/new, 10% database.sql final; referenced in §§A, 1, 14 Stage-0 reading → consistent.
- * Fake Data: “exactly 200 rows per table,” persisted via SQL INSERT, idempotent, ≤1000/batch → enforced in §§11.1, 14 (Gate), 21 (Audit) → consistent.
- * Whole-project mandate: Must complete all modules/Areas, not just MiniGame; reinforced in §§9, 15, 21 → consistent.
- * Admin/Public separation + module UI affiliation + Admin partials (C08): present in §§2, 8, 16, 19 → consistent.
- * No shell in deliverables; local shell allowed for non-file-write only: present in §§5, 20 → consistent.
- * CI/CD + GitHub & GCP deployment: explicit in §18 and required in docs §19 → consistent.
- * Gate rules: 0 errors / 0 warnings + all tests green + no TODO/placeholder → §14 → consistent.
- * WIP/Progress single-line status + NEXT_RUN_PROMPT (Traditional Chinese (繁體中文), one line, after ≥1 diff+commit) + Delta Plan no-print: §§3, 12, 21 → consistent.
+ * Re-read A) Start-of-Run Mandatory Reading (this file + old_0905.txt + new_0905.txt + database.json).
