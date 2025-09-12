@@ -1,0 +1,39 @@
+@{
+    ViewData["Title"] = "Online Store";
+    Layout = "~/Areas/OnlineStore/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3>GameSpace Online Store</h3>
+            </div>
+            <div class="card-body">
+                <p>Use your points to purchase coupons and evouchers!</p>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <i class="fas fa-ticket-alt fa-3x text-primary mb-3"></i>
+                                <h5 class="card-title">Coupons</h5>
+                                <p class="card-text">Purchase discount coupons with your points</p>
+                                <a href="@Url.Action("Coupons")" class="btn btn-primary">Browse Coupons</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <i class="fas fa-gift fa-3x text-success mb-3"></i>
+                                <h5 class="card-title">Evouchers</h5>
+                                <p class="card-text">Redeem evouchers for special rewards</p>
+                                <a href="@Url.Action("Evouchers")" class="btn btn-success">Browse Evouchers</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

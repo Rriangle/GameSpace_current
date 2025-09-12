@@ -64,6 +64,9 @@ namespace GameSpace
 			// Add CorrelationId middleware
 			builder.Services.AddCorrelationId();
 
+			// Add Data Seeding Service
+			builder.Services.AddScoped<GameSpace.Services.DataSeedingService>();
+
 			// ===== social_hub 相關服務註冊 =====
 			builder.Services.AddMemoryCache();
 
