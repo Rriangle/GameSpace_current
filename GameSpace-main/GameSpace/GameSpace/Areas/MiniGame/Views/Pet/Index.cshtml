@@ -1,0 +1,46 @@
+@model GameSpace.Models.Pet
+
+@{
+    ViewData["Title"] = "My Pet";
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3>My Pet</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>Pet Information</h4>
+                        <p><strong>Name:</strong> @Model.PetName</p>
+                        <p><strong>Level:</strong> @Model.PetLevel</p>
+                        <p><strong>Experience:</strong> @Model.PetExp</p>
+                        <p><strong>Happiness:</strong> @Model.PetHappiness</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>Actions</h4>
+                        <a href="@Url.Action("Feed")" class="btn btn-primary">Feed Pet</a>
+                        <a href="@Url.Action("Play")" class="btn btn-success">Play with Pet</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h4>Pet Status</h4>
+            </div>
+            <div class="card-body">
+                <div class="progress mb-2">
+                    <div class="progress-bar" role="progressbar" style="width: @(Model.PetHappiness)%" aria-valuenow="@Model.PetHappiness" aria-valuemin="0" aria-valuemax="100">
+                        @Model.PetHappiness%
+                    </div>
+                </div>
+                <small class="text-muted">Happiness Level</small>
+            </div>
+        </div>
+    </div>
+</div>

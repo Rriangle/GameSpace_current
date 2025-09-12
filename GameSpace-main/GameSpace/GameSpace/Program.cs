@@ -1,10 +1,12 @@
-﻿// ---- 服務命名空間（一般 using）----
+// ---- 服務命名空間（一般 using）----
 using GameSpace.Areas.social_hub.Services;
 using GameSpace.Data;
 using GameSpace.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
+using Serilog;
+using Serilog.Events;
 // ---- 型別別名（避免方案裡若有重複介面/命名空間不一致，導致 DI 對不到）----
 using IMuteFilterAlias = GameSpace.Areas.social_hub.Services.IMuteFilter;
 using INotificationServiceAlias = GameSpace.Areas.social_hub.Services.INotificationService;
@@ -20,7 +22,20 @@ namespace GameSpace
 	{
 		public static async Task Main(string[] args) // ⬅ 改成 async
 		{
-			var builder = WebApplication.CreateBuilder(args);
+			// Configure Serilog
+			Log.Logger = new LoggerConfiguration()
+				.MinimumLevel.Debug()
+				.MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+				.Enrich.FromLogContext()
+				.WriteTo.Console()
+				.WriteTo.File("logs/gamespace-.txt", rollingInterval: RollingInterval.Day)
+				.CreateLogger();
+
+			try
+			{
+				Log.Information("Starting GameSpace application");
+
+				var builder = WebApplication.CreateBuilder(args);
 
 			// Add services to the container.
 			var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
@@ -42,6 +57,12 @@ namespace GameSpace
 
 			// MVC
 			builder.Services.AddControllersWithViews();
+
+			// Add Serilog
+			builder.Host.UseSerilog();
+
+			// Add CorrelationId middleware
+			builder.Services.AddCorrelationId();
 
 			// ===== social_hub 相關服務註冊 =====
 			builder.Services.AddMemoryCache();
@@ -91,6 +112,9 @@ namespace GameSpace
 			app.UseHttpsRedirection();
 			app.UseStaticFiles();
 
+			// Add CorrelationId middleware
+			app.UseCorrelationId();
+
 			app.UseRouting();
 
 			app.UseAuthentication(); // Identity
@@ -112,6 +136,15 @@ namespace GameSpace
 			app.MapHub<GameSpace.Areas.social_hub.Hubs.ChatHub>("/social_hub/chatHub");
 
 			await app.RunAsync(); // ⬅ 搭配 async Main
+			}
+			catch (Exception ex)
+			{
+				Log.Fatal(ex, "Application terminated unexpectedly");
+			}
+			finally
+			{
+				Log.CloseAndFlush();
+			}
 		}
 	}
 }
