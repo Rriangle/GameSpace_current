@@ -73,6 +73,42 @@ namespace GameSpace.Areas.MiniGame.Controllers
             return Json(new { success = true, message = "Sign in successful", points = signIn.PointsChanged });
         }
 
+        public IActionResult SignIn()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SignIn(string action)
+        {
+            var userId = GetCurrentUserId();
+            var today = DateTime.Today;
+            
+            // Check if user already signed in today
+            var existingSignIn = await _context.UserSignInStat
+                .FirstOrDefaultAsync(s => s.UserID == userId && s.SignTime.Date == today);
+            
+            if (existingSignIn != null)
+            {
+                TempData["Message"] = "You have already signed in today!";
+                return RedirectToAction(nameof(Index));
+            }
+            
+            // Create new sign-in record
+            var signInStat = new UserSignInStat
+            {
+                UserID = userId,
+                SignTime = DateTime.Now,
+                Point = 10 // Base points for daily sign-in
+            };
+            
+            _context.UserSignInStat.Add(signInStat);
+            await _context.SaveChangesAsync();
+            
+            TempData["Message"] = "Successfully signed in! You earned 10 points.";
+            return RedirectToAction(nameof(Index));
+        }
+
         private int GetCurrentUserId()
         {
             // TODO: Implement proper user ID retrieval from authentication

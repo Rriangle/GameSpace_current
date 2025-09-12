@@ -173,6 +173,54 @@ namespace GameSpace.Areas.MiniGame.Controllers
                 return (int)(285.69 * Math.Pow(1.06, level));
         }
 
+        public IActionResult StartGame()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> StartGame(string gameType, string difficulty)
+        {
+            var userId = GetCurrentUserId();
+            
+            var miniGame = new MiniGame
+            {
+                UserID = userId,
+                GameType = gameType,
+                StartTime = DateTime.Now,
+                Score = 0,
+                Point = 0
+            };
+            
+            _context.MiniGame.Add(miniGame);
+            await _context.SaveChangesAsync();
+            
+            return RedirectToAction(nameof(Play), new { id = miniGame.GameID });
+        }
+
+        public IActionResult Play(int id)
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EndGame(int gameId, int score, int level)
+        {
+            var miniGame = await _context.MiniGame.FindAsync(gameId);
+            if (miniGame == null)
+            {
+                return NotFound();
+            }
+            
+            miniGame.EndTime = DateTime.Now;
+            miniGame.Score = score;
+            miniGame.Point = score / 10; // 1 point per 10 score
+            
+            await _context.SaveChangesAsync();
+            
+            return Json(new { success = true, message = "Game ended successfully" });
+        }
+
         private int GetCurrentUserId()
         {
             // TODO: Implement proper user ID retrieval from authentication

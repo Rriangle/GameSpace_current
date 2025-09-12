@@ -1,0 +1,132 @@
+@{
+    ViewData["Title"] = "Play Game";
+    Layout = "~/Areas/MiniGame/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3>Playing Game</h3>
+            </div>
+            <div class="card-body">
+                <div class="text-center">
+                    <h4>Game in Progress</h4>
+                    <p>Your game is currently running. Good luck!</p>
+                    
+                    <div class="mb-4">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <h5>Score</h5>
+                                        <p class="h3 text-primary" id="score">0</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <h5>Time</h5>
+                                        <p class="h3 text-success" id="time">60</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <h5>Level</h5>
+                                        <p class="h3 text-warning" id="level">1</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <button class="btn btn-primary btn-lg" onclick="startGame()">Start Game</button>
+                        <button class="btn btn-success btn-lg" onclick="pauseGame()">Pause</button>
+                        <button class="btn btn-danger btn-lg" onclick="endGame()">End Game</button>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 0%" id="progress"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let gameRunning = false;
+let score = 0;
+let timeLeft = 60;
+let level = 1;
+
+function startGame() {
+    gameRunning = true;
+    score = 0;
+    timeLeft = 60;
+    level = 1;
+    updateDisplay();
+    gameLoop();
+}
+
+function pauseGame() {
+    gameRunning = !gameRunning;
+    if (gameRunning) {
+        gameLoop();
+    }
+}
+
+function endGame() {
+    gameRunning = false;
+    // Submit score to server
+    fetch('/MiniGame/MiniGame/EndGame', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ score: score, level: level })
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert('Game ended! Final score: ' + score);
+        window.location.href = '/MiniGame/MiniGame';
+    });
+}
+
+function gameLoop() {
+    if (!gameRunning) return;
+    
+    timeLeft--;
+    if (timeLeft <= 0) {
+        endGame();
+        return;
+    }
+    
+    updateDisplay();
+    setTimeout(gameLoop, 1000);
+}
+
+function updateDisplay() {
+    document.getElementById('score').textContent = score;
+    document.getElementById('time').textContent = timeLeft;
+    document.getElementById('level').textContent = level;
+    document.getElementById('progress').style.width = ((60 - timeLeft) / 60 * 100) + '%';
+}
+
+// Simulate scoring
+document.addEventListener('click', function() {
+    if (gameRunning) {
+        score += 10;
+        if (score % 100 === 0) {
+            level++;
+        }
+        updateDisplay();
+    }
+});
+</script>
