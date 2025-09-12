@@ -1,5 +1,5 @@
-﻿@{
-    // 先讀新的 gs cookie
+@{
+    // Read new gs cookie first
     var gsId = Context.Request.Cookies["gs_id"];
     var gsKind = Context.Request.Cookies["gs_kind"]; // user / manager
     bool hasGs = !string.IsNullOrWhiteSpace(gsId);
@@ -7,7 +7,7 @@
     bool isManagerByGs = string.Equals(gsKind, "manager", StringComparison.OrdinalIgnoreCase);
     bool isUserByGs = string.Equals(gsKind, "user", StringComparison.OrdinalIgnoreCase);
 
-    // 相容舊 cookie（若沒設 gs）
+    // Compatible with legacy cookies (if gs not set)
     bool legacyIsAdmin = (Context.Request.Cookies.TryGetValue("sh_is_admin", out var flag) && flag == "1")
                          || Context.Request.Cookies.ContainsKey("sh_mid");
     bool legacyIsUser = Context.Request.Cookies.ContainsKey("sh_uid");
@@ -16,14 +16,14 @@
     var isUserLogin = hasGs ? isUserByGs : legacyIsUser;
     var isLogin = isAdminLogin || isUserLogin;
 
-    // 顯示名稱：優先舊的名稱 cookie，沒有就 fallback 用 ID
+    // Display name: prioritize legacy name cookie, fallback to ID if not available
     string uname;
     if (isAdminLogin)
-        uname = Context.Request.Cookies["sh_mname"] ?? (hasGs ? $"Manager #{gsId}" : "管理員");
+        uname = Context.Request.Cookies["sh_mname"] ?? (hasGs ? $"Manager #{gsId}" : "Administrator");
     else if (isUserLogin)
-        uname = Context.Request.Cookies["sh_uname"] ?? (hasGs ? $"User #{gsId}" : "訪客");
+        uname = Context.Request.Cookies["sh_uname"] ?? (hasGs ? $"User #{gsId}" : "Guest");
     else
-        uname = "登入";
+        uname = "Login";
 
     var returnUrl = (Context.Request.Path + Context.Request.QueryString).ToString();
 }
@@ -31,40 +31,40 @@
 <nav class="navbar navbar-expand-lg navbar-dark shadow-sm custom-bg-dark">
     <div class="container-fluid p-0 d-flex">
 
-        <!-- 左側 GameSpace / 背景區，固定寬度 -->
+        <!-- Left GameSpace / Background area, fixed width -->
         <div class="d-flex justify-content-center align-items-center flex-shrink-0" style="width:250px; height:100%;">
             <a class="navbar-brand mb-0 text-white" asp-area="" asp-controller="Home" asp-action="Index">
                 GameSpace
             </a>
         </div>
 
-        <!-- 中間導航 -->
+        <!-- Center Navigation -->
         <div class="collapse navbar-collapse justify-content-center" id="navbarNav1">
             <ul class="navbar-nav">
                 <li class="nav-item mx-2">
                     <a class="nav-link text-white" asp-area="social_hub" asp-controller="Home" asp-action="Index">
-                        訊息中心
+                        Message Center
                     </a>
                 </li>
                 <li class="nav-item mx-2">
                     <a class="nav-link text-white" asp-area="social_hub" asp-controller="Home" asp-action="WhoAmI">
-                        登入測試
+                        Login Test
                     </a>
                 </li>
                 <li class="nav-item mx-2">
                     <a class="nav-link text-white" asp-area="social_hub" asp-controller="Mutes" asp-action="Index">
-                        穢語設定
+                        Profanity Settings
                     </a>
                 </li>
                 <li class="nav-item mx-2">
                     <a class="nav-link text-white" asp-area="social_hub" asp-controller="Chat" asp-action="Index">
-                        聊天測試
+                        Chat Test
                     </a>
                 </li>
             </ul>
         </div>
 
-        <!-- 右側使用者選單 -->
+        <!-- Right User Menu -->
         <div class="d-flex align-items-center me-3">
             <ul class="navbar-nav">
                 <li class="nav-item dropdown">
@@ -81,7 +81,7 @@
                                    asp-controller="Home"
                                    asp-action="UserLogin"
                                    asp-route-returnUrl="@(returnUrl)">
-                                    使用者登入
+                                    User Login
                                 </a>
                             </li>
                             <li>
@@ -90,16 +90,16 @@
                                    asp-controller="Home"
                                    asp-action="AdminLogin"
                                    asp-route-returnUrl="@(returnUrl)">
-                                    管理員登入
+                                    Admin Login
                                 </a>
                             </li>
                         }
                         else
                         {
-                            <li><a class="dropdown-item" href="#">測試</a></li>
-                            <li><a class="dropdown-item" href="#">設定</a></li>
+                            <li><a class="dropdown-item" href="#">Test</a></li>
+                            <li><a class="dropdown-item" href="#">Settings</a></li>
                             <li><hr class="dropdown-divider" /></li>
-                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">登出</a></li>
+                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">Logout</a></li>
                         }
                     </ul>
                 </li>
