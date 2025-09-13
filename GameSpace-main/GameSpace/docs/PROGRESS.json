@@ -1,0 +1,16 @@
+{
+  "overall": 25,
+  "stages": {
+    "stage1": 100,
+    "stage2": 0,
+    "stage3": 0,
+    "stage4": 0,
+    "stage5": 0,
+    "stage6": 0,
+    "stage7": 0
+  },
+  "current_stage": "stage2",
+  "last_updated": "2025-01-27T14:30:00Z",
+  "status": "基本專案結構建立完成，開始實作核心功能",
+  "notes": "已建立完整的 Entity Framework 模型、DbContext、資料種子服務和基本控制器"
+}

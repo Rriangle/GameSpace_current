@@ -1,0 +1,83 @@
+@{
+    ViewData["Title"] = "首頁";
+    var stats = ViewBag.Stats as dynamic;
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="display-4 text-center mb-5">歡迎來到 GameSpace 遊戲論壇平台</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">總用戶數</h5>
+                    <h2 class="text-primary">@stats?.TotalUsers</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">總寵物數</h5>
+                    <h2 class="text-success">@stats?.TotalPets</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">小遊戲次數</h5>
+                    <h2 class="text-warning">@stats?.TotalMiniGames</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">優惠券總數</h5>
+                    <h2 class="text-info">@stats?.TotalCoupons</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">平台功能</h5>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-title">寵物養成</h6>
+                                    <p class="card-text">飼養可愛的史萊姆寵物，透過互動提升寵物等級和屬性。</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-title">小遊戲冒險</h6>
+                                    <p class="card-text">每日最多3次冒險挑戰，獲得點數和經驗值獎勵。</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-title">每日簽到</h6>
+                                    <p class="card-text">每日簽到獲得點數、經驗值和優惠券獎勵。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
