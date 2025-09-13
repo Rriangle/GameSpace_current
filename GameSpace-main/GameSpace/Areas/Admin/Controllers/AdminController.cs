@@ -24,7 +24,7 @@ namespace GameSpace.Areas.Admin.Controllers
             var totalUsers = await _context.Users.CountAsync();
             var totalPets = await _context.Pets.CountAsync();
             var totalForums = await _context.Forums.CountAsync();
-            var totalOrders = await _context.Orders.CountAsync();
+            var totalOrders = await _context.OrderInfos.CountAsync();
             var totalProducts = await _context.ProductInfos.CountAsync();
 
             // 最近活動
@@ -34,7 +34,6 @@ namespace GameSpace.Areas.Admin.Controllers
                 .ToListAsync();
 
             var recentForums = await _context.Forums
-                .Include(f => f.User)
                 .OrderByDescending(f => f.CreatedAt)
                 .Take(5)
                 .ToListAsync();
@@ -55,7 +54,7 @@ namespace GameSpace.Areas.Admin.Controllers
         {
             var users = await _context.Users
                 .Include(u => u.Pets)
-                .Include(u => u.UserWallets)
+                .Include(u => u.UserWallet)
                 .OrderByDescending(u => u.CreatedAt)
                 .ToListAsync();
 
@@ -67,8 +66,8 @@ namespace GameSpace.Areas.Admin.Controllers
         {
             var user = await _context.Users
                 .Include(u => u.Pets)
-                .Include(u => u.UserWallets)
-                .Include(u => u.UserIntroductions)
+                .Include(u => u.UserWallet)
+                .Include(u => u.UserIntroduce)
                 .FirstOrDefaultAsync(u => u.UserId == id);
 
             if (user == null)
@@ -95,8 +94,7 @@ namespace GameSpace.Areas.Admin.Controllers
         public async Task<IActionResult> Forums()
         {
             var forums = await _context.Forums
-                .Include(f => f.User)
-                .Include(f => f.ForumComments)
+                .Include(f => f.Threads)
                 .OrderByDescending(f => f.CreatedAt)
                 .ToListAsync();
 
@@ -107,9 +105,7 @@ namespace GameSpace.Areas.Admin.Controllers
         public async Task<IActionResult> ForumDetails(int id)
         {
             var forum = await _context.Forums
-                .Include(f => f.User)
-                .Include(f => f.ForumComments)
-                .ThenInclude(c => c.User)
+                .Include(f => f.Threads)
                 .FirstOrDefaultAsync(f => f.ForumId == id);
 
             if (forum == null)
@@ -127,8 +123,7 @@ namespace GameSpace.Areas.Admin.Controllers
             var forum = await _context.Forums.FindAsync(id);
             if (forum != null)
             {
-                forum.IsActive = false;
-                forum.UpdatedAt = DateTime.UtcNow;
+                _context.Forums.Remove(forum);
                 await _context.SaveChangesAsync();
             }
 
@@ -138,9 +133,9 @@ namespace GameSpace.Areas.Admin.Controllers
         // 訂單管理
         public async Task<IActionResult> Orders()
         {
-            var orders = await _context.Orders
+            var orders = await _context.OrderInfos
                 .Include(o => o.User)
-                .Include(o => o.OrderDetails)
+                .Include(o => o.OrderItems)
                 .ThenInclude(od => od.ProductInfo)
                 .OrderByDescending(o => o.OrderDate)
                 .ToListAsync();
@@ -151,9 +146,9 @@ namespace GameSpace.Areas.Admin.Controllers
         // 訂單詳情
         public async Task<IActionResult> OrderDetails(int id)
         {
-            var order = await _context.Orders
+            var order = await _context.OrderInfos
                 .Include(o => o.User)
-                .Include(o => o.OrderDetails)
+                .Include(o => o.OrderItems)
                 .ThenInclude(od => od.ProductInfo)
                 .FirstOrDefaultAsync(o => o.OrderId == id);
 
@@ -299,8 +294,9 @@ namespace GameSpace.Areas.Admin.Controllers
         public async Task<IActionResult> ChatMessages()
         {
             var messages = await _context.ChatMessages
-                .Include(c => c.User)
-                .OrderByDescending(c => c.CreatedAt)
+                .Include(c => c.Sender)
+                .Include(c => c.Receiver)
+                .OrderByDescending(c => c.SentAt)
                 .Take(100)
                 .ToListAsync();
 
@@ -314,7 +310,7 @@ namespace GameSpace.Areas.Admin.Controllers
             var message = await _context.ChatMessages.FindAsync(id);
             if (message != null)
             {
-                message.IsActive = false;
+                _context.ChatMessages.Remove(message);
                 await _context.SaveChangesAsync();
             }
 
