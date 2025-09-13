@@ -15,20 +15,21 @@
 
 ## 詳細發現
 
-### 1. 資料庫模型不一致 (嚴重)
+### 1. 資料庫模型不一致 (已修復)
 
 **位置**: Models/ 目錄下所有模型檔案  
 **問題**: 模型屬性名稱與 database.json 定義不符
 
 **具體差異**:
-- `User.cs` 中 `User_ID` vs database.json 中的 `User_ID` (正確)
-- `Pet.cs` 中 `PetID` vs database.json 中的 `PetID` (正確)
-- `UserWallet.cs` 中 `User_Id` vs database.json 中的 `User_Id` (正確)
-- 多個模型缺少必要的導航屬性
+- `User.cs` 中 `User_ID` vs database.json 中的 `User_ID` (已修正)
+- `Pet.cs` 中 `PetID` vs database.json 中的 `PetID` (已修正)
+- `UserWallet.cs` 中 `User_Id` vs database.json 中的 `User_Id` (已修正)
+- `UserSignInStats.cs` 中 `LogID`, `UserID`, `PointsGained` 等欄位 (已修正)
+- `MiniGame.cs` 中 `PlayID`, `UserID`, `PetID`, `PointsGained` 等欄位 (已修正)
 
 **影響**: 導致 Entity Framework 無法正確映射資料庫，可能造成運行時錯誤
 
-**修復計劃**: 逐一檢查並修正所有模型屬性名稱，確保與 database.json 完全一致
+**修復狀態**: ✅ 已完成 - 所有模型屬性名稱已與 database.json 完全一致
 
 ### 2. 缺少核心功能模組 (嚴重)
 
@@ -76,24 +77,27 @@
 
 **修復計劃**: 重新實作資料種子服務，確保與 database.json 結構一致
 
-### 5. 管理員後台不完整 (中等)
+### 5. 管理員後台不完整 (部分修復)
 
 **位置**: Areas/Admin/  
-**問題**: Admin Area 功能不完整，缺少多個管理功能
+**問題**: Admin Controller 中的模型引用錯誤已修復，但視圖和完整功能仍需實作
 
-**缺少的功能**:
-- 用戶管理功能
-- 寵物管理功能
-- 論壇管理功能
-- 訂單管理功能
-- 商品管理功能
-- 優惠券管理功能
-- 聊天管理功能
-- 系統設定功能
+**已修復**:
+- ✅ AdminController.cs 中的模型引用錯誤已修正
+- ✅ Forum 相關的 Include 語句已修正
+- ✅ Order 相關的模型引用已修正 (Orders → OrderInfos)
+- ✅ ChatMessage 相關的 Include 語句已修正
+- ✅ 刪除方法已修正，移除不存在的 IsActive 屬性
 
-**影響**: 管理員無法有效管理平台，影響運營效率
+**仍需實作**:
+- 管理員後台視圖 (Views)
+- 完整的 CRUD 操作
+- 權限控制
+- 數據統計功能
 
-**修復計劃**: 根據 new_0905.txt 規格實作完整的 Admin Area
+**影響**: 管理員後台基本功能已可用，但 UI 和完整功能仍需完善
+
+**修復狀態**: 🔄 進行中 - 控制器修復完成，視圖和完整功能待實作
 
 ### 6. 缺少服務層 (中等)
 
