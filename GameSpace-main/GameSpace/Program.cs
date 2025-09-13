@@ -1,6 +1,10 @@
 using GameSpace.Data;
 using GameSpace.Services;
+using GameSpace.Middleware;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,6 +31,26 @@ builder.Services.AddScoped<IWalletService, WalletService>();
 builder.Services.AddScoped<ISignInService, SignInService>();
 builder.Services.AddScoped<IGameService, GameService>();
 builder.Services.AddScoped<IForumService, ForumService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+
+// 設定 JWT 認證
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)),
+            ValidateIssuer = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidateAudience = true,
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+
+builder.Services.AddAuthorization();
 
 builder.Services.AddControllersWithViews();
 
@@ -42,7 +66,9 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+app.UseAuthentication();
 app.UseAuthorization();
+app.UseJwtMiddleware();
 
 app.MapControllerRoute(
     name: "areas",
