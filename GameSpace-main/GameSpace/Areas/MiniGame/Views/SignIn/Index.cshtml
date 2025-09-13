@@ -1,73 +1,62 @@
+@model IEnumerable<GameSpace.Models.UserSignInStats>
 @{
     ViewData["Title"] = "每日簽到";
-    var hasSignedInToday = ViewBag.HasSignedInToday as bool? ?? false;
-    var todaySignIn = ViewBag.TodaySignIn as GameSpace.Models.UserSignInStats;
-    var monthSignIns = ViewBag.MonthSignIns as List<GameSpace.Models.UserSignInStats> ?? new List<GameSpace.Models.UserSignInStats>();
-    var consecutiveDays = ViewBag.ConsecutiveDays as int? ?? 0;
-    var today = ViewBag.Today as DateTime? ?? DateTime.UtcNow.Date;
+    var signInStats = ViewBag.SignInStats as List<GameSpace.Models.UserSignInStats>;
+    var pet = ViewBag.Pet as GameSpace.Models.Pet;
+    var wallet = ViewBag.Wallet as GameSpace.Models.UserWallet;
+    var userId = ViewBag.UserId as int?;
 }
 
-<div class="container">
-    <div class="row">
-        <div class="col-12">
-            <h1 class="text-center mb-4">每日簽到</h1>
-        </div>
-    </div>
-
+<div class="container-fluid">
     <div class="row">
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">
-                    <h5>本月簽到日曆</h5>
+                    <h4 class="card-title mb-0">每日簽到</h4>
                 </div>
                 <div class="card-body">
-                    <div class="calendar">
-                        <div class="calendar-header">
-                            <h6>@today.ToString("yyyy年MM月")</h6>
-                        </div>
-                        <div class="calendar-grid">
-                            @{
-                                var monthStart = new DateTime(today.Year, today.Month, 1);
-                                var monthEnd = monthStart.AddMonths(1).AddDays(-1);
-                                var firstDayOfWeek = (int)monthStart.DayOfWeek;
-                                var daysInMonth = monthEnd.Day;
-                                
-                                // 星期標題
-                                var weekDays = new[] { "日", "一", "二", "三", "四", "五", "六" };
-                            }
-                            
-                            <div class="calendar-weekdays">
-                                @foreach (var day in weekDays)
-                                {
-                                    <div class="calendar-weekday">@day</div>
-                                }
+                    <!-- 簽到按鈕 -->
+                    <div class="text-center mb-4">
+                        <button id="signInBtn" class="btn btn-primary btn-lg" onclick="signIn()">
+                            <i class="fas fa-calendar-check"></i> 立即簽到
+                        </button>
+                    </div>
+
+                    <!-- 簽到狀態 -->
+                    <div id="signInStatus" class="alert alert-info text-center" style="display: none;">
+                        <i class="fas fa-check-circle"></i> <span id="statusMessage"></span>
+                    </div>
+
+                    <!-- 連續簽到天數 -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">連續簽到</h5>
+                                    <h2 class="text-primary" id="consecutiveDays">0</h2>
+                                    <p class="card-text">天</p>
+                                </div>
                             </div>
-                            
-                            <div class="calendar-days">
-                                @for (int i = 0; i < firstDayOfWeek; i++)
-                                {
-                                    <div class="calendar-day empty"></div>
-                                }
-                                
-                                @for (int day = 1; day <= daysInMonth; day++)
-                                {
-                                    var currentDate = new DateTime(today.Year, today.Month, day);
-                                    var isSignedIn = monthSignIns.Any(s => s.SignTime.Date == currentDate);
-                                    var isToday = currentDate == today;
-                                    var isPast = currentDate < today;
-                                    
-                                    <div class="calendar-day @(isToday ? "today" : "") @(isSignedIn ? "signed-in" : "") @(isPast && !isSignedIn ? "missed" : "")">
-                                        <span class="day-number">@day</span>
-                                        @if (isSignedIn)
-                                        {
-                                            <i class="fas fa-check-circle text-success"></i>
-                                        }
-                                        else if (isToday)
-                                        {
-                                            <i class="fas fa-calendar-day text-primary"></i>
-                                        }
-                                    </div>
-                                }
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">總簽到次數</h5>
+                                    <h2 class="text-success">@(signInStats?.Count ?? 0)</h2>
+                                    <p class="card-text">次</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 本月簽到日曆 -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">本月簽到日曆</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="signInCalendar" class="calendar">
+                                <!-- 日曆將由 JavaScript 生成 -->
                             </div>
                         </div>
                     </div>
@@ -76,89 +65,68 @@
         </div>
 
         <div class="col-md-4">
-            <div class="card">
-                <div class="card-header">
-                    <h5>今日簽到</h5>
-                </div>
-                <div class="card-body text-center">
-                    @if (hasSignedInToday)
-                    {
-                        <div class="alert alert-success">
-                            <i class="fas fa-check-circle fa-3x mb-3"></i>
-                            <h5>已簽到</h5>
-                            <p class="text-muted">@todaySignIn.SignTime.ToString("HH:mm")</p>
+            <!-- 寵物資訊 -->
+            @if (pet != null)
+            {
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">我的寵物</h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="pet-avatar mb-3">
+                            <div class="pet-circle" style="background-color: @pet.SkinColor;">
+                                <i class="fas fa-heart"></i>
+                            </div>
                         </div>
-                        <div class="signin-rewards">
-                            <h6>今日獎勵</h6>
-                            <p><i class="fas fa-coins text-warning"></i> +@todaySignIn.PointsChanged 點數</p>
-                            @if (todaySignIn.ExpGained > 0)
-                            {
-                                <p><i class="fas fa-star text-info"></i> +@todaySignIn.ExpGained 經驗值</p>
-                            }
-                            @if (todaySignIn.CouponGained > 0)
-                            {
-                                <p><i class="fas fa-ticket-alt text-success"></i> +@todaySignIn.CouponGained 優惠券</p>
-                            }
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="alert alert-info">
-                            <i class="fas fa-calendar-day fa-3x mb-3"></i>
-                            <h5>尚未簽到</h5>
-                            <p class="text-muted">點擊下方按鈕簽到</p>
-                        </div>
-                        <button id="signInBtn" class="btn btn-primary btn-lg">
-                            <i class="fas fa-check me-2"></i>立即簽到
-                        </button>
-                    }
-                </div>
-            </div>
-
-            <div class="card mt-3">
-                <div class="card-header">
-                    <h5>連續簽到</h5>
-                </div>
-                <div class="card-body text-center">
-                    <h3 class="text-primary">@consecutiveDays 天</h3>
-                    <div class="progress mb-3">
-                        <div class="progress-bar" role="progressbar" style="width: @((consecutiveDays * 100.0 / 30)%)">
-                            @consecutiveDays / 30
+                        <h6>@pet.PetName</h6>
+                        <p class="text-muted">等級 @pet.Level</p>
+                        <div class="progress mb-2">
+                            <div class="progress-bar" role="progressbar" style="width: @((pet.Experience * 100 / CalculateRequiredExp(pet.Level))%)">
+                                @pet.Experience / @CalculateRequiredExp(pet.Level) EXP
+                            </div>
                         </div>
                     </div>
-                    <p class="small text-muted">連續簽到 30 天可獲得額外獎勵</p>
                 </div>
-            </div>
+            }
 
-            <div class="card mt-3">
+            <!-- 錢包資訊 -->
+            @if (wallet != null)
+            {
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">我的錢包</h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <h4 class="text-primary">@wallet.UserPoint</h4>
+                        <p class="text-muted">會員點數</p>
+                    </div>
+                </div>
+            }
+
+            <!-- 簽到獎勵說明 -->
+            <div class="card">
                 <div class="card-header">
-                    <h5>簽到獎勵</h5>
+                    <h5 class="card-title mb-0">簽到獎勵說明</h5>
                 </div>
                 <div class="card-body">
                     <ul class="list-unstyled">
-                        <li><i class="fas fa-check text-success me-2"></i>平日：+20 點數</li>
-                        <li><i class="fas fa-check text-success me-2"></i>假日：+30 點數 +200 經驗</li>
-                        <li><i class="fas fa-check text-success me-2"></i>連續 7 天：+40 點數 +300 經驗 +1 優惠券</li>
-                        <li><i class="fas fa-check text-success me-2"></i>連續 14 天：+60 點數 +500 經驗</li>
-                        <li><i class="fas fa-check text-success me-2"></i>連續 30 天：+200 點數 +2000 經驗 +2 優惠券</li>
+                        <li class="mb-2">
+                            <i class="fas fa-coins text-warning"></i>
+                            <strong>每日簽到：</strong> +20 點
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-calendar-week text-info"></i>
+                            <strong>假日獎勵：</strong> +10 點 + 200 經驗
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-fire text-danger"></i>
+                            <strong>連續7天：</strong> +40 點 + 300 經驗 + 優惠券
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-trophy text-warning"></i>
+                            <strong>連續30天：</strong> +200 點 + 2000 經驗 + 優惠券
+                        </li>
                     </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h5>簽到記錄</h5>
-                </div>
-                <div class="card-body">
-                    <div class="text-center">
-                        <a href="@Url.Action("History", "SignIn")" class="btn btn-outline-primary">
-                            <i class="fas fa-history me-2"></i>查看完整記錄
-                        </a>
-                    </div>
                 </div>
             </div>
         </div>
@@ -166,101 +134,186 @@
 </div>
 
 <style>
+.pet-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    font-size: 2rem;
+    color: white;
+}
+
 .calendar {
-    font-family: Arial, sans-serif;
-}
-
-.calendar-header {
-    text-align: center;
-    margin-bottom: 1rem;
-    font-weight: bold;
-}
-
-.calendar-weekdays {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 1px;
-    margin-bottom: 1px;
-}
-
-.calendar-weekday {
-    background-color: #f8f9fa;
-    padding: 0.5rem;
-    text-align: center;
-    font-weight: bold;
-    border: 1px solid #dee2e6;
-}
-
-.calendar-days {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 1px;
+    gap: 5px;
 }
 
 .calendar-day {
     aspect-ratio: 1;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
     border: 1px solid #dee2e6;
-    position: relative;
-    background-color: #fff;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.calendar-day.signed {
+    background-color: #28a745;
+    color: white;
 }
 
 .calendar-day.today {
-    background-color: #e3f2fd;
-    border-color: #2196f3;
+    background-color: #007bff;
+    color: white;
 }
 
-.calendar-day.signed-in {
-    background-color: #e8f5e8;
-    border-color: #4caf50;
-}
-
-.calendar-day.missed {
-    background-color: #ffebee;
-    border-color: #f44336;
-}
-
-.calendar-day.empty {
+.calendar-day.other-month {
+    color: #6c757d;
     background-color: #f8f9fa;
-    border: none;
-}
-
-.day-number {
-    font-weight: bold;
-}
-
-.signin-rewards {
-    margin-top: 1rem;
-    padding: 1rem;
-    background-color: #f8f9fa;
-    border-radius: 0.5rem;
 }
 </style>
 
-@section Scripts {
-    <script>
-        $('#signInBtn').click(function() {
-            $.post('@Url.Action("SignIn", "SignIn")', function(data) {
-                if (data.success) {
-                    showMessage(data.message, 'success');
-                    setTimeout(() => location.reload(), 2000);
-                } else {
-                    showMessage(data.message, 'error');
-                }
-            });
-        });
-
-        function showMessage(message, type) {
-            const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
-            const alert = $(`<div class="alert ${alertClass} alert-dismissible fade show" role="alert">
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>`);
-            $('.container').prepend(alert);
-            setTimeout(() => alert.alert('close'), 5000);
+<script>
+function signIn() {
+    const btn = document.getElementById('signInBtn');
+    const status = document.getElementById('signInStatus');
+    const message = document.getElementById('statusMessage');
+    
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 簽到中...';
+    
+    fetch('@Url.Action("SignIn", "SignIn")', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
         }
-    </script>
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            message.textContent = data.message;
+            status.className = 'alert alert-success text-center';
+            status.style.display = 'block';
+            
+            // 更新連續簽到天數
+            document.getElementById('consecutiveDays').textContent = data.consecutiveDays;
+            
+            // 更新日曆
+            updateCalendar();
+            
+            // 禁用簽到按鈕
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-check"></i> 今日已簽到';
+            btn.className = 'btn btn-success btn-lg';
+        } else {
+            message.textContent = data.message;
+            status.className = 'alert alert-danger text-center';
+            status.style.display = 'block';
+            
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-calendar-check"></i> 立即簽到';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        message.textContent = '簽到失敗，請稍後再試';
+        status.className = 'alert alert-danger text-center';
+        status.style.display = 'block';
+        
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-calendar-check"></i> 立即簽到';
+    });
+}
+
+function updateCalendar() {
+    // 這裡可以實現日曆更新邏輯
+    // 暫時簡單處理
+    const today = new Date();
+    const todayElement = document.querySelector(`[data-date="${today.getDate()}"]`);
+    if (todayElement) {
+        todayElement.classList.add('signed');
+    }
+}
+
+// 生成日曆
+document.addEventListener('DOMContentLoaded', function() {
+    const calendar = document.getElementById('signInCalendar');
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth();
+    
+    // 獲取本月第一天和最後一天
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    
+    // 獲取第一天是星期幾
+    const firstDayOfWeek = firstDay.getDay();
+    
+    // 生成日曆標題
+    const monthNames = ['一月', '二月', '三月', '四月', '五月', '六月',
+                       '七月', '八月', '九月', '十月', '十一月', '十二月'];
+    const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
+    
+    let calendarHTML = '<div class="calendar-header mb-3">';
+    calendarHTML += `<h6 class="text-center">${year}年${monthNames[month]}</h6>`;
+    calendarHTML += '</div>';
+    
+    // 星期標題
+    calendarHTML += '<div class="calendar-weekdays mb-2">';
+    weekDays.forEach(day => {
+        calendarHTML += `<div class="text-center font-weight-bold">${day}</div>`;
+    });
+    calendarHTML += '</div>';
+    
+    // 生成日期
+    calendarHTML += '<div class="calendar-days">';
+    
+    // 上個月的日期
+    for (let i = firstDayOfWeek - 1; i >= 0; i--) {
+        const date = new Date(year, month, -i);
+        calendarHTML += `<div class="calendar-day other-month">${date.getDate()}</div>`;
+    }
+    
+    // 本月的日期
+    for (let day = 1; day <= daysInMonth; day++) {
+        const isToday = day === today.getDate();
+        const isSigned = @(signInStats?.Any(s => s.SignTime.Date == DateTime.Today) == true ? "true" : "false");
+        
+        let className = 'calendar-day';
+        if (isToday) className += ' today';
+        if (isSigned) className += ' signed';
+        
+        calendarHTML += `<div class="${className}" data-date="${day}">${day}</div>`;
+    }
+    
+    calendarHTML += '</div>';
+    
+    calendar.innerHTML = calendarHTML;
+});
+</script>
+
+@functions {
+    private int CalculateRequiredExp(int level)
+    {
+        if (level <= 10)
+        {
+            return 40 * level + 60;
+        }
+        else if (level <= 100)
+        {
+            return (int)(0.8 * level * level + 380);
+        }
+        else
+        {
+            return (int)(285.69 * Math.Pow(1.06, level));
+        }
+    }
 }

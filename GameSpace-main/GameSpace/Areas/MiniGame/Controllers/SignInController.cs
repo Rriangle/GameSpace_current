@@ -1,220 +1,164 @@
 using Microsoft.AspNetCore.Mvc;
-using GameSpace.Data;
-using GameSpace.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
+using GameSpace.Models;
+using System.Security.Claims;
+using System.Text.Json;
 
 namespace GameSpace.Areas.MiniGame.Controllers
 {
     [Area("MiniGame")]
-    [Authorize]
     public class SignInController : Controller
     {
-        private readonly GameSpaceDbContext _context;
+        private readonly GameSpaceContext _context;
 
-        public SignInController(GameSpaceDbContext context)
+        public SignInController(GameSpaceContext context)
         {
             _context = context;
         }
 
-        // 簽到頁面
+        // GET: MiniGame/SignIn
         public async Task<IActionResult> Index()
         {
             var userId = GetCurrentUserId();
-            var today = DateTime.UtcNow.Date;
-            
-            // 檢查今日是否已簽到
-            var todaySignIn = await _context.UserSignInStats
-                .FirstOrDefaultAsync(s => s.UserId == userId && s.SignTime.Date == today);
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account", new { area = "" });
+            }
 
-            // 取得本月簽到記錄
-            var monthStart = new DateTime(today.Year, today.Month, 1);
-            var monthEnd = monthStart.AddMonths(1).AddDays(-1);
-            var monthSignIns = await _context.UserSignInStats
-                .Where(s => s.UserId == userId && s.SignTime.Date >= monthStart && s.SignTime.Date <= monthEnd)
-                .OrderBy(s => s.SignTime)
+            // 獲取用戶簽到統計
+            var signInStats = await _context.UserSignInStats
+                .Where(s => s.UserId == userId)
+                .OrderByDescending(s => s.SignTime)
                 .ToListAsync();
 
-            // 計算連續簽到天數
-            var consecutiveDays = CalculateConsecutiveDays(monthSignIns, today);
+            // 獲取用戶寵物
+            var pet = await _context.Pets
+                .FirstOrDefaultAsync(p => p.UserId == userId);
 
-            ViewBag.HasSignedInToday = todaySignIn != null;
-            ViewBag.TodaySignIn = todaySignIn;
-            ViewBag.MonthSignIns = monthSignIns;
-            ViewBag.ConsecutiveDays = consecutiveDays;
-            ViewBag.Today = today;
+            // 獲取用戶錢包
+            var wallet = await _context.UserWallets
+                .FirstOrDefaultAsync(w => w.UserId == userId);
 
-            return View();
+            ViewBag.SignInStats = signInStats;
+            ViewBag.Pet = pet;
+            ViewBag.Wallet = wallet;
+            ViewBag.UserId = userId;
+
+            return View(signInStats);
         }
 
-        // 執行簽到
+        // POST: MiniGame/SignIn/SignIn
         [HttpPost]
         public async Task<IActionResult> SignIn()
         {
             var userId = GetCurrentUserId();
-            var today = DateTime.UtcNow.Date;
-
-            // 檢查今日是否已簽到
-            var todaySignIn = await _context.UserSignInStats
-                .FirstOrDefaultAsync(s => s.UserId == userId && s.SignTime.Date == today);
-
-            if (todaySignIn != null)
+            if (userId == null)
             {
-                return Json(new { success = false, message = "今日已簽到" });
+                return Json(new { success = false, message = "請先登入" });
             }
 
-            using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                // 取得本月簽到記錄
-                var monthStart = new DateTime(today.Year, today.Month, 1);
-                var monthEnd = monthStart.AddMonths(1).AddDays(-1);
-                var monthSignIns = await _context.UserSignInStats
-                    .Where(s => s.UserId == userId && s.SignTime.Date >= monthStart && s.SignTime.Date <= monthEnd)
-                    .OrderBy(s => s.SignTime)
-                    .ToListAsync();
+                var today = DateTime.Today;
+                
+                // 檢查今天是否已經簽到
+                var todaySignIn = await _context.UserSignInStats
+                    .FirstOrDefaultAsync(s => s.UserId == userId && s.SignTime.Date == today);
+
+                if (todaySignIn != null)
+                {
+                    return Json(new { success = false, message = "今天已經簽到過了！" });
+                }
+
+                // 獲取用戶錢包
+                var wallet = await _context.UserWallets
+                    .FirstOrDefaultAsync(w => w.UserId == userId);
+
+                if (wallet == null)
+                {
+                    return Json(new { success = false, message = "找不到用戶錢包" });
+                }
+
+                // 獲取用戶寵物
+                var pet = await _context.Pets
+                    .FirstOrDefaultAsync(p => p.UserId == userId);
 
                 // 計算連續簽到天數
-                var consecutiveDays = CalculateConsecutiveDays(monthSignIns, today);
+                var consecutiveDays = await CalculateConsecutiveDays(userId, today);
 
                 // 計算獎勵
-                var rewards = CalculateSignInRewards(consecutiveDays + 1, today);
+                var rewards = CalculateRewards(consecutiveDays + 1, today);
 
                 // 創建簽到記錄
                 var signInRecord = new UserSignInStats
                 {
-                    UserId = userId,
-                    SignTime = DateTime.UtcNow,
-                    PointsChanged = rewards.PointsGained,
-                    PointsChangedTime = DateTime.UtcNow,
-                    ExpGained = rewards.ExpGained,
-                    ExpGainedTime = DateTime.UtcNow,
-                    CouponGained = rewards.CouponGained,
-                    CouponGainedTime = DateTime.UtcNow
+                    UserId = userId.Value,
+                    SignTime = DateTime.Now,
+                    ConsecutiveDays = consecutiveDays + 1,
+                    PointsEarned = rewards.Points,
+                    ExperienceEarned = rewards.Experience,
+                    CouponEarned = rewards.Coupon
                 };
 
                 _context.UserSignInStats.Add(signInRecord);
 
-                // 更新用戶點數
-                if (rewards.PointsGained > 0)
+                // 更新錢包點數
+                wallet.UserPoint += rewards.Points;
+
+                // 更新寵物經驗
+                if (pet != null)
                 {
-                    var userWallet = await _context.UserWallets.FirstOrDefaultAsync(w => w.UserId == userId);
-                    if (userWallet != null)
+                    pet.Experience += rewards.Experience;
+                    
+                    // 檢查是否升級
+                    var newLevel = CalculateLevel(pet.Experience);
+                    if (newLevel > pet.Level)
                     {
-                        userWallet.UserPoint += rewards.PointsGained;
-
-                        // 記錄錢包歷史
-                        _context.WalletHistories.Add(new WalletHistory
-                        {
-                            UserId = userId,
-                            ChangeType = "Point",
-                            PointsChanged = rewards.PointsGained,
-                            Description = "每日簽到獎勵",
-                            ChangeTime = DateTime.UtcNow
-                        });
-                    }
-                }
-
-                // 更新寵物經驗值
-                if (rewards.ExpGained > 0)
-                {
-                    var pet = await _context.Pets.FirstOrDefaultAsync(p => p.UserId == userId);
-                    if (pet != null)
-                    {
-                        pet.Experience += rewards.ExpGained;
-
-                        // 檢查升級
-                        var requiredExp = CalculateRequiredExp(pet.Level);
-                        if (pet.Experience >= requiredExp)
-                        {
-                            pet.Level++;
-                            pet.Experience -= requiredExp;
-                            pet.LevelUpTime = DateTime.UtcNow;
-
-                            var levelUpReward = CalculateLevelUpReward(pet.Level);
-                            pet.PointsGainedLevelUp = levelUpReward;
-                            pet.PointsGainedTimeLevelUp = DateTime.UtcNow;
-
-                            // 增加用戶點數
-                            var userWallet = await _context.UserWallets.FirstOrDefaultAsync(w => w.UserId == userId);
-                            if (userWallet != null)
-                            {
-                                userWallet.UserPoint += levelUpReward;
-
-                                // 記錄錢包歷史
-                                _context.WalletHistories.Add(new WalletHistory
-                                {
-                                    UserId = userId,
-                                    ChangeType = "Point",
-                                    PointsChanged = levelUpReward,
-                                    Description = "寵物升級獎勵",
-                                    ChangeTime = DateTime.UtcNow
-                                });
-                            }
-                        }
-                    }
-                }
-
-                // 發放優惠券
-                if (rewards.CouponGained > 0)
-                {
-                    var couponType = await _context.CouponTypes.FirstOrDefaultAsync();
-                    if (couponType != null)
-                    {
-                        var coupon = new Coupon
-                        {
-                            UserId = userId,
-                            CouponTypeId = couponType.CouponTypeId,
-                            CouponCode = GenerateCouponCode(),
-                            IsUsed = false,
-                            AcquiredTime = DateTime.UtcNow
-                        };
-                        _context.Coupons.Add(coupon);
+                        pet.Level = newLevel;
+                        pet.SkinColorChangedTime = DateTime.Now;
                     }
                 }
 
                 await _context.SaveChangesAsync();
-                await transaction.CommitAsync();
 
                 return Json(new { 
                     success = true, 
-                    message = GetSignInMessage(consecutiveDays + 1, rewards),
-                    pointsGained = rewards.PointsGained,
-                    expGained = rewards.ExpGained,
-                    couponGained = rewards.CouponGained,
-                    consecutiveDays = consecutiveDays + 1
+                    message = $"簽到成功！獲得 {rewards.Points} 點數" + 
+                             (rewards.Experience > 0 ? $" 和 {rewards.Experience} 經驗" : "") +
+                             (rewards.Coupon ? " 和優惠券" : ""),
+                    consecutiveDays = consecutiveDays + 1,
+                    pointsEarned = rewards.Points,
+                    experienceEarned = rewards.Experience,
+                    couponEarned = rewards.Coupon
                 });
             }
-            catch
+            catch (Exception ex)
             {
-                await transaction.RollbackAsync();
-                return Json(new { success = false, message = "簽到失敗" });
+                return Json(new { success = false, message = "簽到失敗：" + ex.Message });
             }
         }
 
-        // 簽到歷史
-        public async Task<IActionResult> History()
+        private int? GetCurrentUserId()
         {
-            var userId = GetCurrentUserId();
-            var signIns = await _context.UserSignInStats
-                .Where(s => s.UserId == userId)
-                .OrderByDescending(s => s.SignTime)
-                .Take(30)
-                .ToListAsync();
-
-            return View(signIns);
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
+            {
+                return userId;
+            }
+            return null;
         }
 
-        private int CalculateConsecutiveDays(List<UserSignInStats> monthSignIns, DateTime today)
+        private async Task<int> CalculateConsecutiveDays(int userId, DateTime today)
         {
-            if (monthSignIns.Count == 0) return 0;
-
             var consecutiveDays = 0;
             var checkDate = today.AddDays(-1);
 
-            for (int i = monthSignIns.Count - 1; i >= 0; i--)
+            while (true)
             {
-                if (monthSignIns[i].SignTime.Date == checkDate)
+                var signInRecord = await _context.UserSignInStats
+                    .FirstOrDefaultAsync(s => s.UserId == userId && s.SignTime.Date == checkDate);
+
+                if (signInRecord != null)
                 {
                     consecutiveDays++;
                     checkDate = checkDate.AddDays(-1);
@@ -228,100 +172,51 @@ namespace GameSpace.Areas.MiniGame.Controllers
             return consecutiveDays;
         }
 
-        private (int PointsGained, int ExpGained, int CouponGained) CalculateSignInRewards(int consecutiveDays, DateTime today)
+        private (int Points, int Experience, bool Coupon) CalculateRewards(int consecutiveDays, DateTime today)
         {
-            var pointsGained = 20; // 基本點數
-            var expGained = 0;
-            var couponGained = 0;
+            var points = 20; // 基礎點數
+            var experience = 0;
+            var coupon = false;
 
             // 假日獎勵
             if (today.DayOfWeek == DayOfWeek.Saturday || today.DayOfWeek == DayOfWeek.Sunday)
             {
-                pointsGained = 30;
-                expGained = 200;
+                points += 10;
+                experience += 200;
             }
 
             // 連續簽到獎勵
             if (consecutiveDays >= 7)
             {
-                pointsGained += 40;
-                expGained += 300;
-                couponGained = 1;
-            }
-
-            if (consecutiveDays >= 14)
-            {
-                pointsGained += 60;
-                expGained += 500;
+                points += 40;
+                experience += 300;
+                coupon = true;
             }
 
             if (consecutiveDays >= 30)
             {
-                pointsGained += 200;
-                expGained += 2000;
-                couponGained = 2;
+                points += 200;
+                experience += 2000;
+                coupon = true;
             }
 
-            return (pointsGained, expGained, couponGained);
+            return (points, experience, coupon);
         }
 
-        private string GetSignInMessage(int consecutiveDays, (int PointsGained, int ExpGained, int CouponGained) rewards)
+        private int CalculateLevel(int experience)
         {
-            var message = $"簽到成功！獲得 {rewards.PointsGained} 點數";
-            
-            if (rewards.ExpGained > 0)
+            if (experience <= 100)
             {
-                message += $"、{rewards.ExpGained} 經驗值";
+                return (experience - 60) / 40 + 1;
             }
-            
-            if (rewards.CouponGained > 0)
+            else if (experience <= 10000)
             {
-                message += $"、{rewards.CouponGained} 張優惠券";
+                return (int)Math.Sqrt((experience - 380) / 0.8) + 1;
             }
-
-            if (consecutiveDays > 1)
-            {
-                message += $"（連續簽到 {consecutiveDays} 天）";
-            }
-
-            return message;
-        }
-
-        private int CalculateRequiredExp(int level)
-        {
-            if (level <= 10)
-                return 40 * level + 60;
-            else if (level <= 100)
-                return (int)(0.8 * level * level + 380);
             else
-                return (int)(285.69 * Math.Pow(1.06, level));
-        }
-
-        private int CalculateLevelUpReward(int level)
-        {
-            if (level <= 10)
-                return level * 10;
-            else if (level <= 20)
-                return level * 20;
-            else if (level <= 30)
-                return level * 30;
-            else if (level <= 40)
-                return level * 40;
-            else if (level <= 50)
-                return level * 50;
-            else
-                return Math.Min(level * 60, 3000);
-        }
-
-        private string GenerateCouponCode()
-        {
-            return $"COUPON{Random.Shared.Next(100000, 999999)}";
-        }
-
-        private int GetCurrentUserId()
-        {
-            // 暫時返回固定用戶ID，實際應該從認證中獲取
-            return 1;
+            {
+                return (int)(Math.Log(experience / 285.69) / Math.Log(1.06)) + 1;
+            }
         }
     }
 }
