@@ -18,42 +18,48 @@ namespace GameSpace.Services
 
         public async Task SeedDataAsync()
         {
+            // 先種子基本資料
+            await SeedCouponTypes();
+            await SeedEvoucherTypes();
             await SeedUsers();
-            await SeedPets();
+            await SeedUserIntroduces();
+            await SeedUserRights();
             await SeedUserWallets();
+            await SeedPets();
+            
+            // 再種子操作記錄
             await SeedUserSignInStats();
             await SeedMiniGames();
             await SeedWalletHistory();
-            await SeedCouponTypes();
             await SeedCoupons();
-            await SeedEvoucherTypes();
             await SeedEvouchers();
             await SeedEvoucherTokens();
             await SeedEvoucherRedeemLogs();
-            await SeedUserIntroduces();
-            await SeedUserRights();
-            await SeedUserTokens();
-            await SeedUserSalesInformations();
         }
 
         private async Task SeedUsers()
         {
             var existingCount = await _context.Users.CountAsync();
-            if (existingCount >= 200) return;
+            var targetCount = 200;
+            if (existingCount >= targetCount) return;
 
             var users = new List<User>();
-            for (int i = existingCount + 1; i <= 200; i++)
+            var names = new[] { "王小明", "李小華", "張美玲", "陳志強", "林淑芬", "黃俊傑", "吳雅婷", "劉建國", "蔡文雄", "楊麗華" };
+            
+            for (int i = existingCount + 1; i <= targetCount; i++)
             {
                 users.Add(new User
                 {
-                    UserName = $"使用者{i:D3}",
-                    UserEmail = $"user{i}@example.com",
-                    UserPhone = GeneratePhoneNumber(),
-                    UserBirthday = GenerateRandomDate(),
-                    UserGender = _random.Next(2) == 0 ? "男性" : "女性",
-                    UserAddress = GenerateAddress(),
-                    UserCreateTime = DateTime.Now.AddDays(-_random.Next(365)),
-                    UserUpdateTime = DateTime.Now.AddDays(-_random.Next(30))
+                    UserName = $"{names[_random.Next(names.Length)]}{i:D3}",
+                    Email = $"user{i}@example.com",
+                    // 使用User模型的實際屬性
+                    NormalizedUserName = $"USER{i}@EXAMPLE.COM",
+                    NormalizedEmail = $"USER{i}@EXAMPLE.COM",
+                    EmailConfirmed = true,
+                    SecurityStamp = Guid.NewGuid().ToString(),
+                    ConcurrencyStamp = Guid.NewGuid().ToString(),
+                    LockoutEnabled = false,
+                    AccessFailedCount = 0
                 });
             }
 
@@ -63,46 +69,67 @@ namespace GameSpace.Services
 
         private async Task SeedPets()
         {
-            var existingCount = await _context.Pet.CountAsync();
-            if (existingCount >= 200) return;
+            var existingCount = await _context.Pets.CountAsync();
+            var targetCount = 200;
+            if (existingCount >= targetCount) return;
 
             var pets = new List<Pet>();
-            for (int i = existingCount + 1; i <= 200; i++)
+            var petNames = new[] { "小可愛", "毛球", "史萊姆", "小精靈", "寶貝", "哆啦A夢", "皮卡丘", "小火龍", "傑尼龜", "妙蛙種子" };
+            var colors = new[] { "#ADD8E6", "#FFB6C1", "#98FB98", "#DDA0DD", "#F0E68C", "#87CEEB", "#FFA07A", "#20B2AA", "#9370DB", "#3CB371" };
+            var backgrounds = new[] { "粉藍", "粉紅", "淺綠", "淺紫", "淺黃", "天藍", "珊瑚", "海藍", "紫色", "森林綠" };
+            
+            for (int i = existingCount + 1; i <= targetCount; i++)
             {
+                var level = _random.Next(1, 51);
                 pets.Add(new Pet
                 {
-                    UserID = i,
-                    PetName = $"寵物{i:D3}",
-                    PetLevel = _random.Next(1, 100),
-                    PetExp = _random.Next(0, 1000),
-                    PetHappiness = _random.Next(0, 101),
-                    PetCreateTime = DateTime.Now.AddDays(-_random.Next(365)),
-                    PetUpdateTime = DateTime.Now.AddDays(-_random.Next(30))
+                    UserId = Math.Min(i, await _context.Users.CountAsync()), // 確保UserId存在
+                    PetName = $"{petNames[_random.Next(petNames.Length)]}{i:D3}",
+                    Level = level,
+                    LevelUpTime = DateTime.UtcNow.AddDays(-_random.Next(30)),
+                    Experience = _random.Next(0, CalculateRequiredExp(level)),
+                    Hunger = _random.Next(0, 101),
+                    Mood = _random.Next(0, 101),
+                    Stamina = _random.Next(0, 101),
+                    Cleanliness = _random.Next(0, 101),
+                    Health = _random.Next(50, 101), // 健康值不會太低
+                    SkinColor = colors[_random.Next(colors.Length)],
+                    SkinColorChangedTime = DateTime.UtcNow.AddDays(-_random.Next(30)),
+                    BackgroundColor = backgrounds[_random.Next(backgrounds.Length)],
+                    BackgroundColorChangedTime = DateTime.UtcNow.AddDays(-_random.Next(30)),
+                    PointsChangedSkinColor = _random.Next(0, 5) == 0 ? 2000 : 0, // 20%機率曾換過膚色
+                    PointsChangedBackgroundColor = 0, // 預設免費
+                    PointsGainedLevelUp = level > 1 ? (level / 10 + 1) * 10 : 0,
+                    PointsGainedTimeLevelUp = DateTime.UtcNow.AddDays(-_random.Next(30))
                 });
             }
 
-            _context.Pet.AddRange(pets);
+            _context.Pets.AddRange(pets);
             await _context.SaveChangesAsync();
         }
 
         private async Task SeedUserWallets()
         {
-            var existingCount = await _context.User_Wallet.CountAsync();
-            if (existingCount >= 200) return;
+            var existingCount = await _context.UserWallets.CountAsync();
+            var targetCount = 200;
+            if (existingCount >= targetCount) return;
 
-            var wallets = new List<User_Wallet>();
-            for (int i = existingCount + 1; i <= 200; i++)
+            var wallets = new List<UserWallet>();
+            var maxUserId = await _context.Users.CountAsync();
+            
+            for (int i = existingCount + 1; i <= targetCount; i++)
             {
-                wallets.Add(new User_Wallet
+                if (i <= maxUserId) // 確保每個用戶都有錢包
                 {
-                    User_Id = i,
-                    User_Point = _random.Next(0, 10000),
-                    User_CreateTime = DateTime.Now.AddDays(-_random.Next(365)),
-                    User_UpdateTime = DateTime.Now.AddDays(-_random.Next(30))
-                });
+                    wallets.Add(new UserWallet
+                    {
+                        UserId = i,
+                        UserPoint = _random.Next(100, 10000) // 給予初始點數
+                    });
+                }
             }
 
-            _context.User_Wallet.AddRange(wallets);
+            _context.UserWallets.AddRange(wallets);
             await _context.SaveChangesAsync();
         }
 
@@ -175,22 +202,36 @@ namespace GameSpace.Services
 
         private async Task SeedCouponTypes()
         {
-            var existingCount = await _context.CouponType.CountAsync();
-            if (existingCount >= 200) return;
+            var existingCount = await _context.CouponTypes.CountAsync();
+            if (existingCount >= 10) return; // 只需要基本的優惠券類型
 
             var couponTypes = new List<CouponType>();
-            for (int i = existingCount + 1; i <= 200; i++)
+            var types = new[]
             {
+                new { Name = "85折優惠券", Type = "Percent", Value = 0.15m, Min = 500m, Cost = 500 },
+                new { Name = "滿1000折100", Type = "Amount", Value = 100m, Min = 1000m, Cost = 300 },
+                new { Name = "免運券", Type = "Amount", Value = 60m, Min = 0m, Cost = 200 },
+                new { Name = "簽到獎勵券", Type = "Percent", Value = 0.10m, Min = 300m, Cost = 0 },
+                new { Name = "遊戲獎勵券", Type = "Amount", Value = 50m, Min = 200m, Cost = 0 }
+            };
+
+            for (int i = 0; i < types.Length; i++)
+            {
+                var type = types[i];
                 couponTypes.Add(new CouponType
                 {
-                    CouponTypeName = $"CouponType{i}",
-                    CouponTypeDescription = $"Description for CouponType{i}",
-                    CouponTypeCreateTime = DateTime.Now.AddDays(-_random.Next(365)),
-                    CouponTypeUpdateTime = DateTime.Now.AddDays(-_random.Next(30))
+                    Name = type.Name,
+                    DiscountType = type.Type,
+                    DiscountValue = type.Value,
+                    MinSpend = type.Min,
+                    ValidFrom = DateTime.UtcNow.AddDays(-30),
+                    ValidTo = DateTime.UtcNow.AddDays(365),
+                    PointsCost = type.Cost,
+                    Description = $"{type.Name}的詳細說明"
                 });
             }
 
-            _context.CouponType.AddRange(couponTypes);
+            _context.CouponTypes.AddRange(couponTypes);
             await _context.SaveChangesAsync();
         }
 
@@ -419,6 +460,22 @@ namespace GameSpace.Services
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
             return new string(Enumerable.Repeat(chars, 32)
                 .Select(s => s[_random.Next(s.Length)]).ToArray());
+        }
+
+        private int CalculateRequiredExp(int level)
+        {
+            if (level <= 10)
+            {
+                return 40 * level + 60;
+            }
+            else if (level <= 100)
+            {
+                return (int)(0.8 * level * level + 380);
+            }
+            else
+            {
+                return (int)(285.69 * Math.Pow(1.06, level));
+            }
         }
     }
 }

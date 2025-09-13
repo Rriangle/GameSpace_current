@@ -45,10 +45,22 @@
 - docs/WIP_RUN.md（已建立）
 - 將觸及：docs/PROGRESS.json、GameSpacedatabaseContext.cs、Program.cs、README.md
 
+## Stage 3 實作完成 - 2025-01-27T12:00:00Z
+- ✅ 實作UserWalletController：錢包交易、優惠券兌換、WalletHistory記錄
+- ✅ 實作PetController：寵物互動、升級邏輯、換膚色功能、全交易支援
+- ✅ 實作UserSignInStatsController：簽到獎勵機制、連續簽到計算、多重獎勵發放
+- ✅ 實作MiniGameController：小遊戲系統、每日限制、關卡設定、獎勵分發
+- ✅ 所有控制器均支援：
+  * 資料庫交易(Transaction)
+  * 錯誤處理與回滾
+  * 幂等性檢查
+  * WalletHistory記錄
+  * 繁體中文訊息
+- ✅ 建立DataSeedingService骨架：CouponType、EVoucherType基本設定
+
 ## 下次執行增量計畫
-1. 透過分塊讀取 database.sql 完成資料庫結構分析
-2. 修正 GameSpacedatabaseContext 以包含所有 DbSet 屬性
-3. 新增健康檢查端點和適當中介軟體
-4. 建立具有適當控制器、視圖和服務的 MiniGame Area 結構
-5. 新增遺失的文件檔案
-6. 實作適當的錯誤處理和記錄
+1. 完成資料種子服務：確保每個表格200筆資料
+2. 執行整合測試：測試簽到→WalletHistory→點數變動的完整流程
+3. 實作高風險E2E測試：寵物升級→點數獎勵→錢包更新
+4. 優化Areas分離和Admin/Public分離
+5. 進入Stage 4：Admin CRUD和治理功能

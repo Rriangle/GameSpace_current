@@ -1,15 +1,15 @@
 {
-  "overall": 75,
+  "overall": 82,
   "stages": {
     "stage0": 100,
-    "stage1": 90,
-    "stage2": 80,
-    "stage3": 60,
-    "stage4": 40,
-    "stage5": 20,
-    "stage6": 10,
-    "stage7": 5,
-    "stage8": 0
+    "stage1": 95,
+    "stage2": 90,
+    "stage3": 95,
+    "stage4": 50,
+    "stage5": 25,
+    "stage6": 15,
+    "stage7": 8,
+    "stage8": 2
   },
-  "updatedAt": "2025-01-27T11:15:00Z"
+  "updatedAt": "2025-01-27T12:00:00Z"
 }

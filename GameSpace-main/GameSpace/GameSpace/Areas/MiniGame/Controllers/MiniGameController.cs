@@ -17,214 +17,451 @@ namespace GameSpace.Areas.MiniGame.Controllers
             _context = context;
         }
 
-        // GET: MiniGame/MiniGame - 取得小遊戲列表
+        // GET: MiniGame/MiniGame - 取得小遊戲記錄列表
         public async Task<IActionResult> Index()
         {
             var userId = GetCurrentUserId();
-            var games = await _context.MiniGame
-                .Where(g => g.UserID == userId)
+            var games = await _context.MiniGames
+                .Where(g => g.UserId == userId && !g.Aborted)
                 .OrderByDescending(g => g.StartTime)
+                .Take(20) // 只顯示最近20筆記錄
                 .ToListAsync();
+
+            // 檢查今日已玩次數
+            var today = DateTime.UtcNow.Date;
+            var todayGamesCount = await _context.MiniGames
+                .CountAsync(g => g.UserId == userId && g.StartTime.Date == today && !g.Aborted);
+            
+            ViewBag.TodayGamesCount = todayGamesCount;
+            ViewBag.MaxDailyGames = 3;
 
             return View(games);
         }
 
-        // POST: MiniGame/MiniGame/Start - 開始新遊戲
-        [HttpPost]
-        public async Task<IActionResult> Start()
+        // GET: MiniGame/MiniGame/StartGame - 顯示開始遊戲頁面
+        public async Task<IActionResult> StartGame()
         {
             var userId = GetCurrentUserId();
             var today = DateTime.UtcNow.Date;
 
-            // 檢查每日遊戲限制（每天 3 場遊戲）
-            var todayGames = await _context.MiniGame
-                .CountAsync(g => g.UserID == userId && g.StartTime.Date == today);
+            // 檢查每日遊戲限制（每天3場遊戲）
+            var todayGames = await _context.MiniGames
+                .CountAsync(g => g.UserId == userId && g.StartTime.Date == today && !g.Aborted);
 
             if (todayGames >= 3)
             {
-                return Json(new { success = false, message = "已達到每日遊戲限制" });
+                TempData["Warning"] = "已達到每日遊戲限制（3次）！";
+                return RedirectToAction(nameof(Index));
             }
 
             // 取得使用者的寵物
-            var pet = await _context.Pet
-                .FirstOrDefaultAsync(p => p.UserID == userId);
+            var pet = await _context.Pets
+                .FirstOrDefaultAsync(p => p.UserId == userId);
 
             if (pet == null)
             {
-                return Json(new { success = false, message = "找不到寵物" });
+                TempData["Error"] = "找不到寵物！請先創建寵物。";
+                return RedirectToAction("Index", "Pet");
             }
 
-            // 檢查寵物健康狀態
-            if (pet.Health <= 0)
+            // 檢查寵物狀態
+            if (pet.Health <= 0 || pet.Hunger >= 100 || pet.Mood <= 0 || pet.Stamina <= 0 || pet.Cleanliness <= 0)
             {
-                return Json(new { success = false, message = "寵物健康狀態不足以遊玩" });
+                TempData["Warning"] = "寵物狀態不佳，無法開始遊戲！請先照顧寵物。";
+                return RedirectToAction("Index", "Pet");
             }
 
-            // 建立新遊戲會話
-            var game = new MiniGame
+            ViewBag.Pet = pet;
+            ViewBag.TodayGamesCount = todayGames;
+            return View();
+        }
+
+        // POST: MiniGame/MiniGame/Start - 開始新遊戲
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Start(int level = 1)
+        {
+            var userId = GetCurrentUserId();
+            var today = DateTime.UtcNow.Date;
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                UserID = userId,
-                PetID = pet.PetID,
-                Level = 1, // 從第 1 級開始
-                MonsterCount = 6,
-                SpeedMultiplier = 1.00m,
-                Result = "Unknown",
-                ExpGained = 0,
-                PointsChanged = 0,
-                CouponGained = "0",
-                HungerDelta = 0,
-                MoodDelta = 0,
-                StaminaDelta = 0,
-                CleanlinessDelta = 0,
-                StartTime = DateTime.UtcNow,
-                EndTime = null,
-                Aborted = false
-            };
+                // 檢查每日遊戲限制
+                var todayGames = await _context.MiniGames
+                    .CountAsync(g => g.UserId == userId && g.StartTime.Date == today && !g.Aborted);
 
-            _context.MiniGame.Add(game);
-            await _context.SaveChangesAsync();
+                if (todayGames >= 3)
+                {
+                    return Json(new { success = false, message = "已達到每日遊戲限制（3次）" });
+                }
 
-            return Json(new { success = true, message = "遊戲已開始", gameId = game.PlayID });
+                // 取得寵物
+                var pet = await _context.Pets
+                    .FirstOrDefaultAsync(p => p.UserId == userId);
+
+                if (pet == null)
+                {
+                    return Json(new { success = false, message = "找不到寵物" });
+                }
+
+                // 檢查寵物狀態
+                if (pet.Health <= 0 || pet.Hunger >= 100 || pet.Mood <= 0 || pet.Stamina <= 0 || pet.Cleanliness <= 0)
+                {
+                    return Json(new { success = false, message = "寵物狀態不佳，無法開始遊戲" });
+                }
+
+                // 根據關卡設定遊戲參數
+                var (monsterCount, speedMultiplier) = GetLevelConfig(level);
+
+                // 建立新遊戲記錄
+                var game = new Models.MiniGame
+                {
+                    UserId = userId,
+                    PetId = pet.PetId,
+                    Level = level,
+                    MonsterCount = monsterCount,
+                    SpeedMultiplier = speedMultiplier,
+                    Result = "Unknown",
+                    ExpGained = 0,
+                    ExpGainedTime = DateTime.UtcNow,
+                    PointsGained = 0,
+                    PointsGainedTime = DateTime.UtcNow,
+                    CouponGained = "0",
+                    CouponGainedTime = DateTime.UtcNow,
+                    HungerDelta = 0,
+                    MoodDelta = 0,
+                    StaminaDelta = 0,
+                    CleanlinessDelta = 0,
+                    StartTime = DateTime.UtcNow,
+                    EndTime = null,
+                    Aborted = false
+                };
+
+                _context.MiniGames.Add(game);
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return Json(new { 
+                    success = true, 
+                    message = "遊戲已開始！", 
+                    gameId = game.PlayId,
+                    level = level,
+                    monsterCount = monsterCount,
+                    speedMultiplier = speedMultiplier
+                });
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return Json(new { success = false, message = $"開始遊戲失敗：{ex.Message}" });
+            }
+        }
+
+        // GET: MiniGame/MiniGame/Play - 遊戲畫面
+        public async Task<IActionResult> Play(int gameId)
+        {
+            var game = await _context.MiniGames
+                .Include(g => g.User)
+                .FirstOrDefaultAsync(g => g.PlayId == gameId);
+
+            if (game == null || game.UserId != GetCurrentUserId())
+            {
+                TempData["Error"] = "找不到遊戲記錄！";
+                return RedirectToAction(nameof(Index));
+            }
+
+            if (!string.IsNullOrEmpty(game.Result) && game.Result != "Unknown")
+            {
+                TempData["Warning"] = "遊戲已結束！";
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(game);
         }
 
         // POST: MiniGame/MiniGame/End - 結束遊戲
         [HttpPost]
-        public async Task<IActionResult> End(int gameId, string result)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> End(int gameId, string result, bool aborted = false)
         {
-            var game = await _context.MiniGame
-                .FirstOrDefaultAsync(g => g.PlayID == gameId);
-
-            if (game == null)
+            var userId = GetCurrentUserId();
+            
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                return Json(new { success = false, message = "找不到遊戲" });
+                var game = await _context.MiniGames
+                    .FirstOrDefaultAsync(g => g.PlayId == gameId && g.UserId == userId);
+
+                if (game == null)
+                {
+                    return Json(new { success = false, message = "找不到遊戲記錄" });
+                }
+
+                if (game.Result != "Unknown")
+                {
+                    return Json(new { success = false, message = "遊戲已結束" });
+                }
+
+                // 更新遊戲記錄
+                game.Result = aborted ? "Abort" : result;
+                game.EndTime = DateTime.UtcNow;
+                game.Aborted = aborted;
+
+                // 如果是放棄，不給任何獎勵
+                if (aborted)
+                {
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                    return Json(new { success = true, message = "遊戲已中止", result = "Abort" });
+                }
+
+                // 計算獎勵和寵物狀態變化
+                var (expGained, pointsGained, couponCode, hungerDelta, moodDelta, staminaDelta, cleanlinessDelta) = 
+                    CalculateGameRewards(game.Level, result);
+
+                game.ExpGained = expGained;
+                game.PointsGained = pointsGained;
+                game.CouponGained = couponCode;
+                game.HungerDelta = hungerDelta;
+                game.MoodDelta = moodDelta;
+                game.StaminaDelta = staminaDelta;
+                game.CleanlinessDelta = cleanlinessDelta;
+
+                // 更新寵物狀態
+                var pet = await _context.Pets
+                    .FirstOrDefaultAsync(p => p.PetId == game.PetId);
+
+                if (pet != null)
+                {
+                    pet.Hunger = Math.Max(0, Math.Min(100, pet.Hunger + hungerDelta));
+                    pet.Mood = Math.Max(0, Math.Min(100, pet.Mood + moodDelta));
+                    pet.Stamina = Math.Max(0, Math.Min(100, pet.Stamina + staminaDelta));
+                    pet.Cleanliness = Math.Max(0, Math.Min(100, pet.Cleanliness + cleanlinessDelta));
+                    pet.Experience += expGained;
+
+                    // 檢查升級
+                    await CheckPetLevelUp(pet, userId);
+                }
+
+                // 更新錢包點數
+                if (pointsGained > 0)
+                {
+                    var wallet = await _context.UserWallets
+                        .FirstOrDefaultAsync(w => w.UserId == userId);
+                    if (wallet == null)
+                    {
+                        wallet = new UserWallet { UserId = userId, UserPoint = 0 };
+                        _context.UserWallets.Add(wallet);
+                    }
+                    wallet.UserPoint += pointsGained;
+
+                    // 記錄錢包異動
+                    var history = new WalletHistory
+                    {
+                        UserId = userId,
+                        ChangeType = "MiniGame",
+                        PointsChanged = pointsGained,
+                        Description = $"小遊戲{result}獲得（Lv.{game.Level}）",
+                        ChangeTime = DateTime.UtcNow
+                    };
+                    _context.WalletHistories.Add(history);
+                }
+
+                // 如果有優惠券獎勵
+                if (!string.IsNullOrEmpty(couponCode) && couponCode != "0")
+                {
+                    await CreateGameCoupon(userId, couponCode);
+                }
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                var message = $"遊戲{(result == "Win" ? "勝利" : "失敗")}！";
+                if (pointsGained > 0) message += $" 獲得{pointsGained}點數";
+                if (expGained > 0) message += $"、{expGained}寵物經驗";
+                if (!string.IsNullOrEmpty(couponCode) && couponCode != "0") message += $"、優惠券";
+
+                return Json(new { 
+                    success = true, 
+                    message = message,
+                    result = result,
+                    expGained = expGained,
+                    pointsGained = pointsGained,
+                    couponGained = couponCode != "0" ? couponCode : null
+                });
             }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return Json(new { success = false, message = $"結束遊戲失敗：{ex.Message}" });
+            }
+        }
 
-            // 更新遊戲結果
-            game.Result = result;
-            game.EndTime = DateTime.UtcNow;
+        // 取得關卡配置
+        private (int monsterCount, decimal speedMultiplier) GetLevelConfig(int level)
+        {
+            return level switch
+            {
+                1 => (6, 1.0m),
+                2 => (8, 1.5m),
+                3 => (10, 2.0m),
+                _ => (6, 1.0m) // 預設第1關
+            };
+        }
 
-            // 根據結果計算獎勵
+        // 計算遊戲獎勵
+        private (int expGained, int pointsGained, string couponCode, int hungerDelta, int moodDelta, int staminaDelta, int cleanlinessDelta) 
+            CalculateGameRewards(int level, string result)
+        {
+            int expGained = 0, pointsGained = 0;
+            string couponCode = "0";
+            int hungerDelta, moodDelta, staminaDelta, cleanlinessDelta;
+
             if (result == "Win")
             {
-                game.ExpGained = 100;
-                game.PointsChanged = 10;
-                game.HungerDelta = -20;
-                game.MoodDelta = 30;
-                game.StaminaDelta = -20;
-                game.CleanlinessDelta = -20;
-            }
-            else if (result == "Lose")
-            {
-                game.ExpGained = 20;
-                game.PointsChanged = 5;
-                game.HungerDelta = -20;
-                game.MoodDelta = -30;
-                game.StaminaDelta = -20;
-                game.CleanlinessDelta = -20;
-            }
-
-            // 更新寵物屬性
-            var pet = await _context.Pet
-                .FirstOrDefaultAsync(p => p.PetID == game.PetID);
-
-            if (pet != null)
-            {
-                pet.Hunger = Math.Max(0, Math.Min(100, pet.Hunger + game.HungerDelta));
-                pet.Mood = Math.Max(0, Math.Min(100, pet.Mood + game.MoodDelta));
-                pet.Stamina = Math.Max(0, Math.Min(100, pet.Stamina + game.StaminaDelta));
-                pet.Cleanliness = Math.Max(0, Math.Min(100, pet.Cleanliness + game.CleanlinessDelta));
-                pet.Experience += game.ExpGained;
-
-                // 檢查是否升級
-                var requiredExp = CalculateRequiredExp(pet.Level);
-                if (pet.Experience >= requiredExp)
+                // 勝利獎勵
+                expGained = level switch
                 {
-                    pet.Level++;
-                    pet.LevelUpTime = DateTime.UtcNow;
-                    pet.Experience -= requiredExp;
-                    pet.PointsGained_levelUp = pet.Level * 10;
-                    pet.PointsGainedTime_levelUp = DateTime.UtcNow;
+                    1 => 100,
+                    2 => 200,
+                    3 => 300,
+                    _ => 100
+                };
+                
+                pointsGained = level switch
+                {
+                    1 => 10,
+                    2 => 20,
+                    3 => 30,
+                    _ => 10
+                };
+
+                // 第3關勝利額外給優惠券
+                if (level == 3)
+                {
+                    couponCode = "GAME_WIN_L3";
                 }
+
+                // 勝利狀態變化
+                hungerDelta = -20;  // 消耗體力會餓
+                moodDelta = +30;    // 勝利很開心
+                staminaDelta = -20; // 消耗體力
+                cleanlinessDelta = -20; // 弄髒了
+            }
+            else
+            {
+                // 失敗獎勵（較少）
+                expGained = 20;
+                pointsGained = 5;
+
+                // 失敗狀態變化
+                hungerDelta = -20;  // 同樣會餓
+                moodDelta = -30;    // 失敗心情不好
+                staminaDelta = -20; // 消耗體力
+                cleanlinessDelta = -20; // 弄髒了
             }
 
-            // 更新使用者錢包
-            if (game.PointsChanged > 0)
+            return (expGained, pointsGained, couponCode, hungerDelta, moodDelta, staminaDelta, cleanlinessDelta);
+        }
+
+        // 建立遊戲獎勵優惠券
+        private async Task CreateGameCoupon(int userId, string couponType)
+        {
+            // 找到遊戲獎勵相關的優惠券類型
+            var couponTypeRecord = await _context.CouponTypes
+                .FirstOrDefaultAsync(ct => ct.Name.Contains("遊戲獎勵") || ct.Name.Contains("冒險獎勵"));
+
+            if (couponTypeRecord != null)
             {
-                var wallet = await _context.User_Wallet
-                    .FirstOrDefaultAsync(w => w.User_Id == game.UserID);
+                var couponCode = GenerateCouponCode();
+                var coupon = new Coupon
+                {
+                    CouponCode = couponCode,
+                    CouponTypeId = couponTypeRecord.CouponTypeId,
+                    UserId = userId,
+                    IsUsed = false,
+                    AcquiredTime = DateTime.UtcNow
+                };
+                _context.Coupons.Add(coupon);
+
+                // 記錄錢包異動
+                var history = new WalletHistory
+                {
+                    UserId = userId,
+                    ChangeType = "Coupon",
+                    PointsChanged = 0,
+                    ItemCode = couponCode,
+                    Description = $"小遊戲獎勵優惠券：{couponTypeRecord.Name}",
+                    ChangeTime = DateTime.UtcNow
+                };
+                _context.WalletHistories.Add(history);
+            }
+        }
+
+        // 檢查寵物升級
+        private async Task CheckPetLevelUp(Pet pet, int userId)
+        {
+            int requiredExp = CalculateRequiredExp(pet.Level);
+            
+            if (pet.Experience >= requiredExp)
+            {
+                pet.Level++;
+                pet.Experience -= requiredExp;
+                pet.LevelUpTime = DateTime.UtcNow;
+                
+                int pointsReward = Math.Min(250, (pet.Level / 10 + 1) * 10);
+                pet.PointsGainedLevelUp = pointsReward;
+                pet.PointsGainedTimeLevelUp = DateTime.UtcNow;
+                
+                var wallet = await _context.UserWallets
+                    .FirstOrDefaultAsync(w => w.UserId == userId);
                 if (wallet != null)
                 {
-                    wallet.User_Point += game.PointsChanged;
+                    wallet.UserPoint += pointsReward;
                 }
+
+                var history = new WalletHistory
+                {
+                    UserId = userId,
+                    ChangeType = "PetLevelUp",
+                    PointsChanged = pointsReward,
+                    Description = $"寵物升級獎勵（Lv.{pet.Level}）",
+                    ChangeTime = DateTime.UtcNow
+                };
+                _context.WalletHistories.Add(history);
             }
-
-            await _context.SaveChangesAsync();
-
-            return Json(new { success = true, message = "遊戲已結束", result = result, expGained = game.ExpGained, pointsGained = game.PointsChanged });
         }
 
         private int CalculateRequiredExp(int level)
         {
             if (level <= 10)
+            {
                 return 40 * level + 60;
-            else if (level <= 100)
-                return (int)(0.8 * level * level + 380);
-            else
-                return (int)(285.69 * Math.Pow(1.06, level));
-        }
-
-        public IActionResult StartGame()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> StartGame(string gameType, string difficulty)
-        {
-            var userId = GetCurrentUserId();
-            
-            var miniGame = new MiniGame
-            {
-                UserID = userId,
-                GameType = gameType,
-                StartTime = DateTime.Now,
-                Score = 0,
-                Point = 0
-            };
-            
-            _context.MiniGame.Add(miniGame);
-            await _context.SaveChangesAsync();
-            
-            return RedirectToAction(nameof(Play), new { id = miniGame.GameID });
-        }
-
-        public IActionResult Play(int id)
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> EndGame(int gameId, int score, int level)
-        {
-            var miniGame = await _context.MiniGame.FindAsync(gameId);
-            if (miniGame == null)
-            {
-                return NotFound();
             }
-            
-            miniGame.EndTime = DateTime.Now;
-            miniGame.Score = score;
-            miniGame.Point = score / 10; // 1 point per 10 score
-            
-            await _context.SaveChangesAsync();
-            
-            return Json(new { success = true, message = "遊戲成功結束" });
+            else if (level <= 100)
+            {
+                return (int)(0.8 * level * level + 380);
+            }
+            else
+            {
+                return (int)(285.69 * Math.Pow(1.06, level));
+            }
+        }
+
+        private string GenerateCouponCode()
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            var random = new Random();
+            return new string(Enumerable.Repeat(chars, 12)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
         private int GetCurrentUserId()
         {
-            // TODO: 實作從身份驗證中取得使用者 ID 的適當方法
-            return 1; // 暫時的佔位符
+            // 暫時使用固定用戶ID進行測試
+            // TODO: 實作適當的用戶身份驗證
+            return 1;
         }
     }
 }
