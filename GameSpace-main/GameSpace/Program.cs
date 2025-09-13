@@ -20,6 +20,14 @@ builder.Services.AddDbContext<GameSpaceDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<DataSeedingService>();
+
+// 註冊業務服務
+builder.Services.AddScoped<IPetService, PetService>();
+builder.Services.AddScoped<IWalletService, WalletService>();
+builder.Services.AddScoped<ISignInService, SignInService>();
+builder.Services.AddScoped<IGameService, GameService>();
+builder.Services.AddScoped<IForumService, ForumService>();
+
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
