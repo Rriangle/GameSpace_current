@@ -53,7 +53,7 @@ namespace GameSpace.Models
 
         [Required]
         [Column("SkinColorChangedTime")]
-        public DateTime ColorChangedTime { get; set; } = DateTime.UtcNow;
+        public DateTime SkinColorChangedTime { get; set; } = DateTime.UtcNow;
 
         [Required]
         [StringLength(50)]
@@ -67,13 +67,19 @@ namespace GameSpace.Models
         public int PointsChangedColor { get; set; } = 0;
 
         [Required]
-        public DateTime PointsChangedTimeColor { get; set; } = DateTime.UtcNow;
+        [Column("PointsChangedTime_SkinColor")]
+        public DateTime PointsChangedTimeSkinColor { get; set; } = DateTime.UtcNow;
+
+        [Required]
+        [Column("PointsChanged_BackgroundColor")]
+        public int PointsChangedBackgroundColor { get; set; } = 0;
 
         [Required]
         [Column("PointsGained_LevelUp")]
         public int PointsGainedLevelUp { get; set; } = 0;
 
         [Required]
+        [Column("PointsGainedTime_LevelUp")]
         public DateTime PointsGainedTimeLevelUp { get; set; } = DateTime.UtcNow;
 
         // 導航屬性

@@ -46,6 +46,9 @@ namespace GameSpace.Models
         [Column("User_LockoutEnd")]
         public DateTime? UserLockoutEnd { get; set; }
 
+        [Column("User_TwoFactorEnabled")]
+        public bool UserTwoFactorEnabled { get; set; } = false;
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

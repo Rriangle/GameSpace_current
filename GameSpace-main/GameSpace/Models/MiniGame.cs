@@ -7,12 +7,15 @@ namespace GameSpace.Models
     public class MiniGame
     {
         [Key]
+        [Column("PlayID")]
         public int PlayId { get; set; }
 
         [Required]
+        [Column("UserID")]
         public int UserId { get; set; }
 
         [Required]
+        [Column("PetID")]
         public int PetId { get; set; }
 
         [Required]
@@ -30,39 +33,55 @@ namespace GameSpace.Models
         public string Result { get; set; } = "Unknown";
 
         [Required]
+        [Column("ExpGained")]
         public int ExpGained { get; set; } = 0;
 
-        public DateTime? ExpGainedTime { get; set; }
+        [Required]
+        [Column("ExpGainedTime")]
+        public DateTime ExpGainedTime { get; set; } = DateTime.UtcNow;
 
         [Required]
-        public int PointsChanged { get; set; } = 0;
-
-        public DateTime? PointsChangedTime { get; set; }
-
-        [Required]
-        public int CouponGained { get; set; } = 0;
+        [Column("PointsGained")]
+        public int PointsGained { get; set; } = 0;
 
         [Required]
+        [Column("PointsGainedTime")]
+        public DateTime PointsGainedTime { get; set; } = DateTime.UtcNow;
+
+        [Required]
+        [Column("CouponGained")]
+        [StringLength(50)]
+        public string CouponGained { get; set; } = "0";
+
+        [Required]
+        [Column("CouponGainedTime")]
         public DateTime CouponGainedTime { get; set; } = DateTime.UtcNow;
 
         [Required]
+        [Column("HungerDelta")]
         public int HungerDelta { get; set; } = 0;
 
         [Required]
+        [Column("MoodDelta")]
         public int MoodDelta { get; set; } = 0;
 
         [Required]
+        [Column("StaminaDelta")]
         public int StaminaDelta { get; set; } = 0;
 
         [Required]
+        [Column("CleanlinessDelta")]
         public int CleanlinessDelta { get; set; } = 0;
 
         [Required]
+        [Column("StartTime")]
         public DateTime StartTime { get; set; } = DateTime.UtcNow;
 
+        [Column("EndTime")]
         public DateTime? EndTime { get; set; }
 
         [Required]
+        [Column("Aborted")]
         public bool Aborted { get; set; } = false;
 
         // 導航屬性

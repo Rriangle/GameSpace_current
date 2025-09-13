@@ -7,30 +7,40 @@ namespace GameSpace.Models
     public class UserSignInStats
     {
         [Key]
+        [Column("LogID")]
         public int LogId { get; set; }
 
         [Required]
+        [Column("SignTime")]
         public DateTime SignTime { get; set; } = DateTime.UtcNow;
 
         [Required]
+        [Column("UserID")]
         public int UserId { get; set; }
 
         [Required]
-        public int PointsChanged { get; set; } = 0;
+        [Column("PointsGained")]
+        public int PointsGained { get; set; } = 0;
 
         [Required]
-        public DateTime PointsChangedTime { get; set; } = DateTime.UtcNow;
+        [Column("PointsGainedTime")]
+        public DateTime PointsGainedTime { get; set; } = DateTime.UtcNow;
 
         [Required]
+        [Column("ExpGained")]
         public int ExpGained { get; set; } = 0;
 
         [Required]
+        [Column("ExpGainedTime")]
         public DateTime ExpGainedTime { get; set; } = DateTime.UtcNow;
 
         [Required]
-        public int CouponGained { get; set; } = 0;
+        [Column("CouponGained")]
+        [StringLength(50)]
+        public string CouponGained { get; set; } = "0";
 
         [Required]
+        [Column("CouponGainedTime")]
         public DateTime CouponGainedTime { get; set; } = DateTime.UtcNow;
 
         // 導航屬性
