@@ -57,6 +57,10 @@ builder.Services.AddScoped<IPerformanceService, PerformanceService>();
 // 註冊安全性服務
 builder.Services.AddScoped<ISecurityService, SecurityService>();
 
+// 註冊監控和日誌服務
+builder.Services.AddScoped<IHealthCheckService, HealthCheckService>();
+builder.Services.AddScoped<IErrorTrackingService, ErrorTrackingService>();
+
 // 設定資料保護
 builder.Services.AddDataProtection()
     .SetApplicationName("GameSpace")
@@ -99,6 +103,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
