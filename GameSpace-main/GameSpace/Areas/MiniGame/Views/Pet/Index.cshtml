@@ -1,0 +1,297 @@
+@model GameSpace.Models.Pet
+
+@{
+    ViewData["Title"] = "我的寵物";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="text-center mb-4">我的寵物 - @Model.PetName</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="pet-avatar mb-3" style="width: 200px; height: 200px; margin: 0 auto; background-color: @Model.SkinColor; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 4rem;">
+                        🐾
+                    </div>
+                    <h3>@Model.PetName</h3>
+                    <p class="text-muted">等級 @Model.Level</p>
+                    <div class="progress mb-2">
+                        <div class="progress-bar" role="progressbar" style="width: @((Model.Experience * 100.0 / CalculateRequiredExp(Model.Level))%)">
+                            @Model.Experience / @CalculateRequiredExp(Model.Level) 經驗
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>寵物狀態</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">飢餓值</label>
+                        <div class="progress">
+                            <div class="progress-bar bg-warning" role="progressbar" style="width: @Model.Hunger%">
+                                @Model.Hunger%
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">心情值</label>
+                        <div class="progress">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: @Model.Mood%">
+                                @Model.Mood%
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">體力值</label>
+                        <div class="progress">
+                            <div class="progress-bar bg-info" role="progressbar" style="width: @Model.Stamina%">
+                                @Model.Stamina%
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">清潔值</label>
+                        <div class="progress">
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: @Model.Cleanliness%">
+                                @Model.Cleanliness%
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">健康值</label>
+                        <div class="progress">
+                            <div class="progress-bar bg-danger" role="progressbar" style="width: @Model.Health%">
+                                @Model.Health%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>寵物互動</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <button class="btn btn-warning w-100" onclick="feedPet()">
+                                <i class="fas fa-utensils me-2"></i>餵食
+                            </button>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <button class="btn btn-primary w-100" onclick="bathPet()">
+                                <i class="fas fa-shower me-2"></i>洗澡
+                            </button>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <button class="btn btn-success w-100" onclick="playWithPet()">
+                                <i class="fas fa-gamepad me-2"></i>陪玩
+                            </button>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <button class="btn btn-info w-100" onclick="sleepPet()">
+                                <i class="fas fa-bed me-2"></i>哄睡
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>換膚色</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">每次換膚色需要 2000 點</p>
+                    <div class="row">
+                        <div class="col-3 mb-2">
+                            <button class="btn btn-sm w-100" style="background-color: #ADD8E6;" onclick="changeSkinColor('#ADD8E6')"></button>
+                        </div>
+                        <div class="col-3 mb-2">
+                            <button class="btn btn-sm w-100" style="background-color: #FFB6C1;" onclick="changeSkinColor('#FFB6C1')"></button>
+                        </div>
+                        <div class="col-3 mb-2">
+                            <button class="btn btn-sm w-100" style="background-color: #98FB98;" onclick="changeSkinColor('#98FB98')"></button>
+                        </div>
+                        <div class="col-3 mb-2">
+                            <button class="btn btn-sm w-100" style="background-color: #F0E68C;" onclick="changeSkinColor('#F0E68C')"></button>
+                        </div>
+                        <div class="col-3 mb-2">
+                            <button class="btn btn-sm w-100" style="background-color: #DDA0DD;" onclick="changeSkinColor('#DDA0DD')"></button>
+                        </div>
+                        <div class="col-3 mb-2">
+                            <button class="btn btn-sm w-100" style="background-color: #FFA07A;" onclick="changeSkinColor('#FFA07A')"></button>
+                        </div>
+                        <div class="col-3 mb-2">
+                            <button class="btn btn-sm w-100" style="background-color: #87CEEB;" onclick="changeSkinColor('#87CEEB')"></button>
+                        </div>
+                        <div class="col-3 mb-2">
+                            <button class="btn btn-sm w-100" style="background-color: #F5DEB3;" onclick="changeSkinColor('#F5DEB3')"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>換背景色</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">換背景色免費</p>
+                    <div class="row">
+                        <div class="col-3 mb-2">
+                            <button class="btn btn-sm w-100 btn-outline-primary" onclick="changeBackgroundColor('粉藍')">粉藍</button>
+                        </div>
+                        <div class="col-3 mb-2">
+                            <button class="btn btn-sm w-100 btn-outline-danger" onclick="changeBackgroundColor('粉紅')">粉紅</button>
+                        </div>
+                        <div class="col-3 mb-2">
+                            <button class="btn btn-sm w-100 btn-outline-success" onclick="changeBackgroundColor('粉綠')">粉綠</button>
+                        </div>
+                        <div class="col-3 mb-2">
+                            <button class="btn btn-sm w-100 btn-outline-warning" onclick="changeBackgroundColor('粉黃')">粉黃</button>
+                        </div>
+                        <div class="col-3 mb-2">
+                            <button class="btn btn-sm w-100 btn-outline-info" onclick="changeBackgroundColor('粉紫')">粉紫</button>
+                        </div>
+                        <div class="col-3 mb-2">
+                            <button class="btn btn-sm w-100 btn-outline-secondary" onclick="changeBackgroundColor('粉灰')">粉灰</button>
+                        </div>
+                        <div class="col-3 mb-2">
+                            <button class="btn btn-sm w-100 btn-outline-dark" onclick="changeBackgroundColor('粉白')">粉白</button>
+                        </div>
+                        <div class="col-3 mb-2">
+                            <button class="btn btn-sm w-100 btn-outline-light" onclick="changeBackgroundColor('粉橙')">粉橙</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function feedPet() {
+            $.post('@Url.Action("Feed", "Pet")', function(data) {
+                if (data.success) {
+                    showMessage(data.message, 'success');
+                    updatePetStatus();
+                } else {
+                    showMessage(data.message, 'error');
+                }
+            });
+        }
+
+        function bathPet() {
+            $.post('@Url.Action("Bath", "Pet")', function(data) {
+                if (data.success) {
+                    showMessage(data.message, 'success');
+                    updatePetStatus();
+                } else {
+                    showMessage(data.message, 'error');
+                }
+            });
+        }
+
+        function playWithPet() {
+            $.post('@Url.Action("Play", "Pet")', function(data) {
+                if (data.success) {
+                    showMessage(data.message, 'success');
+                    updatePetStatus();
+                } else {
+                    showMessage(data.message, 'error');
+                }
+            });
+        }
+
+        function sleepPet() {
+            $.post('@Url.Action("Sleep", "Pet")', function(data) {
+                if (data.success) {
+                    showMessage(data.message, 'success');
+                    updatePetStatus();
+                } else {
+                    showMessage(data.message, 'error');
+                }
+            });
+        }
+
+        function changeSkinColor(color) {
+            $.post('@Url.Action("ChangeSkinColor", "Pet")', { color: color }, function(data) {
+                if (data.success) {
+                    showMessage(data.message, 'success');
+                    $('.pet-avatar').css('background-color', color);
+                } else {
+                    showMessage(data.message, 'error');
+                }
+            });
+        }
+
+        function changeBackgroundColor(color) {
+            $.post('@Url.Action("ChangeBackgroundColor", "Pet")', { color: color }, function(data) {
+                if (data.success) {
+                    showMessage(data.message, 'success');
+                } else {
+                    showMessage(data.message, 'error');
+                }
+            });
+        }
+
+        function updatePetStatus() {
+            location.reload();
+        }
+
+        function showMessage(message, type) {
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+            const alert = $(`<div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>`);
+            $('.container').prepend(alert);
+            setTimeout(() => alert.alert('close'), 3000);
+        }
+
+        // 檢查升級
+        $(document).ready(function() {
+            $.post('@Url.Action("CheckLevelUp", "Pet")', function(data) {
+                if (data.success) {
+                    showMessage(data.message, 'success');
+                    setTimeout(() => location.reload(), 2000);
+                }
+            });
+        });
+    </script>
+}
+
+@functions {
+    private int CalculateRequiredExp(int level)
+    {
+        if (level <= 10)
+            return 40 * level + 60;
+        else if (level <= 100)
+            return (int)(0.8 * level * level + 380);
+        else
+            return (int)(285.69 * Math.Pow(1.06, level));
+    }
+}

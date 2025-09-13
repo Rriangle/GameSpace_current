@@ -1,0 +1,85 @@
+@model GameSpace.Models.ProductInfo
+@{
+    ViewData["Title"] = "商品詳情";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h2>@Model.ProductName</h2>
+                    <p class="text-muted">@Model.Description</p>
+                    <div class="mb-3">
+                        <span class="badge bg-secondary fs-6">@Model.Category</span>
+                    </div>
+                    <div class="h3 text-primary">@Model.Price 點</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5>購買選項</h5>
+                    <div class="mb-3">
+                        <label for="quantity" class="form-label">數量</label>
+                        <input type="number" id="quantity" class="form-control" value="1" min="1" max="99">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">總計</label>
+                        <div class="h4 text-primary" id="totalPrice">@Model.Price 點</div>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-success btn-lg" onclick="purchaseProduct(@Model.ProductId)">
+                            立即購買
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">返回商城</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('quantity').addEventListener('input', function() {
+            const quantity = parseInt(this.value) || 1;
+            const unitPrice = @Model.Price;
+            const totalPrice = quantity * unitPrice;
+            document.getElementById('totalPrice').textContent = totalPrice + ' 點';
+        });
+
+        async function purchaseProduct(productId) {
+            const quantity = parseInt(document.getElementById('quantity').value) || 1;
+            
+            if (quantity <= 0) {
+                alert('請輸入有效的數量');
+                return;
+            }
+
+            if (!confirm(`確定要購買此商品嗎？\n數量：${quantity}\n總計：${quantity * @Model.Price} 點`)) return;
+
+            try {
+                const response = await fetch('@Url.Action("Purchase")', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify({ productId: productId, quantity: quantity })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    alert(data.message);
+                    window.location.href = '@Url.Action("Orders")';
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                alert('購買失敗，請稍後再試');
+            }
+        }
+    </script>
+}

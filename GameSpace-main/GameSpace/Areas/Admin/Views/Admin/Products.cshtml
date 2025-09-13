@@ -1,0 +1,68 @@
+@model List<GameSpace.Models.ProductInfo>
+@{
+    ViewData["Title"] = "商品管理";
+}
+
+<div class="container-fluid">
+    <h1 class="h3 mb-4">商品管理</h1>
+
+    <div class="card shadow">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">商品列表</h6>
+            <a asp-action="CreateProduct" class="btn btn-primary">新增商品</a>
+        </div>
+        <div class="card-body">
+            @if (Model?.Any() == true)
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>商品ID</th>
+                                <th>商品名稱</th>
+                                <th>分類</th>
+                                <th>價格</th>
+                                <th>狀態</th>
+                                <th>創建時間</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var product in Model)
+                            {
+                                <tr>
+                                    <td>@product.ProductId</td>
+                                    <td>@product.ProductName</td>
+                                    <td>
+                                        <span class="badge bg-secondary">@product.Category</span>
+                                    </td>
+                                    <td>
+                                        <span class="text-primary fw-bold">@product.Price 點</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-@(product.IsActive ? "success" : "danger")">
+                                            @(product.IsActive ? "上架" : "下架")
+                                        </span>
+                                    </td>
+                                    <td>@product.CreatedAt.ToString("yyyy/MM/dd")</td>
+                                    <td>
+                                        <a asp-action="ProductDetails" asp-route-id="@product.ProductId" class="btn btn-sm btn-outline-primary">查看</a>
+                                        <a asp-action="EditProduct" asp-route-id="@product.ProductId" class="btn btn-sm btn-outline-warning">編輯</a>
+                                        <form asp-action="DeleteProduct" method="post" style="display: inline;">
+                                            <input type="hidden" name="id" value="@product.ProductId" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('確定要下架此商品嗎？')">下架</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p class="text-muted text-center">暫無商品</p>
+            }
+        </div>
+    </div>
+</div>

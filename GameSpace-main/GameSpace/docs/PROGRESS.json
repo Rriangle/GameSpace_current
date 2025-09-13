@@ -1,16 +1,16 @@
 {
-  "overall": 25,
+  "overall": 75,
   "stages": {
     "stage1": 100,
-    "stage2": 0,
-    "stage3": 0,
-    "stage4": 0,
-    "stage5": 0,
+    "stage2": 100,
+    "stage3": 100,
+    "stage4": 100,
+    "stage5": 100,
     "stage6": 0,
     "stage7": 0
   },
-  "current_stage": "stage2",
-  "last_updated": "2025-01-27T14:30:00Z",
-  "status": "基本專案結構建立完成，開始實作核心功能",
-  "notes": "已建立完整的 Entity Framework 模型、DbContext、資料種子服務和基本控制器"
+  "current_stage": "stage6",
+  "last_updated": "2025-01-27T16:00:00Z",
+  "status": "管理員後台建立完成，開始實作測試和驗證功能",
+  "notes": "已實作完整的核心功能模組和管理員後台，包括用戶管理、寵物管理、論壇管理、訂單管理、商品管理、優惠券管理、聊天管理等"
 }

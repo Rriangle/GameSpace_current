@@ -1,0 +1,109 @@
+@{
+    ViewData["Title"] = "我的錢包";
+    var userWallet = ViewBag.UserWallet as GameSpace.Models.UserWallet;
+    var coupons = ViewBag.Coupons as List<GameSpace.Models.Coupon>;
+    var evouchers = ViewBag.EVouchers as List<GameSpace.Models.EVoucher>;
+    var walletHistories = ViewBag.WalletHistories as List<GameSpace.Models.WalletHistory>;
+}
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">我的錢包</h1>
+
+    <!-- 錢包總覽 -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">會員點數</h5>
+                    <h2 class="text-primary">@(userWallet?.UserPoint ?? 0)</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">優惠券</h5>
+                    <h2 class="text-success">@(coupons?.Count ?? 0)</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">禮券</h5>
+                    <h2 class="text-warning">@(evouchers?.Count ?? 0)</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 快速操作 -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">快速操作</h5>
+                    <div class="d-flex gap-2">
+                        <a asp-action="AvailableCoupons" class="btn btn-outline-primary">兌換優惠券</a>
+                        <a asp-action="AvailableEVouchers" class="btn btn-outline-warning">兌換禮券</a>
+                        <a asp-action="History" class="btn btn-outline-info">查看歷史</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 最近交易記錄 -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">最近交易記錄</h5>
+                </div>
+                <div class="card-body">
+                    @if (walletHistories?.Any() == true)
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>時間</th>
+                                        <th>類型</th>
+                                        <th>描述</th>
+                                        <th>點數變化</th>
+                                        <th>物品代碼</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var history in walletHistories)
+                                    {
+                                        <tr>
+                                            <td>@history.ChangeTime.ToString("yyyy/MM/dd HH:mm")</td>
+                                            <td>
+                                                <span class="badge bg-@(history.ChangeType switch {
+                                                    "Point" => "primary",
+                                                    "Coupon" => "success",
+                                                    "EVoucher" => "warning",
+                                                    _ => "secondary"
+                                                })">@history.ChangeType</span>
+                                            </td>
+                                            <td>@history.Description</td>
+                                            <td class="@(history.PointsChanged > 0 ? "text-success" : "text-danger")">
+                                                @(history.PointsChanged > 0 ? "+" : "")@history.PointsChanged
+                                            </td>
+                                            <td>@(history.ItemCode ?? "-")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center">暫無交易記錄</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

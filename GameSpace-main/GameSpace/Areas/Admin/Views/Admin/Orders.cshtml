@@ -1,0 +1,66 @@
+@model List<GameSpace.Models.Order>
+@{
+    ViewData["Title"] = "訂單管理";
+}
+
+<div class="container-fluid">
+    <h1 class="h3 mb-4">訂單管理</h1>
+
+    <div class="card shadow">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">訂單列表</h6>
+        </div>
+        <div class="card-body">
+            @if (Model?.Any() == true)
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>訂單ID</th>
+                                <th>用戶</th>
+                                <th>訂單日期</th>
+                                <th>總金額</th>
+                                <th>狀態</th>
+                                <th>商品數量</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model)
+                            {
+                                <tr>
+                                    <td>@order.OrderId</td>
+                                    <td>@order.User?.Username</td>
+                                    <td>@order.OrderDate.ToString("yyyy/MM/dd HH:mm")</td>
+                                    <td>
+                                        <span class="text-primary fw-bold">@order.TotalAmount 點</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-@(order.Status switch {
+                                            "已付款" => "success",
+                                            "處理中" => "warning",
+                                            "已完成" => "info",
+                                            "已取消" => "danger",
+                                            _ => "secondary"
+                                        })">@order.Status</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary">@order.OrderDetails.Count</span>
+                                    </td>
+                                    <td>
+                                        <a asp-action="OrderDetails" asp-route-id="@order.OrderId" class="btn btn-sm btn-outline-primary">查看詳情</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p class="text-muted text-center">暫無訂單</p>
+            }
+        </div>
+    </div>
+</div>

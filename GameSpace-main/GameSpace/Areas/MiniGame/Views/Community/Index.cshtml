@@ -1,0 +1,136 @@
+@{
+    ViewData["Title"] = "社群";
+    var userPet = ViewBag.UserPet as GameSpace.Models.Pet;
+    var recentMessages = ViewBag.RecentMessages as List<GameSpace.Models.ChatMessage>;
+    var onlineUsers = (int)ViewBag.OnlineUsers;
+}
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">社群</h1>
+
+    <div class="row">
+        <!-- 左側：我的寵物 -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">我的寵物</h5>
+                </div>
+                <div class="card-body text-center">
+                    @if (userPet != null)
+                    {
+                        <img src="https://via.placeholder.com/100/@(userPet.SkinColor.Replace("#", ""))?text=Pet" 
+                             class="img-fluid rounded-circle mb-3" 
+                             style="width: 100px; height: 100px; object-fit: cover; background-color: @userPet.BackgroundColor;" 
+                             alt="寵物圖片">
+                        <h5>@userPet.PetName</h5>
+                        <p class="text-muted">等級 @userPet.Level</p>
+                        <div class="progress mb-2">
+                            <div class="progress-bar" role="progressbar" style="width: @(userPet.Experience % 100)%"></div>
+                        </div>
+                        <small class="text-muted">經驗值: @userPet.Experience</small>
+                    }
+                    else
+                    {
+                        <p class="text-muted">您還沒有寵物</p>
+                        <a asp-area="MiniGame" asp-controller="Pet" asp-action="Index" class="btn btn-primary">領養寵物</a>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- 中間：最近聊天 -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">最近聊天</h5>
+                    <span class="badge bg-success">@onlineUsers 人在線</span>
+                </div>
+                <div class="card-body" style="height: 300px; overflow-y: auto;">
+                    @if (recentMessages?.Any() == true)
+                    {
+                        @foreach (var message in recentMessages.Take(10))
+                        {
+                            <div class="message-item mb-2">
+                                <div class="message-header">
+                                    <strong>@message.User?.Username</strong>
+                                    <small class="text-muted">@message.CreatedAt.ToString("HH:mm")</small>
+                                </div>
+                                <div class="message-content">@message.Content</div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center">暫無聊天記錄</p>
+                    }
+                </div>
+                <div class="card-footer">
+                    <a asp-action="Chat" class="btn btn-primary w-100">進入聊天室</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右側：快速操作 -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">快速操作</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a asp-action="Chat" class="btn btn-outline-primary">聊天室</a>
+                        <a asp-action="Friends" class="btn btn-outline-success">好友列表</a>
+                        <a asp-action="Leaderboard" class="btn btn-outline-warning">排行榜</a>
+                        <a asp-action="Profile" class="btn btn-outline-info">我的資料</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 社群統計 -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">社群統計</h5>
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <h4 class="text-primary">@onlineUsers</h4>
+                            <p class="text-muted">在線用戶</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h4 class="text-success">@(recentMessages?.Count ?? 0)</h4>
+                            <p class="text-muted">最近訊息</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h4 class="text-warning">-</h4>
+                            <p class="text-muted">活躍討論</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h4 class="text-info">-</h4>
+                            <p class="text-muted">新用戶</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .message-item {
+        border-bottom: 1px solid #eee;
+        padding-bottom: 8px;
+    }
+    .message-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 4px;
+    }
+    .message-content {
+        font-size: 0.9em;
+        color: #666;
+    }
+</style>

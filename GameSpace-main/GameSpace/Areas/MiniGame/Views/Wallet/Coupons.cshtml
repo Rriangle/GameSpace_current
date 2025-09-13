@@ -1,0 +1,65 @@
+@model List<GameSpace.Models.Coupon>
+@{
+    ViewData["Title"] = "我的優惠券";
+}
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">我的優惠券</h1>
+
+    @if (Model?.Any() == true)
+    {
+        <div class="row">
+            @foreach (var coupon in Model)
+            {
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 @(coupon.IsUsed ? "opacity-50" : "")">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">@coupon.CouponType?.Name</h5>
+                            <p class="card-text">@coupon.CouponType?.Description</p>
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-muted">優惠券代碼</span>
+                                    <code>@coupon.CouponCode</code>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-muted">獲得時間</span>
+                                    <small>@coupon.AcquiredTime.ToString("yyyy/MM/dd HH:mm")</small>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="text-muted">狀態</span>
+                                    <span class="badge bg-@(coupon.IsUsed ? "secondary" : "success")">
+                                        @(coupon.IsUsed ? "已使用" : "未使用")
+                                    </span>
+                                </div>
+                                @if (!coupon.IsUsed)
+                                {
+                                    <button class="btn btn-outline-primary w-100" onclick="copyCouponCode('@coupon.CouponCode')">
+                                        複製代碼
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-center">
+            <p class="text-muted">暫無優惠券</p>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function copyCouponCode(code) {
+            navigator.clipboard.writeText(code).then(function() {
+                alert('優惠券代碼已複製到剪貼板');
+            }, function(err) {
+                alert('複製失敗，請手動複製：' + code);
+            });
+        }
+    </script>
+}

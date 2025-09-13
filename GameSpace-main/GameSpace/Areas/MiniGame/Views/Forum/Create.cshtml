@@ -1,0 +1,41 @@
+@model GameSpace.Models.Forum
+@{
+    ViewData["Title"] = "發表新討論";
+}
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">發表新討論</h1>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label">標題</label>
+                            <input asp-for="Title" class="form-control" placeholder="請輸入討論標題" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Content" class="form-label">內容</label>
+                            <textarea asp-for="Content" class="form-control" rows="10" placeholder="請輸入討論內容"></textarea>
+                            <span asp-validation-for="Content" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Index" class="btn btn-outline-secondary">取消</a>
+                            <button type="submit" class="btn btn-primary">發表討論</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

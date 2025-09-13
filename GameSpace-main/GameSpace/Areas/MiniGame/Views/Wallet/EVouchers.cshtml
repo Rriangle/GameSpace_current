@@ -1,0 +1,65 @@
+@model List<GameSpace.Models.EVoucher>
+@{
+    ViewData["Title"] = "我的禮券";
+}
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">我的禮券</h1>
+
+    @if (Model?.Any() == true)
+    {
+        <div class="row">
+            @foreach (var evoucher in Model)
+            {
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 @(evoucher.IsUsed ? "opacity-50" : "")">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">@evoucher.EVoucherType?.Name</h5>
+                            <p class="card-text">@evoucher.EVoucherType?.Description</p>
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-muted">禮券代碼</span>
+                                    <code>@evoucher.EVoucherCode</code>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-muted">獲得時間</span>
+                                    <small>@evoucher.AcquiredTime.ToString("yyyy/MM/dd HH:mm")</small>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="text-muted">狀態</span>
+                                    <span class="badge bg-@(evoucher.IsUsed ? "secondary" : "warning")">
+                                        @(evoucher.IsUsed ? "已使用" : "未使用")
+                                    </span>
+                                </div>
+                                @if (!evoucher.IsUsed)
+                                {
+                                    <button class="btn btn-outline-warning w-100" onclick="copyEVoucherCode('@evoucher.EVoucherCode')">
+                                        複製代碼
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-center">
+            <p class="text-muted">暫無禮券</p>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function copyEVoucherCode(code) {
+            navigator.clipboard.writeText(code).then(function() {
+                alert('禮券代碼已複製到剪貼板');
+            }, function(err) {
+                alert('複製失敗，請手動複製：' + code);
+            });
+        }
+    </script>
+}

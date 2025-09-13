@@ -1,0 +1,67 @@
+@model List<GameSpace.Models.EVoucher>
+@{
+    ViewData["Title"] = "禮券管理";
+}
+
+<div class="container-fluid">
+    <h1 class="h3 mb-4">禮券管理</h1>
+
+    <div class="card shadow">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">禮券列表</h6>
+        </div>
+        <div class="card-body">
+            @if (Model?.Any() == true)
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>禮券ID</th>
+                                <th>禮券代碼</th>
+                                <th>用戶</th>
+                                <th>類型</th>
+                                <th>獲得時間</th>
+                                <th>狀態</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var evoucher in Model)
+                            {
+                                <tr>
+                                    <td>@evoucher.EVoucherId</td>
+                                    <td><code>@evoucher.EVoucherCode</code></td>
+                                    <td>@evoucher.User?.Username</td>
+                                    <td>@evoucher.EVoucherType?.Name</td>
+                                    <td>@evoucher.AcquiredTime.ToString("yyyy/MM/dd HH:mm")</td>
+                                    <td>
+                                        <span class="badge bg-@(evoucher.IsUsed ? "secondary" : "warning")">
+                                            @(evoucher.IsUsed ? "已使用" : "未使用")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="viewEVoucherDetails(@evoucher.EVoucherId)">查看詳情</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p class="text-muted text-center">暫無禮券</p>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function viewEVoucherDetails(evoucherId) {
+            // 這裡可以實現查看禮券詳情的邏輯
+            alert('查看禮券詳情功能開發中，禮券ID: ' + evoucherId);
+        }
+    </script>
+}
