@@ -107,6 +107,9 @@ namespace GameSpace.Data
             modelBuilder.Entity<EVoucher>().HasKey(ev => ev.EVoucherId);
             modelBuilder.Entity<WalletHistory>().HasKey(wh => wh.HistoryId);
 
+            // 效能優化：資料庫索引配置
+            ConfigureIndexes(modelBuilder);
+
             // 設定外鍵關係
             modelBuilder.Entity<UserIntroduce>()
                 .HasOne(ui => ui.User)
@@ -162,6 +165,159 @@ namespace GameSpace.Data
                 .HasOne(wh => wh.User)
                 .WithMany(u => u.WalletHistories)
                 .HasForeignKey(wh => wh.UserId);
+        }
+
+        private void ConfigureIndexes(ModelBuilder modelBuilder)
+        {
+            // 用戶相關索引
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.UserAccount)
+                .IsUnique()
+                .HasDatabaseName("IX_Users_UserAccount");
+
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.UserEmail)
+                .IsUnique()
+                .HasDatabaseName("IX_Users_UserEmail");
+
+            modelBuilder.Entity<UserIntroduce>()
+                .HasIndex(ui => ui.UserNickName)
+                .IsUnique()
+                .HasDatabaseName("IX_UserIntroduces_UserNickName");
+
+            modelBuilder.Entity<UserIntroduce>()
+                .HasIndex(ui => ui.Email)
+                .IsUnique()
+                .HasDatabaseName("IX_UserIntroduces_Email");
+
+            modelBuilder.Entity<UserIntroduce>()
+                .HasIndex(ui => ui.Cellphone)
+                .IsUnique()
+                .HasDatabaseName("IX_UserIntroduces_Cellphone");
+
+            // 寵物相關索引
+            modelBuilder.Entity<Pet>()
+                .HasIndex(p => p.UserId)
+                .HasDatabaseName("IX_Pets_UserId");
+
+            modelBuilder.Entity<Pet>()
+                .HasIndex(p => new { p.UserId, p.Level })
+                .HasDatabaseName("IX_Pets_UserId_Level");
+
+            // 小遊戲相關索引
+            modelBuilder.Entity<MiniGame>()
+                .HasIndex(mg => mg.UserId)
+                .HasDatabaseName("IX_MiniGames_UserId");
+
+            modelBuilder.Entity<MiniGame>()
+                .HasIndex(mg => mg.PetId)
+                .HasDatabaseName("IX_MiniGames_PetId");
+
+            modelBuilder.Entity<MiniGame>()
+                .HasIndex(mg => new { mg.UserId, mg.StartTime })
+                .HasDatabaseName("IX_MiniGames_UserId_StartTime");
+
+            modelBuilder.Entity<MiniGame>()
+                .HasIndex(mg => mg.Result)
+                .HasDatabaseName("IX_MiniGames_Result");
+
+            // 簽到相關索引
+            modelBuilder.Entity<UserSignInStats>()
+                .HasIndex(us => us.UserId)
+                .HasDatabaseName("IX_UserSignInStats_UserId");
+
+            modelBuilder.Entity<UserSignInStats>()
+                .HasIndex(us => new { us.UserId, us.SignTime })
+                .HasDatabaseName("IX_UserSignInStats_UserId_SignTime");
+
+            modelBuilder.Entity<UserSignInStats>()
+                .HasIndex(us => us.SignTime)
+                .HasDatabaseName("IX_UserSignInStats_SignTime");
+
+            // 錢包相關索引
+            modelBuilder.Entity<WalletHistory>()
+                .HasIndex(wh => wh.UserId)
+                .HasDatabaseName("IX_WalletHistories_UserId");
+
+            modelBuilder.Entity<WalletHistory>()
+                .HasIndex(wh => new { wh.UserId, wh.ChangeTime })
+                .HasDatabaseName("IX_WalletHistories_UserId_ChangeTime");
+
+            modelBuilder.Entity<WalletHistory>()
+                .HasIndex(wh => wh.ChangeType)
+                .HasDatabaseName("IX_WalletHistories_ChangeType");
+
+            // 優惠券相關索引
+            modelBuilder.Entity<Coupon>()
+                .HasIndex(c => c.UserId)
+                .HasDatabaseName("IX_Coupons_UserId");
+
+            modelBuilder.Entity<Coupon>()
+                .HasIndex(c => c.CouponCode)
+                .IsUnique()
+                .HasDatabaseName("IX_Coupons_CouponCode");
+
+            modelBuilder.Entity<Coupon>()
+                .HasIndex(c => new { c.UserId, c.IsUsed })
+                .HasDatabaseName("IX_Coupons_UserId_IsUsed");
+
+            // 論壇相關索引
+            modelBuilder.Entity<Thread>()
+                .HasIndex(t => t.ForumId)
+                .HasDatabaseName("IX_Threads_ForumId");
+
+            modelBuilder.Entity<Thread>()
+                .HasIndex(t => new { t.ForumId, t.UpdatedAt })
+                .HasDatabaseName("IX_Threads_ForumId_UpdatedAt");
+
+            modelBuilder.Entity<ThreadPost>()
+                .HasIndex(tp => tp.ThreadId)
+                .HasDatabaseName("IX_ThreadPosts_ThreadId");
+
+            modelBuilder.Entity<ThreadPost>()
+                .HasIndex(tp => new { tp.ThreadId, tp.CreatedAt })
+                .HasDatabaseName("IX_ThreadPosts_ThreadId_CreatedAt");
+
+            // 聊天相關索引
+            modelBuilder.Entity<ChatMessage>()
+                .HasIndex(cm => new { cm.SenderId, cm.ReceiverId })
+                .HasDatabaseName("IX_ChatMessages_SenderId_ReceiverId");
+
+            modelBuilder.Entity<ChatMessage>()
+                .HasIndex(cm => cm.SentAt)
+                .HasDatabaseName("IX_ChatMessages_SentAt");
+
+            // 商城相關索引
+            modelBuilder.Entity<OrderInfo>()
+                .HasIndex(oi => oi.UserId)
+                .HasDatabaseName("IX_OrderInfos_UserId");
+
+            modelBuilder.Entity<OrderInfo>()
+                .HasIndex(oi => new { oi.UserId, oi.OrderDate })
+                .HasDatabaseName("IX_OrderInfos_UserId_OrderDate");
+
+            modelBuilder.Entity<OrderInfo>()
+                .HasIndex(oi => oi.OrderStatus)
+                .HasDatabaseName("IX_OrderInfos_OrderStatus");
+
+            // 遊戲熱度相關索引
+            modelBuilder.Entity<GameMetricDaily>()
+                .HasIndex(gmd => new { gmd.GameId, gmd.MetricId, gmd.Date })
+                .IsUnique()
+                .HasDatabaseName("IX_GameMetricDailies_GameId_MetricId_Date");
+
+            modelBuilder.Entity<LeaderboardSnapshot>()
+                .HasIndex(ls => new { ls.Period, ls.Ts, ls.Rank })
+                .HasDatabaseName("IX_LeaderboardSnapshots_Period_Ts_Rank");
+
+            // 通知相關索引
+            modelBuilder.Entity<NotificationRecipient>()
+                .HasIndex(nr => new { nr.UserId, nr.IsRead })
+                .HasDatabaseName("IX_NotificationRecipients_UserId_IsRead");
+
+            modelBuilder.Entity<NotificationRecipient>()
+                .HasIndex(nr => nr.UserId)
+                .HasDatabaseName("IX_NotificationRecipients_UserId");
         }
     }
 }

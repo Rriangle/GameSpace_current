@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Serilog;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +26,22 @@ builder.Services.AddDbContext<GameSpaceDbContext>(options =>
 
 builder.Services.AddScoped<DataSeedingService>();
 
+// 快取服務配置
+builder.Services.AddMemoryCache();
+
+// Redis 快取服務（可選）
+var redisConnectionString = builder.Configuration.GetConnectionString("Redis");
+if (!string.IsNullOrEmpty(redisConnectionString))
+{
+    builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+        ConnectionMultiplexer.Connect(redisConnectionString));
+    builder.Services.AddScoped<ICacheService, RedisCacheService>();
+}
+else
+{
+    builder.Services.AddScoped<ICacheService, CacheService>();
+}
+
 // 註冊業務服務
 builder.Services.AddScoped<IPetService, PetService>();
 builder.Services.AddScoped<IWalletService, WalletService>();
@@ -32,6 +49,9 @@ builder.Services.AddScoped<ISignInService, SignInService>();
 builder.Services.AddScoped<IGameService, GameService>();
 builder.Services.AddScoped<IForumService, ForumService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+
+// 註冊效能監控服務
+builder.Services.AddScoped<IPerformanceService, PerformanceService>();
 
 // 設定 JWT 認證
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -69,6 +89,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseJwtMiddleware();
+app.UsePerformanceMonitoring();
 
 app.MapControllerRoute(
     name: "areas",

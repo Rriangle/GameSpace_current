@@ -1,6 +1,8 @@
 using GameSpace.Data;
 using GameSpace.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace GameSpace.Services
 {
@@ -22,25 +24,49 @@ namespace GameSpace.Services
     public class PetService : IPetService
     {
         private readonly GameSpaceDbContext _context;
+        private readonly ICacheService _cacheService;
+        private readonly IConfiguration _configuration;
+        private readonly ILogger<PetService> _logger;
 
-        public PetService(GameSpaceDbContext context)
+        public PetService(GameSpaceDbContext context, ICacheService cacheService, IConfiguration configuration, ILogger<PetService> logger)
         {
             _context = context;
+            _cacheService = cacheService;
+            _configuration = configuration;
+            _logger = logger;
         }
 
         public async Task<List<Pet>> GetPetsByUserIdAsync(int userId)
         {
-            return await _context.Pets
-                .Where(p => p.UserId == userId)
-                .OrderByDescending(p => p.CreatedAt)
-                .ToListAsync();
+            var cacheKey = $"pets_user_{userId}";
+            var cacheExpiration = TimeSpan.FromMinutes(_configuration.GetValue<int>("Cache:UserProfileExpirationMinutes", 60));
+
+            return await _cacheService.GetOrSetAsync(cacheKey, async () =>
+            {
+                _logger.LogDebug("從資料庫載入寵物資料: UserId={UserId}", userId);
+                
+                return await _context.Pets
+                    .Where(p => p.UserId == userId)
+                    .OrderByDescending(p => p.CreatedAt)
+                    .AsNoTracking()
+                    .ToListAsync();
+            }, cacheExpiration);
         }
 
         public async Task<Pet?> GetPetByIdAsync(int petId)
         {
-            return await _context.Pets
-                .Include(p => p.User)
-                .FirstOrDefaultAsync(p => p.PetId == petId);
+            var cacheKey = $"pet_{petId}";
+            var cacheExpiration = TimeSpan.FromMinutes(_configuration.GetValue<int>("Cache:UserProfileExpirationMinutes", 60));
+
+            return await _cacheService.GetOrSetAsync(cacheKey, async () =>
+            {
+                _logger.LogDebug("從資料庫載入寵物資料: PetId={PetId}", petId);
+                
+                return await _context.Pets
+                    .Include(p => p.User)
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(p => p.PetId == petId);
+            }, cacheExpiration);
         }
 
         public async Task<Pet> CreatePetAsync(Pet pet)
@@ -50,6 +76,12 @@ namespace GameSpace.Services
             
             _context.Pets.Add(pet);
             await _context.SaveChangesAsync();
+            
+            // 清除相關快取
+            await _cacheService.RemoveAsync($"pets_user_{pet.UserId}");
+            
+            _logger.LogInformation("建立新寵物: PetId={PetId}, UserId={UserId}", pet.PetId, pet.UserId);
+            
             return pet;
         }
 
@@ -58,6 +90,13 @@ namespace GameSpace.Services
             pet.UpdatedAt = DateTime.UtcNow;
             _context.Pets.Update(pet);
             await _context.SaveChangesAsync();
+            
+            // 清除相關快取
+            await _cacheService.RemoveAsync($"pet_{pet.PetId}");
+            await _cacheService.RemoveAsync($"pets_user_{pet.UserId}");
+            
+            _logger.LogInformation("更新寵物資料: PetId={PetId}, UserId={UserId}", pet.PetId, pet.UserId);
+            
             return pet;
         }
 
