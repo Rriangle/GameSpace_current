@@ -7,9 +7,11 @@ namespace GameSpace.Models
     public class UserWallet
     {
         [Key]
+        [Column("User_Id")]
         public int UserId { get; set; }
 
         [Required]
+        [Column("User_Point")]
         public int UserPoint { get; set; } = 0;
 
         // 導航屬性

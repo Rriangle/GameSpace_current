@@ -7,18 +7,22 @@ namespace GameSpace.Models
     public class User
     {
         [Key]
+        [Column("User_ID")]
         public int UserId { get; set; }
 
         [Required]
-        [StringLength(50)]
+        [StringLength(30)]
+        [Column("User_name")]
         public string UserName { get; set; } = string.Empty;
 
         [Required]
-        [StringLength(50)]
+        [StringLength(30)]
+        [Column("User_Account")]
         public string UserAccount { get; set; } = string.Empty;
 
         [Required]
-        [StringLength(255)]
+        [StringLength(30)]
+        [Column("User_Password")]
         public string UserPassword { get; set; } = string.Empty;
 
         [StringLength(100)]
@@ -27,14 +31,19 @@ namespace GameSpace.Models
         [StringLength(20)]
         public string? UserPhone { get; set; }
 
+        [Column("User_EmailConfirmed")]
         public bool UserEmailConfirmed { get; set; } = false;
 
+        [Column("User_PhoneNumberConfirmed")]
         public bool UserPhoneConfirmed { get; set; } = false;
 
+        [Column("User_AccessFailedCount")]
         public int UserAccessFailedCount { get; set; } = 0;
 
+        [Column("User_LockoutEnabled")]
         public bool UserLockoutEnabled { get; set; } = false;
 
+        [Column("User_LockoutEnd")]
         public DateTime? UserLockoutEnd { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

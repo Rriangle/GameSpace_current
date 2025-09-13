@@ -7,9 +7,11 @@ namespace GameSpace.Models
     public class Pet
     {
         [Key]
+        [Column("PetID")]
         public int PetId { get; set; }
 
         [Required]
+        [Column("UserID")]
         public int UserId { get; set; }
 
         [Required]
@@ -50,6 +52,7 @@ namespace GameSpace.Models
         public string SkinColor { get; set; } = "#ADD8E6";
 
         [Required]
+        [Column("SkinColorChangedTime")]
         public DateTime ColorChangedTime { get; set; } = DateTime.UtcNow;
 
         [Required]
@@ -60,12 +63,14 @@ namespace GameSpace.Models
         public DateTime BackgroundColorChangedTime { get; set; } = DateTime.UtcNow;
 
         [Required]
+        [Column("PointsChanged_SkinColor")]
         public int PointsChangedColor { get; set; } = 0;
 
         [Required]
         public DateTime PointsChangedTimeColor { get; set; } = DateTime.UtcNow;
 
         [Required]
+        [Column("PointsGained_LevelUp")]
         public int PointsGainedLevelUp { get; set; } = 0;
 
         [Required]
