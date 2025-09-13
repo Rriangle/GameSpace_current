@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  gamespace-app:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Staging
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=GameSpaceDatabase_Staging;User Id=sa;Password=${STAGING_DB_PASSWORD};TrustServerCertificate=true;MultipleActiveResultSets=true
+      - Jwt__Key=${STAGING_JWT_SECRET_KEY}
+      - Jwt__Issuer=${JWT_ISSUER}
+      - Jwt__Audience=${JWT_AUDIENCE}
+    ports:
+      - "8080:80"
+    volumes:
+      - ./logs/staging:/app/logs
+
+  sqlserver:
+    environment:
+      SA_PASSWORD: ${STAGING_DB_PASSWORD}
+    volumes:
+      - sqlserver_staging_data:/var/opt/mssql
+
+volumes:
+  sqlserver_staging_data:
+    driver: local
