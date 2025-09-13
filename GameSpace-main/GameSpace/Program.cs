@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Serilog;
 using StackExchange.Redis;
+using Microsoft.AspNetCore.DataProtection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,6 +54,31 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 // 註冊效能監控服務
 builder.Services.AddScoped<IPerformanceService, PerformanceService>();
 
+// 註冊安全性服務
+builder.Services.AddScoped<ISecurityService, SecurityService>();
+
+// 設定資料保護
+builder.Services.AddDataProtection()
+    .SetApplicationName("GameSpace")
+    .SetDefaultKeyLifetime(TimeSpan.FromDays(90));
+
+// 設定 Session
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SameSite = SameSiteMode.Strict;
+});
+
+// 設定 Cookie 安全性
+builder.Services.Configure<CookiePolicyOptions>(options =>
+{
+    options.CheckConsentNeeded = context => true;
+    options.MinimumSameSitePolicy = SameSiteMode.Strict;
+    options.Secure = CookieSecurePolicy.Always;
+});
+
 // 設定 JWT 認證
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -85,6 +111,15 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+// 安全性中間件
+app.UseSecurityHeaders();
+app.UseInputValidation();
+app.UseRateLimiting();
+app.UseCsrfProtection();
+
+app.UseSession();
+app.UseCookiePolicy();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
