@@ -151,12 +151,13 @@ var pet = fixture.Create<Pet>();
 - [x] GameController - 遊戲 API 端點
 - [x] WalletController - 錢包 API 端點
 
-### 未來擴展
-- [ ] 認證授權測試
-- [ ] 資料驗證測試
-- [ ] 錯誤處理測試
-- [ ] 效能測試
-- [ ] 安全性測試
+### 已實作擴展測試
+- [x] 認證授權測試 (AuthServiceTests)
+- [x] 資料驗證測試 (ValidationServiceTests)
+- [x] 錯誤處理測試 (ErrorHandlingServiceTests)
+- [x] 效能測試 (PerformanceServiceTests)
+- [x] 安全性測試 (SecurityServiceTests)
+- [x] 端對端測試 (UserJourneyTests)
 
 ## 🐛 除錯測試
 
