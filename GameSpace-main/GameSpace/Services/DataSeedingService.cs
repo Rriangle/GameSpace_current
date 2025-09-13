@@ -83,10 +83,11 @@ namespace GameSpace.Services
                     SkinColor = GetRandomColor(),
                     BackgroundColor = GetRandomBackgroundColor(),
                     LevelUpTime = DateTime.UtcNow.AddDays(-_random.Next(30)),
-                    ColorChangedTime = DateTime.UtcNow.AddDays(-_random.Next(30)),
+                    SkinColorChangedTime = DateTime.UtcNow.AddDays(-_random.Next(30)),
                     BackgroundColorChangedTime = DateTime.UtcNow.AddDays(-_random.Next(30)),
                     PointsChangedColor = _random.Next(0, 5000),
-                    PointsChangedTimeColor = DateTime.UtcNow.AddDays(-_random.Next(30)),
+                    PointsChangedTimeSkinColor = DateTime.UtcNow.AddDays(-_random.Next(30)),
+                    PointsChangedBackgroundColor = _random.Next(0, 5000),
                     PointsGainedLevelUp = _random.Next(0, 1000),
                     PointsGainedTimeLevelUp = DateTime.UtcNow.AddDays(-_random.Next(30))
                 });
@@ -217,7 +218,7 @@ namespace GameSpace.Services
                     PointsChangedTime = DateTime.UtcNow.AddDays(-_random.Next(30)),
                     ExpGained = _random.Next(0, 50),
                     ExpGainedTime = DateTime.UtcNow.AddDays(-_random.Next(30)),
-                    CouponGained = _random.Next(0, 5),
+                    CouponGained = _random.Next(0, 5).ToString(),
                     CouponGainedTime = DateTime.UtcNow.AddDays(-_random.Next(30))
                 });
             }
@@ -251,16 +252,15 @@ namespace GameSpace.Services
                     Result = result,
                     ExpGained = result == "Win" ? _random.Next(10, 100) : _random.Next(0, 20),
                     ExpGainedTime = DateTime.UtcNow.AddDays(-_random.Next(30)),
-                    PointsChanged = result == "Win" ? _random.Next(10, 100) : _random.Next(0, 20),
-                    PointsChangedTime = DateTime.UtcNow.AddDays(-_random.Next(30)),
-                    CouponGained = result == "Win" && _random.Next(2) == 0 ? _random.Next(1, 3) : 0,
+                    PointsGained = result == "Win" ? _random.Next(10, 100) : _random.Next(0, 20),
+                    PointsGainedTime = DateTime.UtcNow.AddDays(-_random.Next(30)),
+                    CouponGained = result == "Win" && _random.Next(2) == 0 ? _random.Next(1, 3).ToString() : "0",
                     CouponGainedTime = DateTime.UtcNow.AddDays(-_random.Next(30)),
                     HungerDelta = _random.Next(-30, 10),
                     MoodDelta = _random.Next(-20, 30),
                     StaminaDelta = _random.Next(-30, 10),
                     CleanlinessDelta = _random.Next(-20, 10),
                     StartTime = DateTime.UtcNow.AddDays(-_random.Next(30)),
-                    EndTime = DateTime.UtcNow.AddDays(-_random.Next(30)).AddMinutes(_random.Next(5, 60)),
                     Aborted = result == "Abort"
                 });
             }
