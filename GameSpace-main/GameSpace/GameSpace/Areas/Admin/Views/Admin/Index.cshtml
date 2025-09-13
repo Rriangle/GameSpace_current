@@ -1,0 +1,167 @@
+@{
+    ViewData["Title"] = "管理員儀表板";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">管理員儀表板</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="card bg-primary text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h4>@ViewBag.Stats.TotalUsers</h4>
+                                            <p>總用戶數</p>
+                                        </div>
+                                        <div>
+                                            <i class="fas fa-users fa-2x"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="@Url.Action("Users")" class="text-white">查看詳情 <i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-success text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h4>@ViewBag.Stats.TotalPets</h4>
+                                            <p>總寵物數</p>
+                                        </div>
+                                        <div>
+                                            <i class="fas fa-paw fa-2x"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="@Url.Action("Pets")" class="text-white">查看詳情 <i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-warning text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h4>@ViewBag.Stats.TotalMiniGames</h4>
+                                            <p>總遊戲數</p>
+                                        </div>
+                                        <div>
+                                            <i class="fas fa-gamepad fa-2x"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="@Url.Action("MiniGames")" class="text-white">查看詳情 <i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-info text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h4>@ViewBag.Stats.TotalCoupons</h4>
+                                            <p>總優惠券數</p>
+                                        </div>
+                                        <div>
+                                            <i class="fas fa-ticket-alt fa-2x"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="@Url.Action("Coupons")" class="text-white">查看詳情 <i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-3">
+                            <div class="card bg-secondary text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h4>@ViewBag.Stats.TotalEvouchers</h4>
+                                            <p>總電子券數</p>
+                                        </div>
+                                        <div>
+                                            <i class="fas fa-gift fa-2x"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="@Url.Action("Evouchers")" class="text-white">查看詳情 <i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-dark text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h4>@ViewBag.Stats.TotalWalletHistory</h4>
+                                            <p>總錢包記錄數</p>
+                                        </div>
+                                        <div>
+                                            <i class="fas fa-history fa-2x"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="@Url.Action("WalletHistory")" class="text-white">查看詳情 <i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-danger text-white">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h4>@ViewBag.Stats.TotalSignIns</h4>
+                                            <p>總簽到數</p>
+                                        </div>
+                                        <div>
+                                            <i class="fas fa-sign-in-alt fa-2x"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="@Url.Action("UserIntroduces")" class="text-white">查看詳情 <i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-light text-dark">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h4>@ViewBag.Stats.TotalUserIntroduces</h4>
+                                            <p>總用戶介紹數</p>
+                                        </div>
+                                        <div>
+                                            <i class="fas fa-comment fa-2x"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="@Url.Action("UserIntroduces")" class="text-dark">查看詳情 <i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

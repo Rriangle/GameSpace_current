@@ -1,91 +1,154 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-TW">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - GameSpace Admin</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/GameSpace.styles.css" asp-append-version="true" />
-    <!-- SB Admin CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/sb-admin-2@4.1.3/css/sb-admin-2.min.css" rel="stylesheet">
+    <title>@ViewData["Title"] - GameSpace 管理系統</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .sidebar {
+            min-height: 100vh;
+            background-color: #343a40;
+        }
+        .sidebar .nav-link {
+            color: #adb5bd;
+        }
+        .sidebar .nav-link:hover {
+            color: #fff;
+            background-color: #495057;
+        }
+        .sidebar .nav-link.active {
+            color: #fff;
+            background-color: #007bff;
+        }
+        .main-content {
+            margin-left: 0;
+        }
+        @media (min-width: 768px) {
+            .main-content {
+                margin-left: 250px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div id="wrapper">
-        <!-- Sidebar -->
-        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="@Url.Action("Index", "Home", new { area = "Admin" })">
-                <div class="sidebar-brand-text mx-3">GameSpace Admin</div>
-            </a>
-            <hr class="sidebar-divider my-0">
-            <li class="nav-item">
-                <a class="nav-link" href="@Url.Action("Index", "Home", new { area = "Admin" })">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Dashboard</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="@Url.Action("Index", "UserManagement", new { area = "Admin" })">
-                    <i class="fas fa-fw fa-users"></i>
-                    <span>User Management</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="@Url.Action("Index", "GameManagement", new { area = "Admin" })">
-                    <i class="fas fa-fw fa-gamepad"></i>
-                    <span>Game Management</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="@Url.Action("Index", "WalletManagement", new { area = "Admin" })">
-                    <i class="fas fa-fw fa-wallet"></i>
-                    <span>Wallet Management</span>
-                </a>
-            </li>
-        </ul>
-
-        <!-- Content Wrapper -->
-        <div id="content-wrapper" class="d-flex flex-column">
-            <!-- Main Content -->
-            <div id="content">
-                <!-- Topbar -->
-                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                        <i class="fa fa-bars"></i>
-                    </button>
-                    <ul class="navbar-nav ml-auto">
-                        <li class="nav-item dropdown no-arrow">
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Admin User</span>
-                                <img class="img-profile rounded-circle" src="https://source.unsplash.com/QAB-WJcbgJk/60x60">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- 側邊欄 -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <div class="text-center mb-4">
+                        <h4 class="text-white">GameSpace</h4>
+                        <small class="text-muted">管理系統</small>
+                    </div>
+                    
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "active" : "")" 
+                               href="@Url.Action("Index", "Admin")">
+                                <i class="fas fa-tachometer-alt"></i> 儀表板
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "Users" ? "active" : "")" 
+                               href="@Url.Action("Users", "Admin")">
+                                <i class="fas fa-users"></i> 用戶管理
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "Pets" ? "active" : "")" 
+                               href="@Url.Action("Pets", "Admin")">
+                                <i class="fas fa-paw"></i> 寵物管理
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "MiniGames" ? "active" : "")" 
+                               href="@Url.Action("MiniGames", "Admin")">
+                                <i class="fas fa-gamepad"></i> 遊戲管理
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "Coupons" ? "active" : "")" 
+                               href="@Url.Action("Coupons", "Admin")">
+                                <i class="fas fa-ticket-alt"></i> 優惠券管理
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "Evouchers" ? "active" : "")" 
+                               href="@Url.Action("Evouchers", "Admin")">
+                                <i class="fas fa-gift"></i> 電子券管理
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "WalletHistory" ? "active" : "")" 
+                               href="@Url.Action("WalletHistory", "Admin")">
+                                <i class="fas fa-history"></i> 錢包記錄
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "UserIntroduces" ? "active" : "")" 
+                               href="@Url.Action("UserIntroduces", "Admin")">
+                                <i class="fas fa-comment"></i> 用戶介紹審核
                             </a>
                         </li>
                     </ul>
-                </nav>
-
-                <!-- Begin Page Content -->
-                <div class="container-fluid">
-                    @RenderBody()
+                    
+                    <hr class="text-white">
+                    
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Index", "Home", new { area = "" })">
+                                <i class="fas fa-home"></i> 返回首頁
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Index", "Test", new { area = "MiniGame" })">
+                                <i class="fas fa-database"></i> 資料庫測試
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Index", "E2ETest", new { area = "MiniGame" })">
+                                <i class="fas fa-vial"></i> E2E測試
+                            </a>
+                        </li>
+                    </ul>
                 </div>
-            </div>
+            </nav>
 
-            <!-- Footer -->
-            <footer class="sticky-footer bg-white">
-                <div class="container my-auto">
-                    <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; GameSpace 2025</span>
+            <!-- 主要內容 -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">@ViewData["Title"]</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-download"></i> 匯出
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-upload"></i> 匯入
+                            </button>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-primary">
+                            <i class="fas fa-plus"></i> 新增
+                        </button>
                     </div>
                 </div>
-            </footer>
+
+                @if (TempData["Message"] != null)
+                {
+                    <div class="alert alert-@TempData["MessageType"] alert-dismissible fade show" role="alert">
+                        @TempData["Message"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                @RenderBody()
+            </main>
         </div>
     </div>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    <!-- SB Admin JS -->
-    <script src="https://cdn.jsdelivr.net/npm/sb-admin-2@4.1.3/js/sb-admin-2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -237,16 +237,23 @@ namespace GameSpace.Services
 
         private async Task SeedCoupons()
         {
-            var existingCount = await _context.Coupon.CountAsync();
+            var existingCount = await _context.Coupons.CountAsync();
             if (existingCount >= 200) return;
+
+            var users = await _context.Users.ToListAsync();
+            var couponTypes = await _context.CouponTypes.ToListAsync();
 
             var coupons = new List<Coupon>();
             for (int i = existingCount + 1; i <= 200; i++)
             {
+                var user = users[Random.Shared.Next(users.Count)];
+                var couponType = couponTypes[Random.Shared.Next(couponTypes.Count)];
+
                 coupons.Add(new Coupon
                 {
-                    CouponTypeID = _random.Next(1, 201),
-                    CouponName = $"Coupon{i}",
+                    UserId = user.UserId,
+                    CouponTypeId = couponType.CouponTypeId,
+                    CouponCode = GenerateCouponCode(),
                     CouponDescription = $"Description for Coupon{i}",
                     CouponPrice = _random.Next(10, 1000),
                     CouponStatus = _random.Next(2) == 0 ? "Active" : "Inactive",
@@ -476,6 +483,41 @@ namespace GameSpace.Services
             {
                 return (int)(285.69 * Math.Pow(1.06, level));
             }
+        }
+
+        private string GenerateCouponCode()
+        {
+            return $"COUPON{Random.Shared.Next(100000, 999999)}";
+        }
+
+        private string GenerateEvoucherCode()
+        {
+            return $"EVOUCHER{Random.Shared.Next(100000, 999999)}";
+        }
+
+        private string GenerateIntroduceContent()
+        {
+            var contents = new[]
+            {
+                "這是一個很棒的遊戲平台！",
+                "推薦給所有喜歡遊戲的朋友",
+                "功能豐富，介面友善",
+                "客服服務很好，推薦！",
+                "遊戲種類多，品質不錯"
+            };
+            return contents[Random.Shared.Next(contents.Length)];
+        }
+
+        private string GenerateRightType()
+        {
+            var types = new[] { "VIP", "Premium", "Basic", "Trial" };
+            return types[Random.Shared.Next(types.Length)];
+        }
+
+        private string GenerateTokenType()
+        {
+            var types = new[] { "Access", "Refresh", "API", "Session" };
+            return types[Random.Shared.Next(types.Length)];
         }
     }
 }

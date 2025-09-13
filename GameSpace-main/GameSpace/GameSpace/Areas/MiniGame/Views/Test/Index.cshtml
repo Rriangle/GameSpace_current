@@ -1,0 +1,133 @@
+@{
+    ViewData["Title"] = "資料庫測試";
+    Layout = "~/Areas/MiniGame/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">資料庫測試面板</h3>
+                </div>
+                <div class="card-body">
+                    @if (TempData["Message"] != null)
+                    {
+                        <div class="alert alert-@TempData["MessageType"] alert-dismissible fade show" role="alert">
+                            @TempData["Message"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>資料庫統計</h5>
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>表格名稱</th>
+                                        <th>記錄數</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Users</td>
+                                        <td>@ViewBag.Stats.Users</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Pets</td>
+                                        <td>@ViewBag.Stats.Pets</td>
+                                    </tr>
+                                    <tr>
+                                        <td>UserWallets</td>
+                                        <td>@ViewBag.Stats.UserWallets</td>
+                                    </tr>
+                                    <tr>
+                                        <td>UserSignInStats</td>
+                                        <td>@ViewBag.Stats.UserSignInStats</td>
+                                    </tr>
+                                    <tr>
+                                        <td>MiniGames</td>
+                                        <td>@ViewBag.Stats.MiniGames</td>
+                                    </tr>
+                                    <tr>
+                                        <td>WalletHistory</td>
+                                        <td>@ViewBag.Stats.WalletHistory</td>
+                                    </tr>
+                                    <tr>
+                                        <td>CouponTypes</td>
+                                        <td>@ViewBag.Stats.CouponTypes</td>
+                                    </tr>
+                                    <tr>
+                                        <td>EVoucherTypes</td>
+                                        <td>@ViewBag.Stats.EVoucherTypes</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Coupons</td>
+                                        <td>@ViewBag.Stats.Coupons</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Evouchers</td>
+                                        <td>@ViewBag.Stats.Evouchers</td>
+                                    </tr>
+                                    <tr>
+                                        <td>EvoucherTokens</td>
+                                        <td>@ViewBag.Stats.EvoucherTokens</td>
+                                    </tr>
+                                    <tr>
+                                        <td>EvoucherRedeemLogs</td>
+                                        <td>@ViewBag.Stats.EvoucherRedeemLogs</td>
+                                    </tr>
+                                    <tr>
+                                        <td>UserIntroduces</td>
+                                        <td>@ViewBag.Stats.UserIntroduces</td>
+                                    </tr>
+                                    <tr>
+                                        <td>UserRights</td>
+                                        <td>@ViewBag.Stats.UserRights</td>
+                                    </tr>
+                                    <tr>
+                                        <td>UserTokens</td>
+                                        <td>@ViewBag.Stats.UserTokens</td>
+                                    </tr>
+                                    <tr>
+                                        <td>UserSalesInformations</td>
+                                        <td>@ViewBag.Stats.UserSalesInformations</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>測試操作</h5>
+                            <div class="d-grid gap-2">
+                                <form asp-action="RunSeed" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                                        <i class="fas fa-seedling"></i> 執行資料庫種子服務
+                                    </button>
+                                </form>
+                                
+                                <form asp-action="TestSignInFlow" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-success btn-lg w-100">
+                                        <i class="fas fa-sign-in-alt"></i> 測試簽到流程
+                                    </button>
+                                </form>
+                                
+                                <a href="@Url.Action("Index", "UserSignInStats")" class="btn btn-info btn-lg w-100">
+                                    <i class="fas fa-calendar-check"></i> 前往簽到頁面
+                                </a>
+                                
+                                <a href="@Url.Action("Index", "UserWallet")" class="btn btn-warning btn-lg w-100">
+                                    <i class="fas fa-wallet"></i> 前往錢包頁面
+                                </a>
+                                
+                                <a href="@Url.Action("Index", "Pet")" class="btn btn-secondary btn-lg w-100">
+                                    <i class="fas fa-paw"></i> 前往寵物頁面
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
