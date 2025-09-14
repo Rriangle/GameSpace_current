@@ -164,7 +164,7 @@
 │   │   ├── Pet.cs
 │   │   ├── PlayerMarketOrderInfo.cs
 │   │   ├── PlayerMarketOrderTradepage.cs
-│   │   ├── PlayerMarketProductImg.cs
+│   │   ├── PlayerMarketProductImage.cs
 │   │   ├── PlayerMarketProductInfo.cs
 │   │   ├── PlayerMarketRanking.cs
 │   │   ├── PlayerMarketTradeMsg.cs
@@ -181,7 +181,7 @@
 │   │   ├── UserRights.cs
 │   │   ├── UserSalesInformation.cs
 │   │   ├── UserSignInStats.cs
-│   │   ├── UserTokens.cs
+│   │   ├── UserToken.cs
 │   │   ├── UserWallet.cs
 │   │   └── WalletHistory.cs
 │   ├── Program.cs
@@ -247,6 +247,7 @@
 ├── nginx
 │   └── nginx.conf
 ├── progress.json
+├── README.md
 ├── reports
 │   ├── file_tree.txt
 │   └── _latest
@@ -292,4 +293,4 @@
     ├── stop.sh
     └── update.sh
 
-56 directories, 237 files
+56 directories, 238 files
