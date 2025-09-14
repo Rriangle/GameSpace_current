@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace GameSpace.Models
 {
     [Table("PlayerMarketTradeMsg")]
-    public class PlayerMarketTradeMsg
+    public class PlayerMarketTradeMessage
     {
         [Key]
         public int TradeMsgId { get; set; }

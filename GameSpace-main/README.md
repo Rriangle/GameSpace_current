@@ -98,6 +98,45 @@ dotnet run
 - **Windows PowerShell**: 提供 PowerShell 等價腳本
 - **Docker**: 容器化環境，無需考慮平台差異
 
+### 環境變數設定
+
+#### 開發環境
+```bash
+# 複製環境變數範本
+cp .env.example .env
+
+# 編輯環境變數
+nano .env
+```
+
+#### 生產環境
+設定以下環境變數：
+
+```bash
+# 資料庫連線
+DB_SERVER=your-db-server
+DB_NAME=GameSpaceDB
+DB_USER=your-db-user
+DB_PASSWORD=your-db-password
+
+# Redis 連線
+REDIS_CONNECTION_STRING=your-redis-connection
+
+# JWT 設定
+JWT_SECRET_KEY=your-jwt-secret-key
+JWT_ISSUER=GameSpace
+JWT_AUDIENCE=GameSpace-Users
+
+# 其他設定
+ASPNETCORE_ENVIRONMENT=Production
+```
+
+#### Docker 環境
+```bash
+# 使用 docker-compose 時，環境變數會自動從 .env 檔案載入
+docker-compose up -d
+```
+
 詳細的技術文檔請參考 [GameSpace/docs/](GameSpace/docs/) 目錄。
 
 ## 專案狀態

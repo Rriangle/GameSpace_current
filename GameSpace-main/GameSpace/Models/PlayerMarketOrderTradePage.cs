@@ -28,6 +28,6 @@ namespace GameSpace.Models
         // 導航屬性
         [ForeignKey("POrderId")]
         public virtual PlayerMarketOrderInfo PlayerMarketOrderInfo { get; set; } = null!;
-        public virtual ICollection<PlayerMarketTradeMsg> PlayerMarketTradeMsgs { get; set; } = new List<PlayerMarketTradeMsg>();
+        public virtual ICollection<PlayerMarketTradeMessage> PlayerMarketTradeMsgs { get; set; } = new List<PlayerMarketTradeMessage>();
     }
 }
