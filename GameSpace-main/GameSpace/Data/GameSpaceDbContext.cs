@@ -15,7 +15,7 @@ namespace GameSpace.Data
         public DbSet<UserRights> UserRights { get; set; }
         public DbSet<UserWallet> UserWallets { get; set; }
         public DbSet<UserSignInStats> UserSignInStats { get; set; }
-        public DbSet<UserTokens> UserTokens { get; set; }
+        public DbSet<UserToken> UserTokens { get; set; }
         public DbSet<UserSalesInformation> UserSalesInformations { get; set; }
 
         // 寵物相關

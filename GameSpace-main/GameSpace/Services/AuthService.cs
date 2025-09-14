@@ -140,7 +140,7 @@ namespace GameSpace.Services
                     var refreshToken = await GenerateRefreshTokenAsync();
 
                     // 儲存 Refresh Token
-                    var userToken = new UserTokens
+                    var userToken = new UserToken
                     {
                         UserId = user.UserId,
                         Token = refreshToken,
@@ -207,7 +207,7 @@ namespace GameSpace.Services
                 var refreshToken = await GenerateRefreshTokenAsync();
 
                 // 儲存 Refresh Token
-                var userToken = new UserTokens
+                var userToken = new UserToken
                 {
                     UserId = user.UserId,
                     Token = refreshToken,
