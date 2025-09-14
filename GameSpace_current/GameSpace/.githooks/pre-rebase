@@ -1,0 +1,2 @@
+#!/bin/sh
+echo "❌ 禁止 rebase（維持 main 單線歷史）"; exit 1

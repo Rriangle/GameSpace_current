@@ -1,0 +1,13 @@
+#!/bin/sh
+b="$(git rev-parse --abbrev-ref HEAD)"
+[ "$b" = "main" ] || { echo "❌ 只允許推送 main"; exit 1; }
+ok=1
+while read local_ref local_sha remote_ref remote_sha
+do
+  case "$local_ref" in
+    refs/heads/main) : ;;
+    *) echo "❌ 禁止推送非 main：$local_ref"; ok=0;;
+  esac
+done
+[ "$ok" -eq 1 ] || exit 1
+exit 0

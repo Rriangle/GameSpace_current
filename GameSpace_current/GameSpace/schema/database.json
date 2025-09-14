@@ -2,7 +2,7 @@
   "meta": {
     "generated_at": "2025-09-12T14:57:08.715921Z",
     "source_files": [
-      "/mnt/data/unpacked_sql/database.sql"
+      "database.json (authoritative)"
     ],
     "tables": 75,
     "columns_total": 527,

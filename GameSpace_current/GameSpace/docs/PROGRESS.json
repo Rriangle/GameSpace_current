@@ -1,0 +1,10 @@
+{
+  "overall": 22,
+  "stages": {
+    "git_policy": 40,
+    "drift_audit": 20,
+    "legacy_purge": 80,
+    "build_test": 0
+  },
+  "updated_at": "2025-09-14T00:00:00Z"
+}
