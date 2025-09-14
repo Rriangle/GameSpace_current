@@ -72,7 +72,7 @@ namespace GameSpace.Data
         public DbSet<PlayerMarketProductInfo> PlayerMarketProductInfos { get; set; }
         public DbSet<PlayerMarketProductImage> PlayerMarketProductImgs { get; set; }
         public DbSet<PlayerMarketOrderInfo> PlayerMarketOrderInfos { get; set; }
-        public DbSet<PlayerMarketOrderTradepage> PlayerMarketOrderTradepages { get; set; }
+        public DbSet<PlayerMarketOrderTradePage> PlayerMarketOrderTradepages { get; set; }
         public DbSet<PlayerMarketTradeMsg> PlayerMarketTradeMsgs { get; set; }
         public DbSet<PlayerMarketRanking> PlayerMarketRankings { get; set; }
 

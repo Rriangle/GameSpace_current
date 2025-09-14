@@ -24,6 +24,6 @@ namespace GameSpace.Models
 
         // 導航屬性
         [ForeignKey("POrderTradepageId")]
-        public virtual PlayerMarketOrderTradepage PlayerMarketOrderTradepage { get; set; } = null!;
+        public virtual PlayerMarketOrderTradePage PlayerMarketOrderTradepage { get; set; } = null!;
     }
 }
