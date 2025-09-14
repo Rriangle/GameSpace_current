@@ -4,6 +4,15 @@
 ├── docker-compose.staging.yml
 ├── docker-compose.yml
 ├── Dockerfile
+├── docs
+│   ├── _archive
+│   │   └── 20250914-0214
+│   │       ├── ARCHIVE_INDEX.md
+│   │       ├── AUDIT.md
+│   │       ├── progress.json
+│   │       └── WIP.md
+│   ├── AUDIT.md
+│   └── WIP.md
 ├── GameSpace
 │   ├── appsettings.json
 │   ├── appsettings.Production.json
@@ -103,17 +112,14 @@
 │   ├── Data
 │   │   └── GameSpaceDbContext.cs
 │   ├── docs
-│   │   ├── AUDIT.md
 │   │   ├── DATABASE.md
 │   │   ├── DEPLOYMENT_CHECKLIST.md
 │   │   ├── DEPLOYMENT.md
 │   │   ├── MODULES.md
 │   │   ├── MONITORING.md
 │   │   ├── PERFORMANCE.md
-│   │   ├── PROGRESS.json
 │   │   ├── PROJECT_SUMMARY.md
-│   │   ├── SECURITY.md
-│   │   └── WIP_RUN.md
+│   │   └── SECURITY.md
 │   ├── GameSpace.csproj
 │   ├── Middleware
 │   │   ├── CsrfProtectionMiddleware.cs
@@ -240,6 +246,7 @@
 │       └── ci-cd.yml
 ├── nginx
 │   └── nginx.conf
+├── progress.json
 ├── reports
 │   ├── file_tree.txt
 │   └── _latest
@@ -285,4 +292,4 @@
     ├── stop.sh
     └── update.sh
 
-53 directories, 233 files
+56 directories, 237 files
