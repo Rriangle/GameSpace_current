@@ -84,7 +84,7 @@ namespace GameSpace.Services
                     _context.UserIntroduces.Add(userIntroduce);
 
                     // 建立用戶權限
-                    var userRights = new UserRights
+                    var userRights = new UserRight
                     {
                         UserId = user.UserId,
                         UserStatus = true,

@@ -55,7 +55,7 @@ namespace GameSpace.Models
 
         // 導航屬性
         public virtual UserIntroduce? UserIntroduce { get; set; }
-        public virtual UserRights? UserRights { get; set; }
+        public virtual UserRight? UserRights { get; set; }
         public virtual UserWallet? UserWallet { get; set; }
         public virtual ICollection<Pet> Pets { get; set; } = new List<Pet>();
         public virtual ICollection<MiniGame> MiniGames { get; set; } = new List<MiniGame>();

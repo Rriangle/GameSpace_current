@@ -12,7 +12,7 @@ namespace GameSpace.Data
         // 用戶相關
         public DbSet<User> Users { get; set; }
         public DbSet<UserIntroduce> UserIntroduces { get; set; }
-        public DbSet<UserRights> UserRights { get; set; }
+        public DbSet<UserRight> UserRights { get; set; }
         public DbSet<UserWallet> UserWallets { get; set; }
         public DbSet<UserSignInStats> UserSignInStats { get; set; }
         public DbSet<UserToken> UserTokens { get; set; }
