@@ -17,6 +17,7 @@ GameSpace-main
 │   ├── AUDIT.md
 │   ├── dialogue_after_run.txt
 │   ├── dialogue.txt
+│   ├── SPEC_SNAPSHOT_.txt
 │   └── WIP.md
 ├── .env.example
 ├── GameSpace
@@ -347,6 +348,7 @@ GameSpace-main
 │   ├── 00
 │   │   ├── 18a606876e982e2574c4edd096ce5414be34ae
 │   │   ├── 2f372285e467ba59e056d1d6ea329e7c20847b
+│   │   ├── 95996321d27d23e8edef40d40acb815e2ddc5d
 │   │   ├── d33a98a671b96b13edb9f6084c8b243eab22ba
 │   │   ├── dcd3fd8887ec53efd8e3f2c19b93473634e0be
 │   │   └── fc238e409ded311856c694bcf97c255154e2e6
@@ -410,6 +412,7 @@ GameSpace-main
 │   │   ├── 9a7288e7dc6f320d6e07a8f115ec7a05cd6d10
 │   │   ├── aab435e058aab60c30411545d37054cb119262
 │   │   ├── af7df013b1f6a14af8889dc75dd6429211171a
+│   │   ├── d9d916ec2e9a2a293b659144e017b2a275fadb
 │   │   └── f08d93d171fb410309a34efdcb2bb7b98afaac
 │   ├── 0c
 │   │   ├── 19fb84b93c0985f29fe82df5efcc06334a9381
@@ -423,6 +426,7 @@ GameSpace-main
 │   │   ├── a04e0d6bd4c54bfeb5b27473b38d3a78b58957
 │   │   └── d97f32e8ffeeb90c0f07c8d4c16125dc3fe7f1
 │   ├── 0e
+│   │   ├── 3cff65d0baf30adb9fd1556451ad764c4cbe3a
 │   │   ├── 4b7f6cfb7a11ecc54e64438b7f31fe89a01a0e
 │   │   └── 992474f3cba72d093669725f1e4e7a0fb25c45
 │   ├── 0f
@@ -440,12 +444,14 @@ GameSpace-main
 │   │   ├── 4c5cd607e387c1e067108d7ce87adb73be91be
 │   │   ├── 6c71cb3f7bc2653e9c2d79c5d5047c8252dba0
 │   │   ├── 7c71f4e1750cdd8c3862c30f943fb00669fc78
+│   │   ├── 8c106dd114231086a11c578ad97aaaae8c68c5
 │   │   ├── c93e62dd160739f3f873e294e533b5705faeb7
 │   │   ├── d2664497640eba3e3e11f4f0318488a65fb140
 │   │   └── fa28c73b21a6d7b7f91705fb0f0595ef6a04ac
 │   ├── 13
 │   │   ├── 2c5ab136a03b69ff6ecb805317af3db39ad6fb
 │   │   ├── 35bb5cef72a7f44eaa3ed4204a834ad798fd69
+│   │   ├── 9f0f8b6c5eaaf2e170cd20279df2158c844085
 │   │   ├── a9eea0b6a6e29d481a37195bd28905a735eda6
 │   │   └── f2349d768f035899adb8440901e1a143019c5a
 │   ├── 14
@@ -540,6 +546,7 @@ GameSpace-main
 │   │   └── fffbd7259ed749c6eb38bb121fb2621e2b1210
 │   ├── 27
 │   │   ├── 1ac82889ae57800b023cf2dd04e02d1e4aada3
+│   │   ├── 62b024020b4b7f1f7b705913ba4ab1eb776691
 │   │   ├── 8058cfdc8a8fb2999d67a4e65b6c3fa5faceeb
 │   │   ├── 8d86e4431913b165634f0d8789d7d4dd3e79ce
 │   │   ├── a2a3756472bf10b9125d03734fe355f92d5f8b
@@ -645,7 +652,8 @@ GameSpace-main
 │   ├── 38
 │   │   ├── 7501be77f63d6a9d465b1ff0128047c82bdbb5
 │   │   ├── c193ebad31ef2bad717f1371d71d871b9878e1
-│   │   └── c2d75154d680d8e8e8eade1ffd568246039cf5
+│   │   ├── c2d75154d680d8e8e8eade1ffd568246039cf5
+│   │   └── cef2fefa6744b5d8c24d20571e5414b37097ee
 │   ├── 39
 │   │   ├── 8e820a8febeb23ba736be00482a40106e5cc84
 │   │   ├── bd6f2cff7c7338c2b1347dddfa997d0e3a33ca
@@ -751,6 +759,7 @@ GameSpace-main
 │   │   ├── b5f957b25ff318f4174c56fe25611f779c5299
 │   │   └── dcd66116be211d22c09ac4dec3af337430dc27
 │   ├── 4b
+│   │   ├── 0cd967474d855ec75804d7f992b8224f1ae8bf
 │   │   ├── 1056bf1323fe3a0f01504238ef9da3ab999c17
 │   │   ├── 1bb87e62b8ac05445b9b29714e0584e0efbd9b
 │   │   ├── 25833199287d545d65e22810dd065b794e7ac0
@@ -763,6 +772,7 @@ GameSpace-main
 │   │   └── abcad0c845473facb81411bb0b32ae114f61f4
 │   ├── 4d
 │   │   ├── 2e3412f24c057015a3ee33e92a7ec195696fe8
+│   │   ├── 5f09e7dbf4fef4474a04c5c7228d0f23944dc5
 │   │   ├── 6100302124707963d86cf58b0acc6b955581b3
 │   │   ├── e5f15f3af7ef55abedbbadb6dd7fc144edf0d2
 │   │   └── f822e1a75ff5a223b5cfb85ece057c95bc858a
@@ -774,7 +784,8 @@ GameSpace-main
 │   ├── 4f
 │   │   ├── a9d85daeeec7f6e00924e3ffd87eff1ab34561
 │   │   ├── b51dfea8df9b24c0af7943ccd8255753f08d8f
-│   │   └── d9508848bc42143ed01209771be47a1900a743
+│   │   ├── d9508848bc42143ed01209771be47a1900a743
+│   │   └── f259247aa895ca28fa075a21ee81b33cd3e117
 │   ├── 50
 │   │   ├── bcafc410a378afa4b34731e25b2f3130b6370c
 │   │   ├── c6173510a43c918678a014753508c364fba414
@@ -795,6 +806,7 @@ GameSpace-main
 │   │   ├── b7b213b410d3d7b9cecd5f669170d80cd8ef91
 │   │   └── fa64b3937699412265223a298a370f86c97b7b
 │   ├── 53
+│   │   ├── 11d34f318af191bef62f87aaaaa70cbc18a2be
 │   │   ├── 6fbe03dd4ae61057bf979d37dfb67b3a76f7b2
 │   │   └── a9d3bec0470b6c59207a90b27f1e5119799a96
 │   ├── 54
@@ -837,6 +849,7 @@ GameSpace-main
 │   │   └── b383402dc43574b4e9b54196b7122fbca44555
 │   ├── 5b
 │   │   ├── 0827283893c7abdbb27b64d874da059dfd3405
+│   │   ├── 0bd3d1ad04b80cb7dd52b08f03e8d6b941ba54
 │   │   ├── 56da4333835cf7ad777fb9343cfa94d7c56512
 │   │   └── c07e71eac995ea710c27977640b1211ac2d321
 │   ├── 5c
@@ -1146,6 +1159,7 @@ GameSpace-main
 │   │   ├── bf1c2d2e6d0f5c6c741170b813f11a0da587ab
 │   │   └── c9fdab973cd08415774ea9adbc4b5344919d37
 │   ├── 90
+│   │   ├── 05d6b45c0fdb6519645b37713f05ef2b317da8
 │   │   ├── 295e9e112925131f07c868daec0fac38efdbc7
 │   │   ├── 3a3bd38e2ed1fcd72ac52130c3d78a54992f06
 │   │   ├── 48ec6944d623be6f2f4e1b4dd00d36b4186e9d
@@ -1158,6 +1172,7 @@ GameSpace-main
 │   ├── 91
 │   │   ├── 02e705e6a03d02f0d1f3c00e3cdffa9ad845a8
 │   │   ├── 1047d65182e02dd0645fb22e982eb4994d2afd
+│   │   ├── 1fdc2113ae42056b83fd69d4329a2a2f4b11be
 │   │   ├── 27ef55809699183a9c0d137c9cd14252b4bece
 │   │   ├── 82253dc9f7c6615ca59eef3ac267e6e491a710
 │   │   └── bae2f1c9cd9694e3ca569e50c01e8c1611b17a
@@ -1251,7 +1266,8 @@ GameSpace-main
 │   │   ├── 11e9838404b686899cf60509f19ea41a175363
 │   │   ├── edea1b531a816c29d334f6ca3099f4c2331145
 │   │   ├── ee3d80958f18416f2310e8ed3233d55dad46e5
-│   │   └── f8c629ed2ffd65ed7bd8880bf3a9499ce8e95c
+│   │   ├── f8c629ed2ffd65ed7bd8880bf3a9499ce8e95c
+│   │   └── fb6571f57339902db1d87406e0e3acf50f6f19
 │   ├── a2
 │   │   ├── 0907736ca9b843a4f1ed49cd2cc1a2d27112b2
 │   │   ├── 0e9b7c532fe1d909dd312207976fd97c33e3bb
@@ -1267,21 +1283,25 @@ GameSpace-main
 │   │   └── 910de07a848e09a38ed53df7c216168a959ed1
 │   ├── a5
 │   │   ├── 6187bb34963d4317b6657900b7f32499836e1d
+│   │   ├── e4509f6e6561b47088d1ddde43fe16285196e7
 │   │   └── f71887aa475604c95fdec2a7300bf0cb28071e
 │   ├── a6
 │   │   ├── 140b4bb2e9c05bad4b3e84d27a149acb20f475
 │   │   ├── 533bd83c3038b833cbc18c8c66db3a778b8b49
 │   │   ├── 63282b9afe4e8dd8b3e3255f5d6bab55212892
-│   │   └── 742dd57e97cd91d9475a3c1ff31d2cd369c245
+│   │   ├── 742dd57e97cd91d9475a3c1ff31d2cd369c245
+│   │   └── e6fcdb588364f258525892b0c46430f86389b6
 │   ├── a7
 │   │   ├── 23ee2e92ece6cb4778bd3f84411c7f94b6e9d6
 │   │   ├── 2ab74e202bd532bb20ed00f0800fe10bbe63f7
+│   │   ├── 3c86a01458b217657a0d3f25810337aa6a4e31
 │   │   ├── 607440e492c296a854dae0871ef3338fee3c55
 │   │   ├── 6d62b05fe9b84a0744d61c22ffb1cc70c99e10
 │   │   └── 795b2094f0ad408fa438c77ec8c0276bce40e6
 │   ├── a8
 │   │   ├── 5a5365e4e3ec84b949c7555a9cc0d610555ade
 │   │   ├── 5a9b8d5f169ebce48e75309ad249f52233d50c
+│   │   ├── 5ecae436092033d93a0b6e252f6fc52c7ae2a9
 │   │   └── c68d63c86ba76a0051d82be05cdc4c85bac121
 │   ├── a9
 │   │   ├── 327e58a02e9ce66478fb1946e3f4f10997e61e
@@ -1297,6 +1317,7 @@ GameSpace-main
 │   │   ├── 22ada6eb446e386d1782876c1d96e45b12069d
 │   │   ├── 28ad91ec0b8906f70becaf0f19c17253c313d5
 │   │   ├── c0dd51f22e00155157c303b84b453d19e0ecd4
+│   │   ├── c75fda62a64775b83903d7d9876dcb04e92e9a
 │   │   └── cd65ef375506275097790bee8ad0fad260ba32
 │   ├── ab
 │   │   ├── 3f825d15e47853eca17e611ad84308aafd9570
@@ -1404,6 +1425,7 @@ GameSpace-main
 │   │   └── ae054aaef21621c40c99109c97590e0d20e731
 │   ├── bf
 │   │   ├── 52334cc45c2950d369f2fe1ac8c257cc5fac5c
+│   │   ├── ab56f81dd4561e18410cbcf8b278e09e5ee5bc
 │   │   └── ef035c4c5646139060146e23fb69a0a83c0d3f
 │   ├── c0
 │   │   └── f9ed1f904c301b34052edf769b7a1274c9d562
@@ -1602,6 +1624,7 @@ GameSpace-main
 │   │   └── f4acd6dad5d26c0b9b55007ff23c2864636882
 │   ├── e3
 │   │   ├── 3ea6642855a4bae4dbb58631706f6d8b45eb18
+│   │   ├── 93a7a2ab7ba4d71a5a9c561b3178a1801689f1
 │   │   ├── b88f1eebe2a4478739779dbf19a287d18f7596
 │   │   ├── cff4abfae13634751c19715c1fb92804576a7e
 │   │   └── d3eb27f24feeef882144a29fbe046725c597bd
@@ -1622,7 +1645,8 @@ GameSpace-main
 │   │   ├── 8beefebb1d6b16c6d43b0885cdc7b7874a9c9e
 │   │   ├── 9de29bb2d1d6434b8b29ae775ad8c2e48c5391
 │   │   ├── c7fb245d6c22fa5a868c108c6ee488249d0c4b
-│   │   └── ee8531000fe9667f17c404c2e9143d1f052d16
+│   │   ├── ee8531000fe9667f17c404c2e9143d1f052d16
+│   │   └── fd82fc2bf6071d6c470c3de2487cb511e58c35
 │   ├── e7
 │   │   ├── 050738b20898bbf71832ff11f29c36e774b520
 │   │   ├── 22f12b551e9f33ac41d6d308898c52cc202e66
@@ -1660,6 +1684,7 @@ GameSpace-main
 │   │   ├── 91af32e20e73d69298466c309c53d1188220c8
 │   │   ├── a6afe81ec5766cb078f24fc8790ec9e750854f
 │   │   ├── ac81993701bcf4fff8993dc59c69700330955c
+│   │   ├── c8845a608d13a916067b16b4a8761ca310b527
 │   │   └── f8c7400525e2104826f8ca130e3a14b8fdc476
 │   ├── ec
 │   │   └── 652d1c1cf76aa98792280063f7b8cbf000043b
@@ -1784,4 +1809,4 @@ GameSpace-main
     │       └── main
     └── tags
 
-329 directories, 1453 files
+329 directories, 1478 files
