@@ -37,6 +37,67 @@ GameSpace 是一個結合遊戲討論與社群互動的綜合平台，採用 ASP
 
 ## 快速開始
 
+### 環境要求
+- **作業系統**: Windows/Linux/macOS
+- **.NET 版本**: .NET 8.0
+- **資料庫**: SQL Server 2019/2022
+- **Shell 環境**: 
+  - **Linux/macOS**: 原生 bash
+  - **Windows**: WSL2 或 Git Bash 或 PowerShell
+  - **容器**: Docker Desktop
+
+### 開發環境設定
+
+#### 1. 克隆專案
+```bash
+git clone <repository-url>
+cd GameSpace-main
+```
+
+#### 2. 資料庫設定
+```bash
+# 建立資料庫
+sqlcmd -S localhost -E -Q "CREATE DATABASE GameSpaceDB"
+
+# 或使用 PowerShell (Windows)
+sqlcmd -S localhost -E -Q "CREATE DATABASE GameSpaceDB"
+```
+
+#### 3. 執行專案
+```bash
+# 使用 bash (Linux/macOS/WSL)
+cd GameSpace
+dotnet restore
+dotnet build
+dotnet run
+
+# 或使用 PowerShell (Windows)
+cd GameSpace
+dotnet restore
+dotnet build
+dotnet run
+```
+
+#### 4. 腳本執行
+```bash
+# Linux/macOS/WSL
+./scripts/quick-deploy.sh
+./scripts/setup-database.sh
+
+# Windows PowerShell
+.\scripts\quick-deploy.ps1
+.\scripts\setup-database.ps1
+```
+
+### 跨平台腳本說明
+
+本專案包含多個 shell 腳本，支援以下執行環境：
+
+- **Linux/macOS**: 原生 bash 環境
+- **Windows WSL2**: 推薦使用 WSL2 執行 bash 腳本
+- **Windows PowerShell**: 提供 PowerShell 等價腳本
+- **Docker**: 容器化環境，無需考慮平台差異
+
 詳細的技術文檔請參考 [GameSpace/docs/](GameSpace/docs/) 目錄。
 
 ## 專案狀態

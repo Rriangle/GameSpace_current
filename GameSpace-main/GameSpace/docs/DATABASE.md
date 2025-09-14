@@ -4,6 +4,96 @@
 
 GameSpace 使用 Microsoft SQL Server 作為主要資料庫，包含 75 個資料表，完整覆蓋所有業務需求。資料庫設計遵循正規化原則，確保資料完整性和查詢效能。
 
+## 資料庫建置策略
+
+### 建置方式選擇
+
+本專案採用 **database.json + DataSeedingService** 方式建置資料庫，而非 EF Migrations。此策略的優點：
+- 避免 EF Migrations 的複雜性
+- 直接基於 schema/database.json 建立資料庫結構
+- 透過 DataSeedingService 統一管理種子資料
+- 更適合複雜的資料庫設計和大量種子資料
+
+### 建置流程
+
+#### 1. 環境準備
+```bash
+# 確保 SQL Server 已安裝並運行
+# 建立資料庫
+sqlcmd -S localhost -E -Q "CREATE DATABASE GameSpaceDB"
+```
+
+#### 2. 執行資料庫建置
+```bash
+# 進入專案目錄
+cd GameSpace
+
+# 建置專案
+dotnet build
+
+# 執行資料庫建置和種子資料匯入
+dotnet run --project GameSpace --environment Development
+```
+
+#### 3. 種子資料匯入時機
+- **開發環境**: 每次啟動應用程式時自動匯入
+- **測試環境**: 測試執行前自動匯入
+- **生產環境**: 手動執行種子資料匯入
+
+#### 4. 手動種子資料匯入
+```bash
+# 僅匯入種子資料（不重建資料庫結構）
+dotnet run --project GameSpace --environment Development --seed-only
+```
+
+### 替代方案：EF Migrations
+
+若需要恢復 EF Migrations，請執行以下步驟：
+
+#### 1. 建立 Migrations 根目錄
+```bash
+# 在 GameSpace 專案根目錄執行
+dotnet ef migrations add InitialCreate --context GameSpaceDbContext
+```
+
+#### 2. 初始化資料庫
+```bash
+# 建立資料庫並套用 Migrations
+dotnet ef database update --context GameSpaceDbContext
+```
+
+#### 3. 後續 Migrations 管理
+```bash
+# 新增 Migration
+dotnet ef migrations add MigrationName --context GameSpaceDbContext
+
+# 套用 Migration
+dotnet ef database update --context GameSpaceDbContext
+
+# 回滾 Migration
+dotnet ef database update PreviousMigrationName --context GameSpaceDbContext
+```
+
+### 資料庫連線設定
+
+#### appsettings.json
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=localhost;Database=GameSpaceDB;Trusted_Connection=true;TrustServerCertificate=true;"
+  }
+}
+```
+
+#### appsettings.Production.json
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=production-server;Database=GameSpaceDB;User Id=username;Password=password;TrustServerCertificate=true;"
+  }
+}
+```
+
 ### 資料庫規格
 - **資料庫名稱**: GameSpaceDB
 - **版本**: SQL Server 2019/2022
