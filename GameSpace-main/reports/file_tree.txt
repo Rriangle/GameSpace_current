@@ -14,6 +14,7 @@
 │   ├── AUDIT.md
 │   ├── dialogue_after_run.txt
 │   ├── dialogue.txt
+│   ├── SPEC_SNAPSHOT_.txt
 │   └── WIP.md
 ├── .env.example
 ├── GameSpace
@@ -303,4 +304,4 @@
     ├── stop.sh
     └── update.sh
 
-56 directories, 248 files
+56 directories, 249 files
