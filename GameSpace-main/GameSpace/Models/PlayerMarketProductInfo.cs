@@ -50,6 +50,6 @@ namespace GameSpace.Models
         public virtual User Seller { get; set; } = null!;
         [ForeignKey("ProductId")]
         public virtual ProductInfo? ProductInfo { get; set; }
-        public virtual ICollection<PlayerMarketProductImg> PlayerMarketProductImgs { get; set; } = new List<PlayerMarketProductImg>();
+        public virtual ICollection<PlayerMarketProductImage> PlayerMarketProductImgs { get; set; } = new List<PlayerMarketProductImage>();
     }
 }

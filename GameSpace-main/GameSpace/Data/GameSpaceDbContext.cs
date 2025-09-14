@@ -70,7 +70,7 @@ namespace GameSpace.Data
 
         // 玩家市場相關
         public DbSet<PlayerMarketProductInfo> PlayerMarketProductInfos { get; set; }
-        public DbSet<PlayerMarketProductImg> PlayerMarketProductImgs { get; set; }
+        public DbSet<PlayerMarketProductImage> PlayerMarketProductImgs { get; set; }
         public DbSet<PlayerMarketOrderInfo> PlayerMarketOrderInfos { get; set; }
         public DbSet<PlayerMarketOrderTradepage> PlayerMarketOrderTradepages { get; set; }
         public DbSet<PlayerMarketTradeMsg> PlayerMarketTradeMsgs { get; set; }
