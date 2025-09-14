@@ -163,7 +163,7 @@
 │   │   ├── OrderItem.cs
 │   │   ├── Pet.cs
 │   │   ├── PlayerMarketOrderInfo.cs
-│   │   ├── PlayerMarketOrderTradepage.cs
+│   │   ├── PlayerMarketOrderTradePage.cs
 │   │   ├── PlayerMarketProductImage.cs
 │   │   ├── PlayerMarketProductInfo.cs
 │   │   ├── PlayerMarketRanking.cs
@@ -178,7 +178,7 @@
 │   │   ├── ThreadPost.cs
 │   │   ├── User.cs
 │   │   ├── UserIntroduce.cs
-│   │   ├── UserRights.cs
+│   │   ├── UserRight.cs
 │   │   ├── UserSalesInformation.cs
 │   │   ├── UserSignInStats.cs
 │   │   ├── UserToken.cs
@@ -251,6 +251,8 @@
 ├── reports
 │   ├── file_tree.txt
 │   └── _latest
+│       ├── build_status.txt
+│       ├── ci_status.txt
 │       ├── db_table_count.txt
 │       ├── dotnet_build.txt
 │       ├── dotnet_test.txt
@@ -267,6 +269,7 @@
     ├── quick-backup.sh
     ├── quick-cleanup.sh
     ├── quick-debug.sh
+    ├── quick-deploy.ps1
     ├── quick-deploy.sh
     ├── quick-help.sh
     ├── quick-info.sh
@@ -286,6 +289,7 @@
     ├── restart.sh
     ├── restore-db.sh
     ├── restore.sh
+    ├── setup-database.ps1
     ├── setup.sh
     ├── ssl-setup.sh
     ├── start.sh
@@ -293,4 +297,4 @@
     ├── stop.sh
     └── update.sh
 
-56 directories, 238 files
+56 directories, 242 files
