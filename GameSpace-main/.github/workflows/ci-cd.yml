@@ -1,7 +1,7 @@
 name: CI/CD Pipeline
 on:
   push:
-    branches: [ main, dev, '**' ]
+    branches: [ main, dev, "**" ]
   pull_request:
 jobs:
   build-test:
@@ -10,13 +10,12 @@ jobs:
       - uses: actions/checkout@v4
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
+        with: { dotnet-version: "8.0.x" }
       - name: SAFE RESET 檢查
         run: |
           test -f docs/AUDIT.md && [ $(wc -c < docs/AUDIT.md) -eq 0 ]
           test -f docs/WIP.md   && [ $(wc -c < docs/WIP.md)   -eq 0 ]
-          tr -d '\n' < progress.json | grep -qx '{"version":"1.0","entries":[]}'
+          tr -d "\n" < progress.json | grep -qx "{\"version\":\"1.0\",\"entries\":[]}"
       - name: Restore & Build
         run: |
           dotnet restore
@@ -29,15 +28,10 @@ jobs:
       - name: 產生樹狀檔
         run: |
           if command -v tree >/dev/null; then
-            tree -a -I '.git|bin|obj|node_modules|artifacts' > reports/file_tree.txt
+            tree -a -I ".git|bin|obj|node_modules|artifacts" > reports/file_tree.txt
           else
-            find . -not -path '*/.git/*' | sort > reports/file_tree.txt
+            find . -not -path "*/.git/*" | sort > reports/file_tree.txt
           fi
       - name: 清理舊報表
         run: |
-          find reports -maxdepth 1 -type f -name 'file_tree_*.txt' -delete || true
-      - name: 上傳報表 Artifact（選擇性）
-        uses: actions/upload-artifact@v4
-        with:
-          name: reports
-          path: reports
+          find reports -maxdepth 1 -type f -name "file_tree_*.txt" -delete || true
