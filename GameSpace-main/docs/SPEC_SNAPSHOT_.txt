@@ -1,0 +1,711 @@
+=== SPEC SNAPSHOT  ===
+--- CONTRIBUTING_AGENT.txt (first 200 lines) ---
+// File: CONTRIBUTING_AGENT.txt
+GameSpace — CONTRIBUTING_AGENT.txt
+(Single Source of Truth for process, constraints, module coverage, area partition, runbook, CI/CD, and stage-gated testing)
+A) Start-of-Run Mandatory Reading & Drift Repair (READ THIS FIRST)
+Every time you start, you must re-read these four files, in this order:
+ * CONTRIBUTING_AGENT.txt (this file)
+ * old_0905.txt
+ * new_0905.txt
+ * database.json
+This prevents “spec drift.” If you detect any drift (your current or planned work conflicts with these sources), immediately enter Repair Mode:
+ * Stop adding new scope.
+ * Identify the drift (what conflicts with which source).
+ * Fix the code/docs/tests to comply with this file + old/new + database.json.
+ * Document the fix briefly in the next commit message (“WHY it drifted, HOW corrected”).
+ * Only then resume normal work.
+You are not allowed to proceed with any new changes until drift is repaired.
+0) Global Language Rule (Mandatory)
+All human-readable outputs must be Traditional Chinese (繁體中文).
+This includes:
+ * commit messages, PR descriptions
+ * logs/console output
+ * documentation/READMEs
+ * audit reports, progress/status lines
+ * UI copy/labels/placeholders
+ * and all code comments (C#, Razor, JS/TS, SQL comments, XML doc).
+Do NOT translate or localize code identifiers (class/method/variable names), file paths, or SQL/CLI keywords.
+1) Authority & Arbitration (90% / 10%)
+The three sources are: old_0905.txt, new_0905.txt, and database.json.
+Rule: old_0905.txt + new_0905.txt together describe ~90% of the business spec.
+For the remaining ~10% gaps or conflicts, database.json is the final authority.
+→ Reconcile terms across old/new line-by-line. When ambiguous, take database.json as the ground truth, and note this decision in your commit message.
+2) Visual & Front-End References (put up front)
+ * Public (front site): follow index.txt for layout/interaction (Bootstrap-based).
+ * Admin (back office): use SB Admin (third-party library; do not modify vendor files).
+Each module must declare its UI affiliation (Admin or Public).
+Do not mix Admin and Public assets/styles in the same page or Area.
+Admin layout tip (C08): Extract sidebar/topbar into Area-level partials
+(e.g., Areas/<Area>/Views/Shared/_Sidebar.cshtml, _Topbar.cshtml). Do not edit vendor files.
+3) Continuous Run, WIP/Progress & Single-Line Status (put up front)
+Only stop when the token budget is nearly exhausted.
+Before you touch anything, read docs/WIP_RUN.md (append-only) and docs/PROGRESS.json (per-stage % + overall).
+On START and on STOP, print exactly one status line (and nothing else):
+> 整體進度: <overall>% | 目前階段: <stage>% | 狀態: <short description>
+> 
+NEXT_RUN_PROMPT may be printed only if you completed ≥ 1 code diff and ≥ 1 commit this run.
+The NEXT_RUN_PROMPT must be one line in Traditional Chinese (繁體中文) that resumes the next precise step.
+Delta Plan (C16): Before STOP, append your next mini-plan to docs/WIP_RUN.md → Next (targets, files, tests, risks/assumptions). Do not print the Delta Plan to console.
+4) Master Kickoff Command (paste every run)
+> Read and follow CONTRIBUTING_AGENT.txt. Continue from last WIP. Work in small chunks (<=3 files, <=400 LOC). Only stop when token budget is nearly exhausted. On START and on STOP, print exactly one line: 整體進度: <overall>% | 目前階段: <stage>% | 狀態: <short description>.
+> 
+5) Delivery Format (Notebook/Diff, enforced)
+Deliver all changes in Notebook/Diff form.
+New file format:
+// File: <relative/path>
+<full file content>
+
+Existing files: provide minimal diff (unless a full file is explicitly requested).
+ * No shell commands (PowerShell/Bash/CMD), including redirection (>/>>).
+ * You may use shell locally for non-file-write tasks (e.g., launching, testing), but never include shell in deliverables.
+ * All human-readable explanations inside the diff must be Traditional Chinese (繁體中文) (C11).
+ * Per-batch limits: ≤ 3 files, ≤ 400 LOC. Then build/test → commit → proceed.
+6) Setup & Execution (local run)
+ * Install: Visual Studio 2022+ and SQL Server 2019/2022.
+ * Run ./database.json in SSMS → creates GameSpaceDatabase with initial data.
+ * Open the ASP.NET Core MVC solution in VS2022.
+ * Set appsettings.json connection string (e.g., DefaultConnection) to your SQL Server.
+   * No EF Migrations or schema edits; the schema lives in ./database.json.
+ * Build & Run. The Public site appears on localhost.
+ * Admin login (seeded): zhang_zhiming_01 / Password001@, li_xiaohua_02 / Password001@.
+ * Public check (sample): dragonknight88 / Password001@.
+7) Manual DB Setup & Run Workflow (agent must support)
+ * Seeder/Runner does not auto-run on startup; provide a manual entry point (callable code/admin endpoint).
+ * Provide a DB connectivity check endpoint (e.g., /healthz/db, returning { status:"ok" } or an error).
+ * Seeding must be idempotent, batched (≤ 1000 rows/batch), with Traditional Chinese (繁體中文) structured logs; failures can rollback/retry, with clear comments.
+ * README must include a “Manual DB initialization & local run” section and a brief troubleshooting list.
+...
+11) Database as Single Source of Truth (database.json rules)
+ * Only database.json defines the schema. No EF Migrations or alternate schemas.
+ * Use existing seed data as-is; do not overwrite/delete deterministic keys unless fixing a clear error (document why).
+ * Read queries should use AsNoTracking(); project aggregates to read models (avoid returning entities directly).
+11.1) Fake Data — 以繁體中文呈現，規則明確
+ * database.json already contains part of the fake data — use it directly.
+ * For missing data, the agent must read new_0905.txt, old_0905.txt, and database.json first, then generate realistic data that looks human (daily/weekly rhythms, peaks, revisits/churn, correlated behaviors).
+ * All generated data must be persisted with SQL INSERT into the database. No in-memory-only or cache-only data.
+ * Target size (simple rule): Every table should end up with exactly 200 rows.
+   * If a table has < 200, insert the missing rows up to exactly 200.
+   * If a table already has > 200, do not delete existing rows; add a DEMO-NOTE: in the commit message explaining the exception.
+   * Idempotency: reruns must not duplicate data (enforce via PK/natural key/UNIQUE). Batch size ≤ 1000.
+   * Random yet reproducible: prefer a global seed Demo.Seed + natural-key hashing (same key → same outputs; different keys → varied outputs).
+   * Constraints: all PK/FK/UNIQUE/CHECK/DEFAULT must pass.
+   * Realism: Traditional Chinese (繁體中文) text, plausible URLs/images (Unsplash/Lorem Picsum acceptable), amounts/frequencies with Zipf/log-normal flavor; inject a small rate of failures/refunds (0.5–2%) without breaking rules.
+...
+19) Documentation Deliverables (must-have; C18 “beginner-friendly”)
+ * README.md — overview, quick start, local run, structure (beginner-friendly)
+ * docs/DEPLOYMENT.md — GitHub Actions CI/CD, GCP deployment (Cloud Run + Cloud SQL for SQL Server and/or GCE), env vars & secrets table, SQL Server connectivity, Admin/Public build notes
+ * docs/MODULES.md — per-module features, routes/endpoints, DTO/OpenAPI refs, UI affiliation (Admin/Public)
+ * docs/DATABASE.md — tables from database.json, seed coverage rule (exactly 200 rows per table), relationships, constraints
+ * docs/OPERATIONS.md, docs/PERF_NOTES.md (Stage 7 outputs)
+20) Safety & Prohibited List
+ * ❌ Any schema source besides database.json (including migrations/ad-hoc scripts)
+...
+21) Runbook — Auto-Start on read CONTRIBUTING_AGENT.txt and begin
+ * Re-read A) Start-of-Run Mandatory Reading (this file + old_0905.txt + new_0905.txt + database.json).
+--- old_0905.txt (first 200 lines) ---
+GameSpace 遊戲論壇平台專案規格書
+〈術語表／名詞統一〉
+會員錢包系統術語
+•	禮券（E-voucher）：會員可扣會員點數獲得的電子券，用於兌換實體商品或折抵現金
+•	優惠券（Coupon）：官方商城專用的折扣券，僅限商城內使用
+•	會員點數 (Point)：系統內虛擬貨幣，用於兌換禮券、優惠券、購買寵物膚色（或背景色）
+簽到系統術語
+•	每日簽到：用戶每日可進行一次的簽到活動
+•	連續簽到：連續多日的簽到記錄
+•	簽到獎勵：簽到後獲得的會員點數、寵物經驗值、商城優惠券
+
+寵物系統術語
+•	史萊姆寵物：系統中的虛擬寵物，具有五維屬性
+•	五維屬性：飢餓、心情、體力、清潔、健康五個屬性值
+•	寵物經驗值：寵物升級所需的數值
+•	等級：寵物成長階段指標
+小遊戲系統術語
+•	小遊戲：系統內的小冒險遊戲
+•	冒險遊戲：與小遊戲同義
+•	遊戲次數限制：每日最多 3 次遊戲限制
+________________________________________
+技術規格（Technical Specifications）
+開發技術棧
+後端技術：
+•	框架：ASP.NET MVC + C#
+•	資料庫：SQL Server
+•	ORM：Entity Framework Core
+•	架構模式：三層式架構設計（Presentation Layer、Business Logic Layer、Data Access Layer）
+前端技術：
+•	模板引擎：Razor
+•	HTML/CSS/JavaScript：基礎前端技術
+•	UI 框架：Bootstrap
+•	JavaScript 庫：jQuery
+•	現代化支援：Vue.js、Tailwind CSS、shadcn/ui
+認證與授權：
+•	登入機制：Email、自訂帳號 + OAuth（Google、Facebook、Discord）
+•	會話管理：JWT Token 或 Session Cookie
+•	權限控制：基於角色的存取控制（RBAC）
+資料庫設計：
+•	資料庫類型：Microsoft SQL Server
+•	資料類型：使用 SQL Server 原生資料類型（int、nvarchar、datetime2、bit、decimal、varbinary(max) 等）
+•	索引策略：主鍵索引、唯一索引、複合索引
+•	外鍵約束：確保資料完整性
+•	中文註釋：所有資料表與欄位均需詳細中文註釋
+系統架構
+三層式架構：
+1.	表現層（Presentation Layer）：
+o	ASP.NET MVC Controllers
+o	Razor Views
+o	HTML/CSS/JavaScript 前端組件
+o	Vue.js 組件（支援）
+2.	業務邏輯層（Business Logic Layer）：
+o	各功能模組控制器（SignInController、PetController 等）
+o	業務規則驗證
+o	資料轉換與處理
+o	第三方服務整合
+3.	資料存取層（Data Access Layer）：
+o	Entity Framework Core
+o	Repository 模式（PetRepository、UserRepository 等）
+o	資料庫連線管理
+o	交易處理
+開發工具與環境
+開發環境：
+•	IDE：Visual Studio 2022 或 Visual Studio Code
+•	版本控制：Git（支援 GitHub 部署）
+•	資料庫管理：SQL Server Management Studio (SSMS)
+•	API 測試：Postman 或 Swagger UI
+測試框架：
+•	單元測試：xUnit 或 MSTest
+•	整合測試：ASP.NET Core Test Host
+•	端對端測試：Selenium WebDriver
+•	API 測試：REST Assured 或類似工具
+部署與監控：
+•	容器化：Docker（可選）
+•	CI/CD：GitHub Actions 或 Azure DevOps
+•	監控：Application Insights
+•	日誌：Serilog 或 NLog
+效能與擴展性
+效能要求：
+•	響應時間：頁面載入時間 < 3 秒
+•	API 響應：API 響應時間 < 1 秒
+•	並發處理：支援 1000+ 同時在線用戶
+•	資料庫查詢：複雜查詢執行時間 < 5 秒
+擴展性設計：
+•	水平擴展：支援多實例部署
+•	快取策略：Redis 或 Memory Cache
+•	資料庫優化：查詢優化、索引策略
+•	CDN：靜態資源 CDN 加速
+安全性要求
+資料安全：
+•	密碼加密：使用 bcrypt 或 PBKDF2 雜湊
+•	**資料傳輸：**HTTPS/TLS 1.2+
+•	**SQL 注入防護：**參數化查詢
+•	**XSS 防護：**輸入驗證與輸出編碼
+存取控制：
+•	**身份驗證：**多因子認證支援
+•	**授權控制：**基於角色的權限管理
+•	**API 安全：**Rate Limiting、API Key 驗證
+•	**審計日誌：**所有敏感操作記錄
+________________________________________
+前端風格規格（Frontend Style Specifications）
+設計系統
+色彩系統：
+•	主色調：玻璃風設計，支援多種主色切換
+o	預設主色：#7557ff（紫色）
+o	次要色：#34d2ff（藍色）
+o	成功色：#22c55e（綠色）
+•	**背景色：**漸層背景設計
+o	淺色模式：#eef3f8 到 #ffffff 的漸層
+o	深色模式：#0c111b 到 #0a0f18 的漸層
+•	文字色：
+o	主要文字：#1f2937（淺色）/ #e5edff（深色）
+o	次要文字：#64748b（淺色）/ #9fb1c9（深色）
+字體系統：
+•	字體族：system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif
+•	字體大小：16px 基礎，支援響應式縮放
+•	行高：1.65 倍行高
+間距系統：
+•	基礎間距：8px 網格系統
+•	元件間距：12px、16px、24px、32px
+•	頁面邊距：16px（手機）、24px（平板）、32px（桌面）
+元件設計
+按鈕設計：
+•	主要按鈕：漸層背景、圓角 12px、陰影效果
+•	次要按鈕：邊框樣式、透明背景
+•	連結按鈕：虛線邊框、透明背景
+•	狀態變化：hover 時上移 3px、縮放 1.01
+卡片設計：
+•	背景：玻璃風效果（backdrop-filter: blur(14px)）
+•	邊框：1px 實線、圓角 16px
+•	陰影：0 18px 40px rgba(17,24,39,.12)
+•	懸停效果：上移 3px、縮放 1.01
+表單設計：
+•	輸入框：圓角 12px、邊框樣式、聚焦時邊框變色
+•	下拉選單：與輸入框一致樣式
+•	標籤：左對齊、字重 600
+•	驗證訊息：紅色文字、圖示提示
+響應式設計
+斷點設定：
+•	手機：< 740px
+•	平板：740px - 1100px
+•	桌面：> 1100px
+網格系統：
+•	手機：單欄佈局
+•	平板：雙欄佈局
+•	桌面：多欄佈局（最多 6 欄）
+元件適配：
+•	導航欄：手機版摺疊選單
+•	卡片：響應式寬度調整
+•	表格：手機版水平滾動
+•	圖片：響應式縮放
+動畫與互動
+過渡動畫：
+•	持續時間：0.16s ease
+•	緩動函數：ease-in-out
+•	屬性：transform、box-shadow、filter
+載入動畫：
+•	骨架屏：內容載入時的佔位動畫
+•	進度條：操作進度指示
+•	**旋轉動畫：**載入中狀態
+微互動：
+•	按鈕回饋：點擊時縮放效果
+•	懸停效果：元件懸停時的視覺回饋
+•	焦點指示：鍵盤導航的焦點指示
+主題系統
+主題切換：
+•	淺色主題：預設主題
+•	深色主題：可切換的深色模式
+•	緊湊模式：減少間距的緊湊佈局
+主色切換：
+•	紫色主題：#7557ff（預設）
+•	藍色主題：#34d2ff
+•	綠色主題：#22c55e
+特殊效果
+玻璃風效果：
+•	背景模糊：backdrop-filter: blur(14px)
+•	透明度：rgba(255,255,255,.75)（淺色）/ rgba(22,30,48,.65)（深色）
+•	邊框：半透明邊框效果
+漸層背景：
+•	主背景：多層徑向漸層
+•	元件背景：線性漸層
+•	動態效果：支援動態漸層變化
+陰影系統：
+•	基礎陰影：0 18px 40px rgba(17,24,39,.12)
+•	深色模式：0 18px 42px rgba(0,0,0,.35)
+•	懸停陰影：增強陰影效果
+可近用性（Accessibility）
+鍵盤導航：
+•	焦點指示：清晰的焦點樣式
+•	Tab 順序：邏輯的 Tab 鍵順序
+•	快捷鍵：常用功能的快捷鍵支援
+螢幕閱讀器：
+•	語義化標籤：正確的 HTML 語義標籤
+•	ARIA 標籤：適當的 ARIA 屬性
+•	替代文字：圖片的替代文字
+色彩對比：
+•	文字對比：符合 WCAG AA 標準
+•	狀態指示：不依賴顏色的狀態指示
+•	高對比模式：支援高對比模式
+效能優化
+
+--- new_0905.txt (first 200 lines) ---
+GameSpace 遊戲論壇平台完整規格文件
+系統總覽與範圍
+
+GameSpace 是一個結合遊戲討論與社群互動的綜合平台，涵蓋會員系統、遊戲資訊追蹤、線上社群以及商務交易等功能。整個系統採用 MVC 架構實作，前端顯示層、業務邏輯層與資料存取層嚴格分離，使用者操作由 Controller 接收，再由 Service 處理業務規則，最後透過 Repository 存取資料庫。系統以三層式架構（Presentation/Business/Data Layer）設計，並透過 DTO 等物件在各層傳遞資料，提升模組化和維護性。基礎資料庫採用 Microsoft SQL Server，設計了多張資料表覆蓋會員資料、寵物屬性、遊戲論壇、交易訂單等核心資料（詳細結構見「資料表結構」章節）。
+
+系統功能範圍包含：會員註冊與認證、會員錢包（點數管理）、每日簽到獎勵、寵物養成系統、小遊戲冒險、官方商城（訂單管理、商品展示）、玩家自由市場（C2C 交易）、優惠券/電子禮券系統、遊戲熱度指標追蹤與排行榜、遊戲討論論壇、好友與群組社群、即時聊天、通知系統、收藏與按讚互動、管理後台權限控制等模組。
+
+系統範圍排除：實體商品物流配送（僅記錄訂單與數位交付，不處理實體運送）、手機行動 App（僅開發 Web 平台，未包含 App 部分）、多語言國際化（目前僅支援繁體中文 zh-Hant）、遊戲內容嵌入（僅追蹤外部遊戲數據，未內嵌可交互遊戲）。以上排除項目未在本版本中實作。
+
+術語定義
+
+為避免歧義，以下統一重要名詞術語：
+
+會員錢包系統術語：
+
+禮券（E-voucher）：會員可扣除會員點數兌換取得的電子禮券，用於兌換實體商品或折抵現金。
+
+優惠券（Coupon）：官方商城專用的折扣券，只能在官方商城內使用，例如免運券、折扣券等。
+
+會員點數（Point）：平台內的虛擬貨幣，可用於兌換禮券、優惠券，或購買寵物膚色/背景等虛擬商品。
+
+每日簽到系統術語：
+
+每日簽到：會員每日可進行一次的簽到操作。
+
+連續簽到：會員連續多日簽到所形成的簽到記錄。
+
+簽到獎勵：會員完成每日簽到後獲得的獎勵，包括會員點數、寵物經驗值或商城優惠券等。
+
+寵物系統術語：
+
+史萊姆寵物：平台提供的虛擬寵物，目前為可愛造型的史萊姆，具有五項屬性。
+
+五維屬性：指寵物的五項狀態值：飢餓、心情、體力、清潔、健康。
+
+寵物經驗值：寵物升級所需累積的經驗數值。
+
+等級：寵物成長階段的等級指標，等級提升可獲得獎勵。
+
+小遊戲系統術語：
+
+小遊戲：平台內的冒險小遊戲，玩家可派出寵物參與戰鬥。
+
+冒險遊戲：與“小遊戲”同義，指小遊戲冒險挑戰。
+
+遊戲次數限制：每日最多可進行 3 次小遊戲挑戰的限制。
+
+技術架構與開發環境
+
+後端技術棧：本專案採用 ASP.NET MVC + C# 作為主要後端框架。資料庫使用 Microsoft SQL Server，資料存取透過 Entity Framework Core (ORM) 實作，遵循 Repository 模式以分離資料庫操作。系統採用三層式架構，包括表現層（ASP.NET MVC 控制器與 Razor 視圖）、業務邏輯層（各功能模組的服務與控制器，例如 SignInController、PetController 等）以及資料存取層（Repository 和 EF Core）。前端部分使用 Razor 模板引擎搭配 HTML/CSS/JavaScript 開發，UI 框架採用 Bootstrap，並視需要整合現代化前端技術如 Vue.js、Tailwind CSS 等提升互動體驗。
+
+開發工具：開發環境使用 Visual Studio 2022 或 VS Code，版本控制使用 Git（GitHub），資料庫管理透過 SQL Server Management Studio (SSMS)。API 測試使用 Postman 或 Swagger UI 進行。自動化測試方面，單元測試使用 xUnit 或 MSTest，整合測試可使用 ASP.NET Core TestHost，端對端測試則可採用 Selenium WebDriver。部署方面，本專案可選用 Docker 進行容器化，並使用 GitHub Actions 或 Azure DevOps 建置 CI/CD。生產環境監控使用 Application Insights 等工具，日誌記錄採用 Serilog 或 NLog。
+
+資料庫設計：後端資料庫使用 SQL Server，資料類型採用 SQL Server 原生類型（int, nvarchar, datetime2, bit, decimal, varbinary(max) 等）。每張資料表均設計了適當的主鍵（多使用自增 INT 型）、唯一索引及必要的複合索引以優化查詢。所有外鍵關係均定義完整，以確保參考完整性；所有資料表與欄位具備詳細的中文註解以方便維護。
+
+認證與授權：系統支援多種登入方式，包括傳統 Email/帳號密碼登入以及 OAuth 第三方登入（例如 Google、Facebook、Discord）。登入成功後，伺服器簽發 JWT Token 或建立 Session Cookie 以維持使用者會話。系統實作基於角色的存取控制（RBAC），使用者與管理員的操作權限由其角色與權限設定決定。所有後端 API 均透過 [Authorize] 屬性檢查 JWT 權限與使用者角色，在進行敏感操作（如購物、留言、管理後台）前會驗證使用者是否具有相應的權限。若未通過權限驗證，API 將返回 HTTP 401（未授權）或 403（禁止存取）的錯誤。
+
+非功能性需求（NFR）
+
+效能要求：平台須確保良好的效能。頁面載入時間應低於 3 秒；REST API 的平均響應時間應低於 1 秒。系統需支援至少 1000 名以上的同時在線使用者，並發時系統保持穩定。對於複雜的資料查詢操作，應優化 SQL 或使用索引確保執行時間在 5 秒以內。系統前端採用漸進式加載與快取策略減少延遲。為應對高併發，系統可透過水平擴充（增加伺服器實例）來提高吞吐量，同時可使用 Redis 或 Memory Cache 進行快取減輕資料庫負載。靜態資源（圖片、JS/CSS）則可部署於 CDN 以加速全球訪問。
+
+安全性要求：系統高度重視安全。使用者密碼在資料庫中必須使用強雜湊（例如 bcrypt 或 PBKDF2）儲存，決不能以明文形式保存。所有資料傳輸必須經由 HTTPS（TLS 1.2 以上）加密通道進行，防止中間人攔截。後端對資料庫查詢採用參數化查詢，杜絕 SQL Injection 攻擊風險；前端與後端皆實施嚴格的輸入驗證和輸出編碼，防範 XSS 跨站腳本攻擊。身份驗證方面支援多因子驗證（2FA），例如 Email 確認或手機簡訊驗證。授權控制方面，採用 RBAC 管理使用者權限，並以最小權限原則配置各角色功能。為保障 API 安全，實作頻率限制（Rate Limiting）及 API Key 驗證（對內部 API）等機制。系統保存操作審計日誌：對所有敏感操作（如登入、交易、後台管理）皆記錄詳細日誌，以便於日後追蹤和審計。
+
+擴充性與維護：系統設計須具有高度擴充性，可隨專案需求演進進行模組擴充與升級。程式碼遵循SOLID原則，模組解耦以方便替換或重構。資料庫考慮將高頻日志或歷史資料進行分區或拆分（例如將聊天訊息依月份分表）來維持性能。系統提供容錯機制：關鍵操作包裹在資料庫交易中，若過程發生錯誤將回滾避免資料不一致。對第三方服務（如 OAuth、支付網關）調用設置超時與重試策略，避免依賴外部導致功能阻塞。
+
+前端設計與UI規範
+
+設計系統：前端介面採用玻璃風設計風格，支援亮色與暗色兩種主題。主色調為紫色 (#7557ff)，次要搭配藍色 (#34d2ff)；成功訊息色使用綠色 (#22c55e)。背景以漸層呈現：亮色模式下從#eef3f8 過渡到 #ffffff，暗色模式下從 #0c111b 過渡到 #0a0f18。主要文字顏色在亮色模式為 #1f2937，在暗色模式為 #e5edff，次要文字為 #64748b（亮）或 #9fb1c9（暗）。
+
+字體與版面：字體採用系統預設字型搭配思源黑體 (Noto Sans TC) 及微軟正黑等無襯線字體。基本字號為 16px，行高約為字號的 1.65 倍以確保易讀性。版面設計基於 8px 的網格系統控制間距，常用的內外間距依序為 12px、16px、24px、32px 等。頁面邊距在手機端為 16px，平板為 24px，桌面為 32px，以適配不同裝置尺寸。
+
+響應式與互動：整體 UI 採用響應式設計，確保在桌面、平板與手機等不同解析度裝置上介面均能良好顯示。針對較小螢幕，某些次要資訊欄位會自動隱藏或折疊，由使用者點擊按鈕展開查看。交互方面，大量採用 AJAX 或 Fetch 進行局部資料更新，提升用戶體驗的即時性。針對遊戲相關的動畫頁面，採用 CSS3 或 Canvas/WebGL 技術繪製，並使用 requestAnimationFrame 進行動畫渲染，以確保流暢度和效能。介面動效廣泛運用硬體加速（CSS Transitions/Transforms）減少重繪負擔，並結合音效增強沉浸感。
+
+
+會員認證與帳號系統
+
+功能描述：會員認證系統負責處理使用者的註冊、登入、身份驗證和權限控管。會員基本資料分散儲存在多個資料表中，包括 Users（帳號主檔）、User_Introduce（個人檔案）、User_Rights（權限設定）、UserTokens（登入/認證 Token 紀錄）等。新用戶註冊時需提供帳號、密碼、電子郵件、手機號碼、身份證字號、暱稱、出生日期等資訊，後端將驗證這些資訊的格式與唯一性（例如帳號、Email、電話號碼和身分證字號均需唯一）。若註冊資料通過驗證，系統會在 Users 表建立帳號記錄，並於 User_Introduce 表寫入對應的個人資訊。同時產生默認的權限設定(User_Rights)，例如 User_Status 設為正常（1）等。系統也會發送驗證信件或簡訊以確認 Email/手機。密碼在儲存前經過不可逆雜湊處理，確保資料安全。
+
+Users 資料表的主要欄位包括：User_ID（主鍵）、User_Account（登入帳號，唯一）、User_Password（雜湊後的密碼）、User_EmailConfirmed/PhoneConfirmed（Email/手機驗證標誌）、User_AccessFailedCount（登入失敗次數）、User_LockoutEnabled（是否啟用鎖定）、User_LockoutEnd（帳戶鎖定截止時間）等。系統利用 User_AccessFailedCount 來記錄連續登入失敗次數；當其超過預設上限時，User_LockoutEnabled 會被設置鎖定且 User_LockoutEnd 欄位標記解鎖時間，在此之前使用者無法登入。UserTokens 表則記錄使用者的登入 Token（例如發行重設密碼連結的Token或第三方登入資訊），包含 Token 值、提供者（Provider）名稱、過期時間等欄位。這可用於實現例如 “記住我” 功能或 OAuth 資料記錄。
+
+權限與角色：每個會員在 User_Rights 表中對應一筆權限紀錄，欄位如 User_Status（使用者狀態，例如正常=1、停權=0）、ShoppingPermission（商城購物權限）、MessagePermission（論壇發文留言權限）、SalesAuthority（開啟自由市場銷售權限）等。系統根據這些欄位控制功能開關：例如 ShoppingPermission=0 的帳號將無法進行商城購物，MessagePermission=0 則禁止在論壇發表文章或留言。SalesAuthority=1 方可申請成為賣家上架商品（詳見商城系統）。管理後台有獨立的管理員帳號系統，ManagerData 表存儲管理員資訊，包括 Manager_Account、Manager_Password（同樣需雜湊）、Email 及鎖定相關欄位。管理員的角色權限由 ManagerRolePermission 表定義，每個角色有不同的許可權布林值欄位，例如 UserStatusManagement（管理使用者狀態權限）、ShoppingPermissionManagement（商城管理權限）、MessagePermissionManagement（論壇內容管理權限）、Pet_Rights_Management（寵物系統管理權限）等。ManagerRole 表則將管理員分配到一個或多個角色，實現多對多的角色指派。透過這套角色權限機制，管理後台也實現了 RBAC 控制，只有被賦予特定角色的管理員才能使用相應後台功能。
+
+資料庫關聯：Users 表作為會員的主檔，通過主鍵 User_ID 與多張表產生關聯。User_Introduce 和 User_Rights 皆以 User_ID 作為主鍵及外鍵，與 Users 表一對一對應。這表示每新增一個 Users 紀錄，必須同步新增對應的 User_Introduce 及 User_Rights 紀錄，以初始化使用者的個人資訊與權限。注意：管理員帳號與會員帳號資料表分開，ManagerData 以獨立的 Manager_Id 作主鍵，不會與 Users 表互相混用。
+
+註冊流程：用戶透過前端提供的註冊頁面填寫帳號、密碼及個人資訊提交註冊申請。前端進行基本的格式驗證（例如密碼強度、Email 格式）後，呼叫後端 API /api/auth/register 傳送用戶輸入資料。後端接收到請求後，執行以下步驟： (1) 檢查帳號、Email、手機等是否已被註冊；(2) 如果資料有效且未重複，建立 Users、User_Introduce、User_Rights 對應記錄；(3) 將密碼欄位使用安全雜湊後存儲；(4) 產生 Email 驗證信或手機驗證碼並發送給使用者；(5) 回傳註冊成功結果給前端。前端收到成功響應後，提示使用者查收驗證信完成後續驗證。若任一驗證步驟失敗（例如帳號重複或格式錯誤），後端將回傳對應錯誤訊息（如 400 Bad Request）並說明原因。註冊成功的帳號在驗證Email/手機前可能受限部分功能（User_EmailConfirmed 為0時可限制其發文或交易）。
+
+登入流程：使用者在登入頁面輸入帳號（或Email）與密碼後提交登入請求。後端收到後查詢 Users 表檢索相符的帳號，然後比對密碼雜湊是否正確。如果密碼錯誤，將累加該 User 的 User_AccessFailedCount 欄位計數；若連續失敗次數超出系統上限（例如 5 次），則將 User_LockoutEnabled 設為 1 並設定 User_LockoutEnd 為鎖定截止時間（如 15 分鐘後）。若驗證通過且帳號狀態正常 (User_Status=1)，後端生成 JWT Token 或建立 Session，並在回應中返回 Token 供前端保存（例如存於 localStorage 或 Cookie）。前端隨後帶著該 Token 進入系統，後續所有需要身份驗證的 API 請求都在 Header 附帶此 Token。後端採用中介軟體驗證 Token 的有效性及解析其中的 UserID，繼而加載使用者資料與權限。若帳號被鎖定或停權 (User_Status=0 或鎖定尚未解除)，登入請求將被拒絕並返回相應錯誤（如帳號已停權或暫時鎖定）。
+
+權限控管流程：所有經過身份驗證的後端 API 都會根據使用者的權限決定是否授權執行。例如，當一般會員嘗試存取管理後台功能時，由於缺乏管理員角色，其請求將被拒絕返回 HTTP 403。再如，使用者在商城購物結帳時，系統會檢查該用戶的 User_Rights.ShoppingPermission 是否為 1；若為 0 則禁止下單操作並返回錯誤訊息。類似地，論壇發文時檢查 MessagePermission 欄位，無權者則顯示無法發言提示。管理員登入後，系統會核對其 ManagerRole 設定，決定顯示哪些後台功能選單：例如只有擁有 Pet_Rights_Management 權限的管理員才能進入寵物系統管理介面。此外，對於使用者之間的互動，如加好友或發送訊息，後端會檢查雙方關係與封鎖狀態（Relation.Status）；若發現目標用戶將發送者封鎖，則拒絕聊天訊息送達。所有未通過授權的操作都會被記錄到審計日誌，以備日後檢查。
+
+使用流程（會員註冊與登入）：
+
+帳號註冊：小明透過首頁的「註冊」按鈕進入註冊頁，按照提示輸入帳號、密碼、Email 等必要資訊並提交。系統即時檢查他填寫的帳號是否已被使用，以及密碼強度是否符合要求（例如至少8字元，包含大小寫與數字）。小明提交後，後端成功建立他的會員帳戶，並立即發出一封驗證信到他提供的 Email。小明在信中點擊驗證連結，系統確認後將他的 EmailConfirmed 狀態標記為已驗證。此時，小明的帳號就完全啟用了。
+
+帳號登入：小明返回網站點擊「登入」，輸入剛才註冊的帳號和密碼嘗試登入。由於密碼正確且帳號已驗證，後端簽發了一組 JWT 身份憑證給前端。前端保存該 Token 後，自動將頁面跳轉到會員中心首頁，右上角顯示小明的暱稱來表明已登入狀態。此後，小明每次發出需要權限的操作請求（例如編輯個人資料、發表文章），瀏覽器都會自動附帶 JWT Token，後端驗證該 Token 有效且未過期，小明即可順利使用相關功能。如果小明連續幾次輸入錯誤密碼導致帳號被鎖定，前端會收到錯誤回應，提示「帳號已鎖定，請稍後再試」，小明必須等待鎖定時間過後或透過「忘記密碼」流程重置密碼才能重新登入。整個過程對小明而言是透明的，但在後端已經完整記錄了他的註冊、Email 驗證及每次登入嘗試的狀態，以確保安全性和可追溯性。
+
+會員錢包系統
+
+功能描述：會員錢包系統管理每個會員的虛擬點數餘額，以及與點數相關的交易歷史。在 GameSpace 平台中，每位會員都有一個專屬的虛擬貨幣帳戶，即會員點數 (Point) 帳戶，可用於兌換商城優惠券、禮券，或購買虛擬道具（例如寵物的膚色或背景主題）。會員錢包相關的核心資料表有兩個：User_Wallet 和 WalletHistory。User_Wallet 表是一對一錢包主檔，每個會員（User）對應唯一一筆錢包記錄。其欄位包括 User_Id（會員ID，主鍵也是外鍵，參照 Users.User_ID）和 User_Point（當前可用的點數餘額）。此表不再儲存任何優惠券或禮券的數量欄位——原先規劃的 Coupon_Number / EVoucher_Number 欄位已從錢包表移除，改為獨立的券類資料表進行管理。
+
+WalletHistory 表是錢包異動日誌，用來記錄每一次會員點數或券類資產的變動。其欄位包含 ChangeType（異動類型，例如 "Point" 點數、"Coupon" 優惠券、"EVoucher" 禮券）、PointsChanged（點數增減值，正值表示獲得，負值表示消費）、ItemCode（如涉及券則記錄券的代碼）、Description（文字描述此異動原因，例如「每日簽到+20點」或「兌換85折優惠券-500點」）以及 ChangeTime（異動發生時間）。WalletHistory 以 UserID 和 ChangeTime 建立索引，方便前台會員查詢自己的錢包明細，以及後台管理員進行審計。這允許用戶在「我的錢包明細」中按時間順序查看歷史交易紀錄，也讓管理員能針對特定用戶的交易紀錄進行調查。
+
+商業規則：會員點數被定義為不可為負的整數單位，通常 1 點等價於平台內的 1 單位虛擬幣。會員可透過多種方式獲得點數：每日簽到、參與小遊戲挑戰、官方活動獎勵或管理員人工發放獎勵等。每當發生這類事件，後端會在處理該事件的業務邏輯中，調用錢包服務增加相應的 User_Wallet.User_Point 值，並寫入一筆 WalletHistory 紀錄。例如，當用戶完成每日簽到時，系統會執行 User_Wallet.User_Point += 獲得點數，同時在 WalletHistory 表新增一行記錄，ChangeType="Point"，PointsChanged 設為該次新增的點數值，Description 填寫「每日簽到獲得+X點」。點數的消費則發生於用戶兌換優惠券或禮券時。當用戶在錢包介面選擇一項優惠券/禮券進行兌換，後端會先檢查 User_Wallet.User_Point 是否足夠支付該券所需點數成本 (PointsCost)。若餘額充足，則在一個資料庫交易中同時執行：扣減 User_Point 相應點數、在 Coupon 或 EVoucher 表為用戶新增一張券、並在 WalletHistory 新增一筆對應記錄。若點數不足，則錢包前端介面的兌換按鈕將被禁用或點擊後提示「餘額不足」，整個兌換請求不會提交。
+
+為確保資料一致性與防止並發問題，所有對 User_Wallet 點數的更新操作都應在資料庫交易 (Transaction) 中執行，並需要適當的鎖機制（例如行鎖定）來避免併發修改導致的競爭條件。更新點數時也必須嚴格檢查結果不能為負數：如果計算結果試圖將 User_Point 減至 0 以下，則該交易應該回滾並返回錯誤。例如，兩筆同時進行的扣點操作導致餘額負值，後端需檢測並中止其中一筆，確保 User_Point >= 0。
+
+前台功能：會員可在網站的「會員中心」或「我的錢包」頁面查看自己的點數餘額。介面上即時顯示 User_Point 數值，並提供點數變動明細查詢功能：點擊「查看收支明細」可拉取 WalletHistory 列表，顯示每筆點數或券的增減、時間及原因。同一介面也提供優惠券與禮券分頁，讓使用者查看自己目前持有的所有商城優惠券和電子禮券。在「我的優惠券」分頁，用戶可以看到每張優惠券的代碼、折扣內容、有效期限以及使用狀態（未使用或已使用）；在「我的禮券」分頁則列出電子禮券的代碼（一般以大寫英數字組成，可轉換為條碼或 QR Code 顯示）、禮券面額或內容描述、有效期限及使用狀態。這些券的資訊並非直接存放於 User_Wallet，而是透過查詢 Coupon 表和 EVoucher 表獲取，但在錢包UI中整合展示。前端錢包頁面也提供「點數兌換券」的操作入口：用戶可選擇想兌換的優惠券或禮券類型，系統會顯示所需點數成本，點擊確認後調用後端 API 進行兌換。如果兌換成功，新獲得的券會即時出現在對應的券列表中。錢包頁面在行動裝置上會自動隱藏某些較長的欄位（如完整券代碼）以保持版面整潔，使用者可點擊展開按鈕來查看完整資訊。
+
+後端服務：後端實作 WalletController 和 WalletService 來處理錢包相關的邏輯。例如，GET /api/wallet 用於獲取當前登入會員的錢包總覽資訊，包括點數餘額以及各類券的數量；GET /api/wallet/history 可查詢用戶的點數異動明細，支援分頁和篩選；POST /api/wallet/redeem-coupon 用於會員請求以點數兌換一張優惠券。後端在這些 API 中首先會驗證請求的 JWT Token 確認身份，再執行業務邏輯。在執行加點或扣點操作時，會調用 WalletService 中的方法，例如 AddPoints(userId, amount, description) 或 RedeemCoupon(userId, couponTypeId) 等。服務方法內部負責執行前述的交易機制，同步更新多張表並處理錯誤回滾。此外，管理員在後台也有介面可以調整用戶點數：AdminWalletController 提供例如 POST /api/admin/wallet/{userId}/adjust 的端點，允許超管手動增減特定會員的點數（例如客服補償或懲罰扣點），此類操作必須有管理權限且會寫入日誌。所有管理員對錢包的操作（例如發放點數、刪除不當獎勵）都需記錄在審計日誌中，以確保日後可追溯每筆異動由誰執行、執行原因。
+
+使用流程（錢包與點數）：
+小紅每天登入後首先查看自己的會員點數餘額，以便安排要參與的活動和兌換獎勵。她點擊網站頂部的「我的錢包」，立即看到頁面上顯示「當前點數：1200 點」。今天是活動最後一天，小紅決定用 500 點兌換一張「滿 1000 折 100」的商城優惠券。她切換到「我的優惠券」分頁，點擊「兌換優惠券」按鈕，彈出兌換選單，從中選擇了「滿額折抵100券」（需要500點）。系統檢查她目前的點數是否足夠（1200 ≥ 500），然後在彈出的確認視窗中提示「將扣除 500 點，兌換優惠券代碼：PROMO100，是否確認？」。小紅點擊確認後，前端呼叫後端完成扣點和發券操作。數秒內，小紅的點數餘額更新為 700 點，同時在「我的優惠券」列表中出現了一張新的優惠券代碼。她複製了該優惠券代碼，隨後前往商城選購商品。在結帳時，小紅將剛獲得的券碼貼上並點擊「套用」，訂單金額成功減免了 $100。
+
+隔日，小紅再次登入進行每日簽到。簽到完成後，系統自動增加了她的會員點數（例如 +20 點）並贈送了一張 85 折優惠券作為連續簽到7天的獎勵。小紅打開錢包明細查看，發現最新一筆記錄顯示：「每日簽到獲得 +20 點」。同時「我的優惠券」中也新增了一張 85 折券。幾天後，小紅參與小遊戲挑戰並贏得勝利，她的寵物獲得經驗的同時，自己的會員點數也增加了 50 點作為遊戲獎勵。她再次打開錢包，錢包餘額相應上升，並能在收支明細中看到「小遊戲勝利獲得 +50 點」的紀錄。整個錢包系統的使用對小紅而言十分直觀：點數餘額及時更新，收支明細清晰列出每次變動來源，優惠券/禮券亦集中管理，一目了然。目前小紅積累點數後可以自主決定如何消費，如兌換更多優惠券或禮券；若點數不足，她也知道需要參與更多活動或等待每日簽到來累積點數。整個過程中，所有點數變動皆受到系統嚴格管控，確保帳戶安全：例如連續快速的重複扣點請求會被攔截，避免惡意重複扣款。小紅對錢包系統的安全性和透明度感到信任，樂於持續參與平台活動以獲取和使用點數。
+
+每日簽到系統
+
+功能描述：每日簽到系統允許會員每天主動簽到一次，以獲取積分獎勵和其他獎品。該模組旨在提升用戶日常活躍度和留存率，透過連續簽到獎勵機制鼓勵用戶每日回訪。簽到相關資料記錄在 UserSignInStats 資料表中，每當用戶完成簽到動作，系統都會在此表新增一筆紀錄以保存簽到時間及獲得的獎勵。UserSignInStats 表的欄位包括：LogID（簽到日誌流水號，主鍵，自增）、UserID（會員 ID）、SignTime（簽到時間）、PointsGained（此次簽到獲得的點數量）、PointsGainedTime（點數發放時間）、ExpGained（此次簽到獲得的寵物經驗值）、ExpGainedTime（經驗值發放時間）、CouponGained（若當日活動贈送優惠券則記錄券碼，否則為 "0"）、CouponGainedTime（優惠券發放時間）。資料表上建立了複合索引 (UserID, SignTime)，可加速查詢某個會員在一段期間內的簽到記錄，或統計其連續簽到狀況。
+
+簽到規則：系統限制每位會員每天只能簽到一次。判斷依據為 UserSignInStats 裡是否已有該會員在「今天」的記錄。由於 SignTime 是精確到日期時間的欄位，可透過查詢當日 00:00 之後是否存在 UserID 的紀錄來判定。若已簽到，則拒絕重複簽到請求並返回錯誤訊息「今日已簽到」。成功簽到後，系統會根據定義的獎勵機制發放獎品。基本獎勵通常是固定點數，例如每日簽到獲得 +20 點（假設值）。此外，系統支援連續簽到獎勵：例如設定連續簽到滿7天時額外贈送 100 點和一張優惠券，連續簽到滿14天時可能贈送更高額的獎勵，以此類推。如果當天碰上特殊活動或節日，管理員也可配置特殊簽到獎勵，例如在特定日期簽到會獲得雙倍點數或限定禮券。所有這些規則都可在後台進行配置和調整。當用戶達成條件時，後端會自動將對應的獎勵值填入 UserSignInStats 的 PointsGained、ExpGained 或 CouponGained 欄位中。例如，小明連續簽到了第7天，系統在新增簽到記錄時同時寫入 PointsGained=20（基本點數）和 CouponGained="DISC20"（折扣券代碼），並在 Coupon 表為他新增一張 8折優惠券。為避免重複發獎，後端在計算獎勵時需檢查連續簽到天數是否剛好達成門檻且之前沒發過該獎勵。
+
+獎勵發放與整合：當用戶成功簽到後，後端將進行一系列原子操作：在一個資料庫 Transaction 中完成 (1) 新增 UserSignInStats 紀錄、(2) 更新會員點數餘額、(3) 更新寵物經驗值（若有綁定寵物）、(4) 如有優惠券獎勵則新增 Coupon 紀錄。具體而言，系統會執行 INSERT INTO UserSignInStats(...) 寫入簽到時間與各項獎勵值；接著執行 UPDATE User_Wallet SET User_Point = User_Point + PointsGained 增加會員錢包點數，同時透過 WalletHistory 紀錄本次簽到獲得點數的明細（Description 如「每日簽到獲得+20點」）；如果 ExpGained > 0，則執行 UPDATE Pet SET Experience = Experience + ExpGained 找到該會員的寵物累加經驗，並檢查是否達到升級門檻（如超過則提升等級並更新 Pet.Level 和 Pet.LevelUpTime 等）；如果 CouponGained 欄位不為 "0"，則表示需要發放優惠券，系統將從 CouponType 定義中找到對應的優惠券類型，生成唯一券碼，插入一筆新的 Coupon 記錄給該會員（UserID 對應，CouponCode 隨機生成，IsUsed=0 等），並將此券碼填寫回 UserSignInStats.CouponGained。上述所有操作在同一個交易中提交，以確保獎勵發放和簽到記錄的一致性。最後返回成功結果給前端，讓用戶端可以即時顯示「簽到成功，獲得 X 點」的提示。
+
+錯誤處理：若在簽到過程中某一步驟發生異常（例如資料庫連線中斷或新增 Coupon 失敗等），後端會回滾整個交易，以確保不會出現簽到記錄新增了但點數沒發放，或點數扣除但券沒給的情況。回滾後後端向前端返回一個錯誤代碼（如 CHECKIN001）和友好訊息。前端收到錯誤時，會提示用戶「簽到失敗，請稍後再試」之類的訊息。系統也會將錯誤細節記錄在伺服器日誌中，便於開發人員排查問題。
+
+後台管理：管理員在後台可以設定和調整簽到規則。例如透過 AdminCheckInController 介面配置每日簽到的基礎點數獎勵、各級連續簽到額外獎勵內容以及特殊日期的獎勵方案。若有需要，管理員也可在後台檢視所有用戶的簽到記錄（UserSignInStats 清單），並有權執行手動調整，例如「補簽」或修改某用戶的簽到次數。補簽通常需要扣除會員一定點數或使用特定補簽券才能執行：管理員可為用戶發放一張特殊優惠券作為補簽許可，讓用戶下次登入時可以使用該券補登昨天的簽到。若用戶因某些原因錯過多日簽到，管理員也能透過後台直接新增缺失日的 UserSignInStats 紀錄來補發相應獎勵（例如酌情發放點數），並將此操作記錄在歷程以資註明。所有後台對簽到資料的干預都必須慎重，並同步影響相關的累計獎勵狀態，確保用戶後續簽到的連續計算正確。
+
+使用流程（每日簽到）：
+
+執行簽到：早上，小明登入平台後，導航到「每日簽到」區域並點擊簽到按鈕。前端立即呼叫 POST /api/signin API 向後端發出簽到請求。
+
+後端檢查：後端收到請求，首先依據小明的 UserID 查詢當天是否已有簽到記錄（例如執行 SELECT * FROM UserSignInStats WHERE UserID = 小明ID AND SignTime >= 今天0點）。若發現已有紀錄，後端立刻回傳錯誤狀態，前端則彈出訊息「今日已簽到」，流程終止。若沒有紀錄，則表示可以簽到，後端進入下一步計算獎勵。
+
+計算獎勵：系統根據小明的情況計算此次簽到獎勵。預設情況下，小明可獲得 PointsGained = 20 點，如果他的帳號已有綁定寵物，則額外 ExpGained = 10（讓寵物獲得 10 點經驗）；再檢查小明是否已連續簽到多日。假設今天是他連續簽到的第7天，系統會在上述基本獎勵之外，額外增加 +100 點以及設定 CouponGained 為一張85折優惠券的代碼。這些獎勵值和代碼會暫存於計算結果中。
+
+資料庫更新：後端開啟資料庫交易，執行一系列更新：
+
+在 UserSignInStats 新增一筆簽到記錄：內容包括 SignTime=此刻時間、PointsGained=20（或120，含連續獎勵）、ExpGained=10、CouponGained=「PROMO15」（假設85折券代碼）等。
+
+更新 User_Wallet：將小明的 User_Point 增加對應的點數（假如共+120點）。
+
+更新 Pet：如果 ExpGained > 0，則找到小明的寵物資料，累加 Experience 值 10 點。檢查累積經驗是否超過升級所需，如是則寵物升級（Level += 1），並重置經驗或扣除升級所需部分，同時寵物的 LevelUpTime 設為現在，並因升級獲得對應獎勵點數（該點數也會順帶加入 User_Wallet 和 WalletHistory）。
+
+如果有 Coupon 獎勵，則在 Coupon 資料表為小明插入一筆新優惠券記錄，CouponCode 為事先計算的券碼「PROMO15」、CouponTypeID 對應85折券類型、UserID 為小明、IsUsed=0、AcquiredTime=現在。
+
+在 WalletHistory 插入一筆紀錄，記錄此次簽到導致的點數變動：ChangeType="Point", PointsChanged=+120, Description="每日簽到獲得+120點", ChangeTime=現在。
+所有操作成功後提交 Transaction，確保資料一致。
+
+結果返回：交易提交後，後端返回簽到成功的結果給前端。前端隨即更新UI：顯示「簽到成功！獲得120點積分，寵物經驗+10」的提示字樣，同時會員錢包餘額增加、寵物資訊更新，新的優惠券出現在小明的錢包券列表中。
+
+後續操作：由於小明已經連續簽到滿7天，他獲得的優惠券和額外點數獎勵將在下次簽到計算時重置連續天數（或按規則重新計算）。隔天，小明若繼續簽到，系統會重新從1開始計算連續天數，或按照設計規則進入下一個週期的累積計算。
+
+整個每日簽到流程中，系統將執行過程的重要資訊以通知形式告知用戶：例如當小明獲得優惠券時，除了畫面提示，通知中心也會收到一則「你已獲得優惠券：85折優惠券」的站內通知。此模組的實施有效提升了每日用戶訪問率，透過漸進式的獎勵使用戶樂於天天簽到，形成習慣。
+
+寵物養成系統
+
+功能描述：寵物系統讓會員可以飼養並培育一隻虛擬寵物（目前實裝的是可愛的「史萊姆」寵物）。每個會員最多擁有一隻專屬寵物。寵物具有五項基本屬性：飢餓 (Hunger)、心情 (Mood)、體力 (Stamina)、清潔 (Cleanliness)、健康 (Health)，所有屬性值範圍介於 0 至 100 之間。寵物同時具備等級 (Level) 和經驗值 (Experience)，等級提升可以解鎖新功能或稱號，經驗值則通過參與互動和遊戲累積。寵物系統的核心資料表為 Pet 表。每筆 Pet 表記錄對應一隻寵物，欄位包括 PetID（寵物ID，自增主鍵）、UserID（寵物所屬會員ID）、PetName（寵物暱稱）、Level（當前等級）、LevelUpTime（最後升級時間）、Experience（累計經驗值），以及五維屬性 Hunger, Mood, Stamina, Cleanliness, Health。此外還有寵物的外觀欄位，如 SkinColor（膚色，以HEX色碼表示）、SkinColorChangedTime（最後更換膚色的時間）、BackgroundColor（背景主題顏色或名稱）、BackgroundColorChangedTime（最後更換背景的時間）等。Pet 表也紀錄了最近一次升級獲得的點數獎勵 (PointsGained_LevelUp) 以及最近一次換膚/換背景花費的點數 (PointsChanged_SkinColor、PointsChanged_BackgroundColor)。
+
+等級與經驗機制：寵物升級所需經驗值可以根據等級成長公式 L(n) 定義，例如每升一級所需經驗呈線性或指數增長。當 Pet.Experience 累積達到目前等級的門檻值時，寵物等級 Level 自動 +1，經驗值歸零或扣除門檻值後的剩餘部分繼續累積。升級時系統更新 Pet.LevelUpTime 為當前時間，並可選擇性地給與會員一些獎勵，如點數獎勵或屬性提升。例如設計為每升級寵物都會讓主人獲得 50 會員點數，此時 PointsGained_LevelUp 欄位會記錄50，且系統會透過 WalletHistory 增加「寵物升級獲得+50點」的紀錄。寵物升級可能同時提升寵物的屬性上限或回復部分屬性值，具體規則可由系統調整。
+
+五維屬性的影響：寵物的 Hunger、Mood、Stamina、Cleanliness、Health 會隨時間推移或使用者互動而改變。平台預設會有自動衰減機制，例如每隔24小時寵物的飢餓值 +5（表示更餓了）、心情值 -3（長期未互動導致心情下降）等。同時，在用戶與寵物進行互動或參與小遊戲時，這些屬性也會即時變化（詳見下述互動與小遊戲部分）。屬性值有上下限約束：任何屬性不可低於0或高於100，當計算結果超出範圍時，後端需強制將其調整回邊界值。例如某屬性計算得出 -5 則設為 0，超出 100 則設為 100。如果某些屬性長期處於極端值（如飢餓=100表示非常餓），系統可以設定特殊懲罰或狀態，如寵物健康值下降甚至生病。當 Health 下降為 0（可能代表寵物因過度飢餓或生病而「虛弱」），可以限制用戶某些行為（例如禁止開始小遊戲直到寵物恢復健康）。這些規則的目的在於鼓勵用戶定期照顧寵物，例如餵食、洗澡、陪伴以維持其各項狀態。
+
+換膚色與背景：寵物外觀可由用戶自定義，包括更換寵物膚色（顏色）和背景主題。更換膚色屬於付費項目，用戶需要支付一定會員點數才可解鎖新的顏色。平台預設更換一次膚色需花費 2000 點會員積分。當用戶在前端選擇一種新顏色提交更換請求時，後端首先檢查他錢包點數是否>=2000。如足夠則扣除點數，將 Pet.SkinColor 更新為新顏色代碼，並寫入 Pet.SkinColorChangedTime 為當前時間，同時 Pet.PointsChanged_SkinColor 記錄此次扣除點數數額（2000）。User_Wallet 錢包餘額相應減少，WalletHistory 亦新增「購買寵物膚色-2000點」的記錄。背景主題預設可以免費更換多種顏色或圖案，小明可以在前端介面任意挑選預設背景並套用。每次換背景會更新 Pet.BackgroundColor 及 BackgroundColorChangedTime，但 PointsChanged_BackgroundColor 預設為0不扣點。然而，若未來推出特別背景（例如限量主題）需點數購買，則可在配置中將其標記需要扣點，系統在更換時會執行與換膚類似的扣點流程。
+
+寵物狀態事件：當寵物的某些屬性達到臨界值時，系統可以觸發特殊事件或提醒。例如如果 Hunger 一直100（極度飢餓）達一段時間，系統可以判定寵物「餓昏了」——健康度會開始下降且暫時無法參與小遊戲，並向用戶發送通知提醒「您的寵物太餓了，快去餵食！」。又如清潔值長期為0，寵物可能「生病」，健康值下降並顯示骯髒狀態，直到用戶在互動中執行洗澡操作使 Cleanliness 回升。這些狀態改變會寫入寵物日誌供管理員日後查詢。
+
+前端介面：在會員的個人主頁或專門的寵物頁面，系統以視覺化方式展示寵物資訊。具體包含：寵物的名稱（可由用戶編輯）、等級和經驗進度條（例如顯示「Lv.3（120/300 XP）」）、以及五維屬性的進度條或百分比圓環。當前屬性值接近0或100時可能以顏色提示（例如過低時顯示紅色警告）。介面上提供多個互動按鈕：如「餵食」、「玩耍」、「洗澡」、「哄睡」等。用戶點擊這些按鈕即可對寵物執行對應操作。比如點擊「餵食」，前端會呼叫後端 API 增加寵物飢餓值和心情值；按「洗澡」則提高 Cleanliness 清潔值；「玩耍」可以提升 Mood 但也許減少 Stamina，視規則設定而定。當寵物處於某些特殊狀態時，一些按鈕可能不可用（如 Health=0 時禁用「玩耍」按鈕）以避免加重寵物負荷。此外，介面上也提供「換膚色」和「換背景」的選項卡或按鈕。點擊換膚色會彈出顏色選擇器，列出一系列可購買的顏色方塊及所需點數；用戶選定顏色並確認後，即扣點並改變寵物顏色（流程如前述）。背景更換類似，但如果是免費背景則不扣點，立即套用。前端在換膚或換背景時應提供預覽效果，例如滑過某顏色即時在寵物圖示上顯示該顏色效果，提升使用體驗。
+
+後端邏輯：寵物各項操作對應的後端實現如下：
+
+餵食 / 玩耍 / 互動：Controller 接收到如 /api/pet/feed 或 /api/pet/play 之類的請求時，會呼叫 PetInteractionService。該服務按定義的增量修改 Pet 表對應寵物的 Hunger、Mood 等屬性值。例如餵食可能執行 Hunger += 20、Mood += 10，但上限封頂100；如果因為餵食使 Hunger 到100，系統可進一步將 Health 微增表示健康改善。互動完成後將最新屬性值保存回資料庫，返回更新後的寵物狀態給前端。若該次互動導致寵物達到某些事件（例如 Hunger 首次回到0），後端可在返回時攜帶一個事件標誌，前端據此彈出提示如「寵物吃飽了，開心地蹭了你一下」。
+
+寵物成長：當會員完成小遊戲後，對應的 MiniGame 記錄中會有 ExpGained 欄位累積了寵物此次獲得的經驗。系統在保存 MiniGame 結果時，同步執行 Pet.Experience += 該 ExpGained。然後檢查 Pet.Experience 是否超過當前等級的升級所需值。如果超過，則呼叫 PetLevelService 執行升級流程：提升 Pet.Level 值並將 Experience 扣減升級門檻值後的剩餘經驗（或歸零），更新 Pet.LevelUpTime，同時計算會員獲得的點數獎勵（若有）並增加到會員錢包。例如寵物升至5級獎勵主人100點，則User_Wallet加100，WalletHistory記錄「寵物升級獎勵+100點」。這些操作在一個事務中完成，以確保寵物等級與經驗、主人點數更新統一成功或失敗。
+
+屬性重置：為模擬現實，平台可能設有後台排程（Background Service），每日淩晨執行一次全局寵物狀態更新。例如每天00:00對所有 Pet 資料進行更新：Hunger = LEAST(Hunger + 5, 100)（飢餓感上升但不超100）、Mood = GREATEST(Mood - 3, 0)（心情下降但不低於0）、體力 Stamina 可能自然恢復一些等。這種批次處理將使長時間未登入的用戶，其寵物狀態逐漸惡化，需要用戶回來照料。實作上可以透過 SQL 作業或每隻寵物執行程式計算，更新時注意加鎖避免跟即時互動衝突。更新後若某些寵物屬性觸發關鍵事件（如Health降為0），系統可透過通知系統發送提醒給其主人。
+
+錯誤校驗：所有寵物相關的API在執行前都要檢查關鍵條件。例如執行 /api/pet/play 前，後端需驗證該會員擁有一隻寵物（Pet表有紀錄且UserID對應）；如果會員尚未創建寵物（也許未完成某任務解鎖寵物），則返回錯誤指出「尚無寵物，無法進行互動」。再如開始小遊戲前，要驗證寵物 Health > 0 且五維屬性中沒有任何一項為 0（比如飢餓值不為0），否則返回錯誤代碼 PET002 表示「寵物狀態不佳，無法開始遊戲」。換膚色/背景操作則需檢查輸入的色碼或背景識別碼是否合法（在允許選擇範圍內），以及會員點數是否足夠支付。任何不符條件的請求都會被即時拒絕並回傳對應錯誤訊息。
+
+使用流程（寵物互動與養成）：
+小明的寵物「史萊姆」是他每天登入遊戲論壇平台後一定會關心的對象。進入會員中心，小明首先檢視他的寵物狀態：飢餓 80%、心情 40%、體力 90%、清潔 60%、健康 85%。由於心情值偏低，小明決定與寵物互動一下來提升它的心情。他點擊了「陪玩」按鈕，寵物的心情值立即上升了一些（例如從40%升到55%），同時體力可能略減來模擬寵物有點累了。接著，他看到飢餓值也挺高，於是點擊「餵食」。這次寵物開心地吃掉虛擬飼料，飢餓值從80%降至50%（越低表示越不餓），心情值也同步提高到70%。清潔值沒有改變，不過系統提示「寵物吃得滿嘴是醬，需要洗澡了！」。小明點擊「洗澡」，清潔值回升到90%，寵物在螢幕上呈現出乾淨閃亮的模樣。此時健康值保持85%，但因為飢餓已緩解且心情變好，寵物健康未受到進一步影響。
+
+一連串互動下來，小明的寵物屬性變化即時反映在介面上，每次操作後都有可愛的動畫：餵食時史萊姆露出滿足的笑容並發出「嗝～」的音效，洗澡時出現泡泡效果並伴隨水流聲。這些都增強了小明與寵物互動的樂趣，也鼓勵他每天都花點時間照料寵物。
+
+當天晚些時候，小明帶著史萊姆去參加了一場小遊戲冒險。在冒險勝利後，他獲得了 50 點會員點數獎勵，史萊姆也得到 20 點經驗。系統通知他「寵物經驗+20」，並在寵物介面上將經驗條向前推進了20點。史萊姆目前等級為 3，升到 4 級還差 80 點經驗。小明期待著再多玩幾次遊戲讓寵物升級。隔天，他登入時發現史萊姆的飢餓值略有上升（過了一夜，從50%變成60%），心情值下降了一些（從70%降到65%），這提醒他需要定期與寵物互動。
+
+在一次升級後（史萊姆升到4級），系統彈出祝賀訊息「恭喜！史萊姆升到 Lv.4，您獲得獎勵：+50 點會員積分！」。小明的錢包點數隨之增加，也對繼續培養寵物更有動力了。某天，小明決定給史萊姆換個顏色試試。他打開「換膚色」面板，看到有多種顏色選擇，每種需要2000點。他餘額足夠，於是選擇了一個酷炫的紅色並點擊確認。系統扣除了他2000點，史萊姆立刻變成紅色，看起來煥然一新。錢包歷史新增了「購買寵物膚色 -2000點」的紀錄。朋友們在論壇上看到他的寵物截圖，都誇這紅色很帥氣，小明覺得2000點花得很值得。
+
+現在，小明每天都花幾分鐘關注史萊姆的狀態。他深知若長期不理會寵物，史萊姆可能會餓肚子、生病，甚至影響自己玩遊戲的進度。幸好平台有貼心的提醒機制：有一次小明出差忘了登入兩天，系統在第二天透過Email通知他「您的寵物很想您！目前飢餓100，心情0，快回來照料吧」。小明立刻登入，費了點力氣才把屬性都恢復上來，暗暗決定以後不要冷落史萊姆。寵物系統以這種方式成功地讓用戶與平台產生情感連結，史萊姆對小明而言彷彿成了遊戲世界中的夥伴，陪伴著他的日常。
+
+小遊戲系統
+
+功能描述：小遊戲系統提供會員與其寵物進行冒險挑戰的娛樂功能。目前實作的是一款結合寵物養成元素的小型冒險遊戲。玩家可以帶著自己的寵物參與戰鬥，每日最多進行 3 次遊戲。每次遊戲挑戰都會產生一筆遊戲記錄儲存於 MiniGame 資料表。MiniGame 表欄位包括：PlayID（遊戲記錄ID，主鍵，自增）、UserID（玩家會員ID）、PetID（出戰寵物ID）、Level（關卡等級）、MonsterCount（怪物數量）、SpeedMultiplier（怪物速度倍率）、Result（結果，可能值："Win"勝利、"Lose"失敗、"Abort"中途放棄）、ExpGained（寵物獲得的經驗值）、PointsGained（玩家獲得的會員點數）、CouponGained（若通關額外贈送的優惠券代碼，否則為 "0"）、HungerDelta/MoodDelta/StaminaDelta/CleanlinessDelta（遊戲過程對寵物各屬性造成的變化量，可正可負）、StartTime（遊戲開始時間）、EndTime（遊戲結束時間，若中途放棄則為 NULL）、Aborted（是否中途放棄，布林值）。這些資料允許系統在賽後更新寵物狀態，以及為用戶提供遊戲歷史查詢的依據。
+
+遊戲規則：小遊戲的內容可以是回合制戰鬥，也可以是簡單的動作躲避類遊戲。系統預設了多個關卡 Level，每個關卡對應不同的怪物數量 (MonsterCount) 和怪物速度 (SpeedMultiplier)。通常 Level 越高，怪物越多且越快，難度越大。玩家進入遊戲前需從可用關卡中選擇一個（或系統根據玩家等級推薦）。遊戲開始後，玩家控制寵物與怪物戰鬥：具體戰鬥細節視遊戲設計而定，假設為一個寵物對若干怪物的關卡。當遊戲結束時會有三種可能結果：勝利 (Win)、失敗 (Lose) 或中途放棄 (Abort)。若玩家在遊戲進行中途強制退出（關閉頁面或按下放棄鍵），系統記錄 Result="Abort"，EndTime 保持 NULL，並將 Aborted 標誌設為 1。勝利或失敗則 EndTime 記錄完成時間，Aborted=0。
+
+結果結算：遊戲結束後，後端依據結果計算本局遊戲獎勵：
+
+如果勝利 (Win)：玩家將獲得豐厚的獎勵。舉例而言，會員點數獎勵 PointsGained 可按照公式 basePoint * Level * MonsterCount * SpeedMultiplier 計算。假設 basePoint=10，若玩家在 Level 2 關卡對戰 5 隻怪物 (MonsterCount=5) 且速度倍率1.2，則點數獎勵 = 10 * 2 * 5 * 1.2 = 120 點。同時寵物獲得 ExpGained 經驗值，可按 baseExp * Level 計算，例如 baseExp=5，Level 2 即獲得 10 點經驗。此外系統會檢查是否觸發額外獎勵條件，例如活動期間首次通關獎勵、隱藏關卡獎勵等。如果達成條件，CouponGained 欄位將填入對應的優惠券代碼並記錄優惠券發放。例如玩家首次通關最終關卡，系統額外給他一張滿額折扣券，CouponGained="CLEAR2025"並在 Coupon 表增加一筆記錄給該玩家。
+
+如果失敗 (Lose)：玩家可能只獲得少量獎勵甚至沒有獎勵。例如可以設定失敗仍獲得少許寵物經驗 ExpGained=5 或會員點數 PointsGained=0（表示沒有點數獎勵）。若遊戲設計允許，也可給予一些安慰獎如極低概率掉落道具，但若無任何獎勵則 MiniGame 記錄中的 PointsGained 和 ExpGained 保持預設的0值不變。
+
+--- database.json (first 200 lines) ---
+{
+  "meta": {
+    "generated_at": "2025-09-12T14:57:08.715921Z",
+    "source_files": [
+      "/mnt/data/unpacked_sql/database.sql"
+    ],
+    "tables": 75,
+    "columns_total": 527,
+    "pk_count": 55,
+    "fk_count": 151,
+    "unique_count": 14,
+    "check_count": 20,
+    "sequences": []
+  },
+  "tables": [
+    {
+      "schema": "dbo",
+      "name": "banned_words",
+      "columns": [
+        {
+          "name": "word_id",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "word",
+          "datatype": "[nvarchar](50)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "created_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__banned_w__7FFA1D406FBDDC61",
+          "columns": [
+            "word_id"
+          ]
+        },
+        "foreign_keys": [],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "bookmarks",
+      "columns": [
+        {
+          "name": "id",
+          "datatype": "[bigint] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "User_ID",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "target_type",
+          "datatype": "[varchar](50)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "target_id",
+          "datatype": "[bigint]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "created_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__bookmark__3213E83F2689F12E",
+          "columns": [
+            "id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK__bookmarks__User___6BAEFA67",
+            "columns": [
+              "User_ID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK__bookmarks__User___77DFC722",
+            "columns": [
+              "User_ID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "Coupon",
+      "columns": [
+        {
+          "name": "CouponID",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "CouponCode",
+          "datatype": "[varchar](20)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "CouponTypeID",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "UserID",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "IsUsed",
+          "datatype": "[bit]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "AcquiredTime",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "UsedTime",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+
