@@ -12,6 +12,7 @@
 │   │       ├── progress.json
 │   │       └── WIP.md
 │   ├── AUDIT.md
+│   ├── dialogue.txt
 │   └── WIP.md
 ├── GameSpace
 │   ├── appsettings.json
@@ -40,8 +41,9 @@
 │   │   │       │   ├── UserDetails.cshtml
 │   │   │       │   └── Users.cshtml
 │   │   │       ├── Home
-│   │   │       └── Shared
-│   │   │           └── _Layout.cshtml
+│   │   │       ├── Shared
+│   │   │       │   └── _Layout.cshtml
+│   │   │       └── _ViewImports.cshtml
 │   │   ├── MiniGame
 │   │   │   ├── Controllers
 │   │   │   │   ├── CommunityController.cs
@@ -102,8 +104,9 @@
 │   │           │   └── Register.cshtml
 │   │           ├── Home
 │   │           │   └── Index.cshtml
-│   │           └── Shared
-│   │               └── _Layout.cshtml
+│   │           ├── Shared
+│   │           │   └── _Layout.cshtml
+│   │           └── _ViewImports.cshtml
 │   ├── Controllers
 │   │   └── Api
 │   │       ├── AuthApiController.cs
@@ -167,7 +170,7 @@
 │   │   ├── PlayerMarketProductImage.cs
 │   │   ├── PlayerMarketProductInfo.cs
 │   │   ├── PlayerMarketRanking.cs
-│   │   ├── PlayerMarketTradeMsg.cs
+│   │   ├── PlayerMarketTradeMessage.cs
 │   │   ├── Post.cs
 │   │   ├── ProductInfo.cs
 │   │   ├── Reaction.cs
@@ -297,4 +300,4 @@
     ├── stop.sh
     └── update.sh
 
-56 directories, 242 files
+56 directories, 245 files
