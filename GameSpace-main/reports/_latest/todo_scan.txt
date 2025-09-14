@@ -68,9 +68,15 @@
 ./GameSpace/Services/SecurityService.cs:133:                $"Failed login attempt from {ipAddress}", ipAddress);
 ./GameSpace/docs/SECURITY.md:250:  "details": "Failed login attempt from 192.168.1.100",
 ./GameSpace/docs/SECURITY.md:277:    "MaxFailedLoginAttempts": 5,
-./GameSpace/docs/WIP_RUN.md:1:# GameSpace WIP 執行記錄
-./GameSpace/docs/WIP_RUN.md:7:- ❌ 缺少 docs/ 資料夾和 WIP_RUN.md、PROGRESS.json
-./GameSpace/docs/WIP_RUN.md:16:- ✅ 建立 WIP_RUN.md 和 PROGRESS.json
-./GameSpace/docs/WIP_RUN.md:21:- ✅ 建立 WIP_RUN.md 和 PROGRESS.json
 ./GameSpace/appsettings.json:48:    "MaxFailedLoginAttempts": 5,
+./docs/_archive/20250914-0214/WIP.md:1:# GameSpace WIP 執行記錄
+./docs/_archive/20250914-0214/WIP.md:7:- ❌ 缺少 docs/ 資料夾和 WIP_RUN.md、PROGRESS.json
+./docs/_archive/20250914-0214/WIP.md:16:- ✅ 建立 WIP_RUN.md 和 PROGRESS.json
+./docs/_archive/20250914-0214/WIP.md:21:- ✅ 建立 WIP_RUN.md 和 PROGRESS.json
+./docs/_archive/20250914-0214/AUDIT.md:19:- **TODO/佔位掃描**: 發現 77 個匹配項目，主要為合法的 HTML placeholder 屬性和 CSS grid-template-columns 屬性
+./docs/_archive/20250914-0214/AUDIT.md:24:掃描結果顯示大部分 "placeholder" 匹配為合法的 HTML 表單 placeholder 屬性，這些是正常的 UI 元素，不屬於需要修復的佔位符。
+./docs/_archive/20250914-0214/ARCHIVE_INDEX.md:13:2. **WIP.md** - 工作進度記錄
+./docs/_archive/20250914-0214/ARCHIVE_INDEX.md:14:   - 來源: GameSpace/docs/WIP_RUN.md
+./README.md:17:  - `WIP.md` - 工作進度記錄
+./README.md:44:當前專案狀態請參考 [docs/AUDIT.md](docs/AUDIT.md) 和 [docs/WIP.md](docs/WIP.md)。
 ./GameSpace.Tests/appsettings.Test.json:24:    "MaxLoginAttempts": 5,
