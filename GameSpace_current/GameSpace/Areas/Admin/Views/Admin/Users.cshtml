@@ -1,0 +1,59 @@
+@model List<GameSpace.Models.User>
+@{
+    ViewData["Title"] = "用戶管理";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <h1 class="h3 mb-4">用戶管理</h1>
+
+    <div class="card shadow">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">用戶列表</h6>
+        </div>
+        <div class="card-body">
+            @if (Model?.Any() == true)
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>用戶ID</th>
+                                <th>用戶名</th>
+                                <th>電子郵件</th>
+                                <th>註冊時間</th>
+                                <th>寵物數</th>
+                                <th>點數</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var user in Model)
+                            {
+                                <tr>
+                                    <td>@user.UserId</td>
+                                    <td>@user.Username</td>
+                                    <td>@user.Email</td>
+                                    <td>@user.CreatedAt.ToString("yyyy/MM/dd HH:mm")</td>
+                                    <td>
+                                        <span class="badge bg-success">@(user.Pets?.Count ?? 0)</span>
+                                    </td>
+                                    <td>
+                                        <span class="text-primary fw-bold">@(user.UserWallets?.FirstOrDefault()?.UserPoint ?? 0)</span>
+                                    </td>
+                                    <td>
+                                        <a asp-action="UserDetails" asp-route-id="@user.UserId" class="btn btn-sm btn-outline-primary">查看詳情</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p class="text-muted text-center">暫無用戶</p>
+            }
+        </div>
+    </div>
+</div>

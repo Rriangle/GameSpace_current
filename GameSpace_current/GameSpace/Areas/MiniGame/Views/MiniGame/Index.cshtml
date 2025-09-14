@@ -1,0 +1,327 @@
+@{
+    ViewData["Title"] = "小遊戲";
+    var canPlay = ViewBag.CanPlay as bool? ?? false;
+    var todayGames = ViewBag.TodayGames as int? ?? 0;
+    var remainingGames = ViewBag.RemainingGames as int? ?? 0;
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="text-center mb-4">小遊戲冒險</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5>遊戲區域</h5>
+                </div>
+                <div class="card-body text-center">
+                    @if (canPlay)
+                    {
+                        <div id="gameArea" class="mb-4">
+                            <canvas id="gameCanvas" width="600" height="400" style="border: 2px solid #ddd; border-radius: 10px;"></canvas>
+                        </div>
+                        <div class="mb-3">
+                            <button id="startGameBtn" class="btn btn-primary btn-lg">
+                                <i class="fas fa-play me-2"></i>開始冒險
+                            </button>
+                        </div>
+                        <div id="gameInfo" class="alert alert-info" style="display: none;">
+                            <h6>遊戲資訊</h6>
+                            <p id="gameLevel">關卡：1</p>
+                            <p id="gameMonsters">怪物數量：6</p>
+                            <p id="gameSpeed">速度倍率：1.0x</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning">
+                            <h5>無法開始遊戲</h5>
+                            @if (todayGames >= 3)
+                            {
+                                <p>今日遊戲次數已達上限（3次）</p>
+                            }
+                            else
+                            {
+                                <p>寵物健康值不足或找不到寵物</p>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>今日統計</h5>
+                </div>
+                <div class="card-body">
+                    <p>已玩次數：<span class="badge bg-primary">@todayGames / 3</span></p>
+                    <p>剩餘次數：<span class="badge bg-success">@remainingGames</span></p>
+                    <div class="progress mb-3">
+                        <div class="progress-bar" role="progressbar" style="width: @((todayGames * 100.0 / 3)%)">
+                            @todayGames / 3
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5>遊戲規則</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check text-success me-2"></i>每日最多 3 次</li>
+                        <li><i class="fas fa-check text-success me-2"></i>寵物健康值需 > 0</li>
+                        <li><i class="fas fa-check text-success me-2"></i>勝利可獲得經驗值和點數</li>
+                        <li><i class="fas fa-check text-success me-2"></i>第三關勝利有機會獲得優惠券</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5>關卡資訊</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <strong>第 1 關</strong>
+                        <p class="small text-muted">怪物：6隻，速度：1.0x</p>
+                    </div>
+                    <div class="mb-2">
+                        <strong>第 2 關</strong>
+                        <p class="small text-muted">怪物：8隻，速度：1.5x</p>
+                    </div>
+                    <div class="mb-2">
+                        <strong>第 3 關</strong>
+                        <p class="small text-muted">怪物：10隻，速度：2.0x</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>最近遊戲記錄</h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center">
+                        <a href="@Url.Action("History", "MiniGame")" class="btn btn-outline-primary">
+                            <i class="fas fa-history me-2"></i>查看完整記錄
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let gameState = 'idle'; // idle, playing, ended
+        let gameId = null;
+        let gameStartTime = null;
+        let monstersDefeated = 0;
+        let gameLevel = 1;
+        let gameMonsters = 6;
+        let gameSpeed = 1.0;
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        $('#startGameBtn').click(function() {
+            if (gameState === 'idle') {
+                startGame();
+            }
+        });
+
+        function startGame() {
+            $.post('@Url.Action("StartGame", "MiniGame")', function(data) {
+                if (data.success) {
+                    gameId = data.gameId;
+                    gameLevel = data.level;
+                    gameMonsters = data.monsterCount;
+                    gameSpeed = data.speedMultiplier;
+                    gameStartTime = Date.now();
+                    monstersDefeated = 0;
+                    
+                    gameState = 'playing';
+                    $('#startGameBtn').text('遊戲進行中...').prop('disabled', true);
+                    $('#gameInfo').show();
+                    $('#gameLevel').text(`關卡：${gameLevel}`);
+                    $('#gameMonsters').text(`怪物數量：${gameMonsters}`);
+                    $('#gameSpeed').text(`速度倍率：${gameSpeed}x`);
+                    
+                    startGameLoop();
+                } else {
+                    showMessage(data.message, 'error');
+                }
+            });
+        }
+
+        function startGameLoop() {
+            // 簡單的遊戲循環
+            let monsters = [];
+            for (let i = 0; i < gameMonsters; i++) {
+                monsters.push({
+                    x: Math.random() * (canvas.width - 20),
+                    y: Math.random() * (canvas.height - 20),
+                    vx: (Math.random() - 0.5) * gameSpeed * 2,
+                    vy: (Math.random() - 0.5) * gameSpeed * 2,
+                    size: 20
+                });
+            }
+
+            let pet = {
+                x: canvas.width / 2,
+                y: canvas.height / 2,
+                size: 30,
+                vx: 0,
+                vy: 0
+            };
+
+            function gameLoop() {
+                if (gameState !== 'playing') return;
+
+                // 清空畫布
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // 繪製寵物
+                ctx.fillStyle = '#ADD8E6';
+                ctx.beginPath();
+                ctx.arc(pet.x, pet.y, pet.size, 0, Math.PI * 2);
+                ctx.fill();
+
+                // 更新和繪製怪物
+                monsters.forEach((monster, index) => {
+                    monster.x += monster.vx;
+                    monster.y += monster.vy;
+
+                    // 邊界檢查
+                    if (monster.x < 0 || monster.x > canvas.width - monster.size) {
+                        monster.vx = -monster.vx;
+                    }
+                    if (monster.y < 0 || monster.y > canvas.height - monster.size) {
+                        monster.vy = -monster.vy;
+                    }
+
+                    // 繪製怪物
+                    ctx.fillStyle = '#FF6B6B';
+                    ctx.beginPath();
+                    ctx.arc(monster.x, monster.y, monster.size, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // 碰撞檢測
+                    const dx = pet.x - monster.x;
+                    const dy = pet.y - monster.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < pet.size + monster.size) {
+                        // 怪物被消滅
+                        monsters.splice(index, 1);
+                        monstersDefeated++;
+                    }
+                });
+
+                // 檢查勝利條件
+                if (monsters.length === 0) {
+                    endGame('Win');
+                    return;
+                }
+
+                requestAnimationFrame(gameLoop);
+            }
+
+            // 鍵盤控制
+            document.addEventListener('keydown', function(e) {
+                if (gameState !== 'playing') return;
+
+                switch(e.key) {
+                    case 'ArrowLeft':
+                        pet.vx = -3;
+                        break;
+                    case 'ArrowRight':
+                        pet.vx = 3;
+                        break;
+                    case 'ArrowUp':
+                        pet.vy = -3;
+                        break;
+                    case 'ArrowDown':
+                        pet.vy = 3;
+                        break;
+                }
+            });
+
+            document.addEventListener('keyup', function(e) {
+                if (gameState !== 'playing') return;
+
+                switch(e.key) {
+                    case 'ArrowLeft':
+                    case 'ArrowRight':
+                        pet.vx = 0;
+                        break;
+                    case 'ArrowUp':
+                    case 'ArrowDown':
+                        pet.vy = 0;
+                        break;
+                }
+            });
+
+            // 更新寵物位置
+            setInterval(function() {
+                if (gameState === 'playing') {
+                    pet.x += pet.vx;
+                    pet.y += pet.vy;
+
+                    // 邊界檢查
+                    if (pet.x < pet.size) pet.x = pet.size;
+                    if (pet.x > canvas.width - pet.size) pet.x = canvas.width - pet.size;
+                    if (pet.y < pet.size) pet.y = pet.size;
+                    if (pet.y > canvas.height - pet.size) pet.y = canvas.height - pet.size;
+                }
+            }, 16);
+
+            gameLoop();
+        }
+
+        function endGame(result) {
+            gameState = 'ended';
+            const timeSpent = Math.floor((Date.now() - gameStartTime) / 1000);
+
+            $.post('@Url.Action("EndGame", "MiniGame")', {
+                gameId: gameId,
+                result: result,
+                monstersDefeated: monstersDefeated,
+                timeSpent: timeSpent
+            }, function(data) {
+                if (data.success) {
+                    showMessage(data.message, 'success');
+                    $('#startGameBtn').text('開始冒險').prop('disabled', false);
+                    $('#gameInfo').hide();
+                    gameState = 'idle';
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    showMessage(data.message, 'error');
+                }
+            });
+        }
+
+        function showMessage(message, type) {
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+            const alert = $(`<div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>`);
+            $('.container').prepend(alert);
+            setTimeout(() => alert.alert('close'), 5000);
+        }
+    </script>
+}

@@ -1,0 +1,119 @@
+@model List<GameSpace.Models.ProductInfo>
+@{
+    ViewData["Title"] = "商城";
+    var categories = ViewBag.Categories as List<string>;
+}
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">商城</h1>
+
+    <!-- 搜尋和篩選 -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="get" asp-action="Search">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <input type="text" name="keyword" class="form-control" placeholder="搜尋商品名稱或描述" value="@ViewBag.Keyword">
+                            </div>
+                            <div class="col-md-3">
+                                <select name="category" class="form-select">
+                                    <option value="">所有分類</option>
+                                    @if (categories != null)
+                                    {
+                                        @foreach (var category in categories)
+                                        {
+                                            <option value="@category" @(ViewBag.SelectedCategory == category ? "selected" : "")>@category</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-primary w-100">搜尋</button>
+                            </div>
+                            <div class="col-md-3">
+                                <a asp-action="Orders" class="btn btn-outline-info w-100">我的訂單</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 商品列表 -->
+    @if (Model?.Any() == true)
+    {
+        <div class="row">
+            @foreach (var product in Model)
+            {
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">@product.ProductName</h5>
+                            <p class="card-text">@product.Description</p>
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-muted">分類</span>
+                                    <span class="badge bg-secondary">@product.Category</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="text-muted">價格</span>
+                                    <span class="h5 text-primary mb-0">@product.Price 點</span>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a asp-action="Details" asp-route-id="@product.ProductId" class="btn btn-outline-primary flex-fill">查看詳情</a>
+                                    <button class="btn btn-success flex-fill" onclick="purchaseProduct(@product.ProductId)">
+                                        購買
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-center">
+            <p class="text-muted">找不到符合條件的商品</p>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        async function purchaseProduct(productId) {
+            const quantity = prompt('請輸入購買數量：', '1');
+            if (!quantity || isNaN(quantity) || parseInt(quantity) <= 0) {
+                alert('請輸入有效的數量');
+                return;
+            }
+
+            if (!confirm(`確定要購買此商品嗎？`)) return;
+
+            try {
+                const response = await fetch('@Url.Action("Purchase")', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify({ productId: productId, quantity: parseInt(quantity) })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    alert(data.message);
+                    location.reload();
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                alert('購買失敗，請稍後再試');
+            }
+        }
+    </script>
+}

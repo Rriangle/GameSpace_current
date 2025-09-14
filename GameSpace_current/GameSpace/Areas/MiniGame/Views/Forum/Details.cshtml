@@ -1,0 +1,146 @@
+@model GameSpace.Models.Forum
+@{
+    ViewData["Title"] = "討論詳情";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h3 class="mb-0">@Model.Title</h3>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="btn-group">
+                                <a asp-action="Edit" asp-route-id="@Model.ForumId" class="btn btn-outline-primary btn-sm">編輯</a>
+                                <a asp-action="Delete" asp-route-id="@Model.ForumId" class="btn btn-outline-danger btn-sm">刪除</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <small class="text-muted">
+                                作者：@Model.User?.Username | 
+                                發表時間：@Model.CreatedAt.ToString("yyyy/MM/dd HH:mm")
+                            </small>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <span class="badge bg-primary">瀏覽 @Model.ViewCount</span>
+                            <span class="badge bg-success">評論 @Model.ForumComments?.Count</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        @Html.Raw(Model.Content.Replace("\n", "<br>"))
+                    </div>
+
+                    @if (Model.UpdatedAt > Model.CreatedAt)
+                    {
+                        <div class="text-muted">
+                            <small>最後更新：@Model.UpdatedAt.ToString("yyyy/MM/dd HH:mm")</small>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 評論區 -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">評論 (@Model.ForumComments?.Count)</h5>
+                </div>
+                <div class="card-body">
+                    <!-- 添加評論 -->
+                    <div class="mb-4">
+                        <form id="commentForm">
+                            <div class="mb-3">
+                                <textarea id="commentContent" class="form-control" rows="3" placeholder="發表您的評論..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">發表評論</button>
+                        </form>
+                    </div>
+
+                    <!-- 評論列表 -->
+                    <div id="commentsList">
+                        @if (Model.ForumComments?.Any() == true)
+                        {
+                            @foreach (var comment in Model.ForumComments.OrderBy(c => c.CreatedAt))
+                            {
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <p class="mb-1">@comment.Content</p>
+                                            </div>
+                                            <div class="col-md-4 text-end">
+                                                <small class="text-muted">
+                                                    @comment.User?.Username | 
+                                                    @comment.CreatedAt.ToString("yyyy/MM/dd HH:mm")
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p class="text-muted text-center">暫無評論</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-12 text-center">
+            <a asp-action="Index" class="btn btn-outline-secondary">返回論壇</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('commentForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const content = document.getElementById('commentContent').value.trim();
+            if (!content) {
+                alert('請輸入評論內容');
+                return;
+            }
+
+            try {
+                const response = await fetch('@Url.Action("AddComment")', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify({ 
+                        forumId: @Model.ForumId, 
+                        content: content 
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    alert(data.message);
+                    location.reload();
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                alert('發表評論失敗，請稍後再試');
+            }
+        });
+    </script>
+}

@@ -1,0 +1,72 @@
+@model List<GameSpace.Models.Forum>
+@{
+    ViewData["Title"] = "論壇管理";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <h1 class="h3 mb-4">論壇管理</h1>
+
+    <div class="card shadow">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">討論列表</h6>
+        </div>
+        <div class="card-body">
+            @if (Model?.Any() == true)
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>討論ID</th>
+                                <th>標題</th>
+                                <th>作者</th>
+                                <th>發表時間</th>
+                                <th>瀏覽次數</th>
+                                <th>評論數</th>
+                                <th>狀態</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var forum in Model)
+                            {
+                                <tr>
+                                    <td>@forum.ForumId</td>
+                                    <td>@(forum.Title.Length > 30 ? forum.Title.Substring(0, 30) + "..." : forum.Title)</td>
+                                    <td>@forum.User?.Username</td>
+                                    <td>@forum.CreatedAt.ToString("yyyy/MM/dd HH:mm")</td>
+                                    <td>
+                                        <span class="badge bg-primary">@forum.ViewCount</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">@(forum.ForumComments?.Count ?? 0)</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-@(forum.IsActive ? "success" : "danger")">
+                                            @(forum.IsActive ? "正常" : "已刪除")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a asp-action="ForumDetails" asp-route-id="@forum.ForumId" class="btn btn-sm btn-outline-primary">查看</a>
+                                        @if (forum.IsActive)
+                                        {
+                                            <form asp-action="DeleteForum" method="post" style="display: inline;">
+                                                <input type="hidden" name="id" value="@forum.ForumId" />
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('確定要刪除此討論嗎？')">刪除</button>
+                                            </form>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p class="text-muted text-center">暫無討論</p>
+            }
+        </div>
+    </div>
+</div>

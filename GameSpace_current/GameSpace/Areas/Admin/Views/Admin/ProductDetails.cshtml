@@ -1,0 +1,74 @@
+@model GameSpace.Models.ProductInfo
+@{
+    ViewData["Title"] = "商品詳情";
+}
+
+<div class="container-fluid">
+    <h1 class="h3 mb-4">商品詳情</h1>
+
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">@Model.ProductName</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>商品ID：</strong></td>
+                                    <td>@Model.ProductId</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>商品名稱：</strong></td>
+                                    <td>@Model.ProductName</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>分類：</strong></td>
+                                    <td><span class="badge bg-secondary">@Model.Category</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>價格：</strong></td>
+                                    <td><span class="text-primary fw-bold">@Model.Price 點</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>狀態：</strong></td>
+                                    <td>
+                                        <span class="badge bg-@(Model.IsActive ? "success" : "danger")">
+                                            @(Model.IsActive ? "上架" : "下架")
+                                        </span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>創建時間：</strong></td>
+                                    <td>@Model.CreatedAt.ToString("yyyy/MM/dd HH:mm")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>更新時間：</strong></td>
+                                    <td>@Model.UpdatedAt.ToString("yyyy/MM/dd HH:mm")</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h6>商品描述：</h6>
+                        <p>@Model.Description</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 text-center">
+            <a asp-action="Products" class="btn btn-outline-secondary">返回商品列表</a>
+            <a asp-action="EditProduct" asp-route-id="@Model.ProductId" class="btn btn-outline-warning">編輯商品</a>
+        </div>
+    </div>
+</div>

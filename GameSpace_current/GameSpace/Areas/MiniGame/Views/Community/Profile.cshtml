@@ -1,0 +1,148 @@
+@model GameSpace.Models.User
+@{
+    ViewData["Title"] = "用戶資料";
+    var pet = ViewBag.Pet as GameSpace.Models.Pet;
+    var userWallet = ViewBag.UserWallet as GameSpace.Models.UserWallet;
+    var userIntro = ViewBag.UserIntro as GameSpace.Models.UserIntroduction;
+    var isOwnProfile = (bool)ViewBag.IsOwnProfile;
+}
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">用戶資料</h1>
+
+    <div class="row">
+        <!-- 用戶基本資訊 -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">@Model.Username</h5>
+                    <p class="text-muted">@Model.Email</p>
+                    <p class="text-muted">註冊時間：@Model.CreatedAt.ToString("yyyy/MM/dd")</p>
+                    
+                    @if (userWallet != null)
+                    {
+                        <div class="mt-3">
+                            <h6 class="text-primary">@userWallet.UserPoint 點</h6>
+                            <p class="text-muted">會員點數</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- 寵物資訊 -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">寵物資訊</h5>
+                </div>
+                <div class="card-body text-center">
+                    @if (pet != null)
+                    {
+                        <img src="https://via.placeholder.com/120/@(pet.SkinColor.Replace("#", ""))?text=Pet" 
+                             class="img-fluid rounded-circle mb-3" 
+                             style="width: 120px; height: 120px; object-fit: cover; background-color: @pet.BackgroundColor;" 
+                             alt="寵物圖片">
+                        <h5>@pet.PetName</h5>
+                        <p class="text-muted">等級 @pet.Level</p>
+                        <div class="progress mb-2">
+                            <div class="progress-bar" role="progressbar" style="width: @(pet.Experience % 100)%"></div>
+                        </div>
+                        <small class="text-muted">經驗值: @pet.Experience</small>
+                    }
+                    else
+                    {
+                        <p class="text-muted">尚未領養寵物</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- 個人簡介 -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">個人簡介</h5>
+                </div>
+                <div class="card-body">
+                    @if (userIntro != null)
+                    {
+                        <p>@userIntro.Introduction</p>
+                        <small class="text-muted">
+                            最後更新：@userIntro.UpdatedAt.ToString("yyyy/MM/dd")
+                        </small>
+                    }
+                    else
+                    {
+                        <p class="text-muted">暫無個人簡介</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 統計資訊 -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">統計資訊</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <h4 class="text-primary">-</h4>
+                            <p class="text-muted">簽到天數</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h4 class="text-success">-</h4>
+                            <p class="text-muted">小遊戲勝利</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h4 class="text-warning">-</h4>
+                            <p class="text-muted">論壇發文</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h4 class="text-info">-</h4>
+                            <p class="text-muted">聊天訊息</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 操作按鈕 -->
+    <div class="row mt-4">
+        <div class="col-12 text-center">
+            @if (isOwnProfile)
+            {
+                <a asp-area="MiniGame" asp-controller="Pet" asp-action="Index" class="btn btn-primary me-2">管理寵物</a>
+                <a asp-area="MiniGame" asp-controller="Wallet" asp-action="Index" class="btn btn-outline-primary me-2">我的錢包</a>
+                <a asp-area="MiniGame" asp-controller="Forum" asp-action="MyForums" class="btn btn-outline-success me-2">我的討論</a>
+            }
+            else
+            {
+                <button class="btn btn-primary me-2" onclick="addFriend('@Model.Username')">添加好友</button>
+                <button class="btn btn-outline-primary me-2" onclick="sendMessage('@Model.Username')">發送訊息</button>
+            }
+            <a asp-action="Index" class="btn btn-outline-secondary">返回社群</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function addFriend(username) {
+            if (confirm('確定要添加 ' + username + ' 為好友嗎？')) {
+                // 這裡可以實現添加好友的邏輯
+                alert('好友請求已發送');
+            }
+        }
+
+        function sendMessage(username) {
+            // 這裡可以實現發送訊息的邏輯
+            alert('發送訊息功能開發中');
+        }
+    </script>
+}

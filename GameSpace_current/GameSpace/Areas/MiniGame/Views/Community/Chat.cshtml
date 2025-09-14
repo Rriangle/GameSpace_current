@@ -1,0 +1,180 @@
+@{
+    ViewData["Title"] = "聊天室";
+    var messages = ViewBag.Messages as List<GameSpace.Models.ChatMessage>;
+    var onlineUsers = (int)ViewBag.OnlineUsers;
+}
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">聊天室</h1>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">聊天室</h5>
+                    <span class="badge bg-success">@onlineUsers 人在線</span>
+                </div>
+                <div class="card-body" id="chatMessages" style="height: 400px; overflow-y: auto;">
+                    @if (messages?.Any() == true)
+                    {
+                        @foreach (var message in messages)
+                        {
+                            <div class="message-item mb-2">
+                                <div class="message-header">
+                                    <strong>@message.User?.Username</strong>
+                                    <small class="text-muted">@message.CreatedAt.ToString("HH:mm")</small>
+                                </div>
+                                <div class="message-content">@message.Content</div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center">暫無聊天記錄</p>
+                    }
+                </div>
+                <div class="card-footer">
+                    <form id="messageForm">
+                        <div class="input-group">
+                            <input type="text" id="messageInput" class="form-control" placeholder="輸入訊息..." maxlength="500">
+                            <button type="submit" class="btn btn-primary">發送</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">聊天室資訊</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">歡迎來到聊天室！請遵守以下規則：</p>
+                    <ul class="list-unstyled">
+                        <li>• 保持友善和尊重</li>
+                        <li>• 不要發送垃圾訊息</li>
+                        <li>• 不要使用不當語言</li>
+                        <li>• 不要分享個人資訊</li>
+                    </ul>
+                    <hr>
+                    <p class="text-muted">
+                        <strong>在線用戶：</strong>@onlineUsers 人
+                    </p>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="mb-0">快速操作</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a asp-action="Index" class="btn btn-outline-secondary">返回社群</a>
+                        <a asp-action="Friends" class="btn btn-outline-success">好友列表</a>
+                        <a asp-action="Leaderboard" class="btn btn-outline-warning">排行榜</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let lastMessageTime = new Date('@(messages?.LastOrDefault()?.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ss.fffZ") ?? DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"))');
+
+        // 發送訊息
+        document.getElementById('messageForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const messageInput = document.getElementById('messageInput');
+            const content = messageInput.value.trim();
+            
+            if (!content) return;
+
+            try {
+                const response = await fetch('@Url.Action("SendMessage")', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify({ content: content })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    // 添加新訊息到聊天區域
+                    const chatMessages = document.getElementById('chatMessages');
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = 'message-item mb-2';
+                    messageDiv.innerHTML = data.messageHtml;
+                    chatMessages.appendChild(messageDiv);
+                    
+                    // 清空輸入框
+                    messageInput.value = '';
+                    
+                    // 滾動到底部
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                alert('發送訊息失敗，請稍後再試');
+            }
+        });
+
+        // 定期檢查新訊息
+        setInterval(async function() {
+            try {
+                const response = await fetch('@Url.Action("GetNewMessages")' + '?lastMessageTime=' + lastMessageTime.toISOString());
+                const data = await response.json();
+                
+                if (data.messages && data.messages.length > 0) {
+                    const chatMessages = document.getElementById('chatMessages');
+                    
+                    data.messages.forEach(function(messageHtml) {
+                        const messageDiv = document.createElement('div');
+                        messageDiv.className = 'message-item mb-2';
+                        messageDiv.innerHTML = messageHtml;
+                        chatMessages.appendChild(messageDiv);
+                    });
+                    
+                    // 滾動到底部
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                    
+                    // 更新最後訊息時間
+                    if (data.lastMessageTime) {
+                        lastMessageTime = new Date(data.lastMessageTime);
+                    }
+                }
+            } catch (error) {
+                console.error('獲取新訊息失敗:', error);
+            }
+        }, 2000); // 每2秒檢查一次
+
+        // 頁面載入時滾動到底部
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        });
+    </script>
+}
+
+<style>
+    .message-item {
+        border-bottom: 1px solid #eee;
+        padding-bottom: 8px;
+    }
+    .message-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 4px;
+    }
+    .message-content {
+        font-size: 0.9em;
+        color: #666;
+    }
+</style>

@@ -1,0 +1,133 @@
+@model List<GameSpace.Models.Friendship>
+@{
+    ViewData["Title"] = "好友列表";
+}
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">好友列表</h1>
+
+    <!-- 添加好友 -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">添加好友</h5>
+                    <form id="addFriendForm">
+                        <div class="input-group">
+                            <input type="text" id="friendUsername" class="form-control" placeholder="輸入用戶名" required>
+                            <button type="submit" class="btn btn-primary">添加好友</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 好友列表 -->
+    @if (Model?.Any() == true)
+    {
+        <div class="row">
+            @foreach (var friendship in Model)
+            {
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">@friendship.Friend?.Username</h5>
+                            <p class="text-muted">好友狀態：@friendship.Status</p>
+                            <div class="d-flex justify-content-center gap-2">
+                                <a asp-action="Profile" asp-route-id="@friendship.FriendId" class="btn btn-outline-primary btn-sm">查看資料</a>
+                                <button class="btn btn-outline-danger btn-sm" onclick="removeFriend(@friendship.FriendshipId)">移除好友</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-center">
+            <p class="text-muted">您還沒有好友</p>
+            <p class="text-muted">快來添加一些好友吧！</p>
+        </div>
+    }
+
+    <!-- 好友請求 -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">好友請求</h5>
+                </div>
+                <div class="card-body">
+                    <a asp-action="FriendRequests" class="btn btn-outline-info">查看好友請求</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-12 text-center">
+            <a asp-action="Index" class="btn btn-outline-secondary">返回社群</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // 添加好友
+        document.getElementById('addFriendForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('friendUsername').value.trim();
+            if (!username) return;
+
+            try {
+                const response = await fetch('@Url.Action("AddFriend")', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify({ username: username })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    alert(data.message);
+                    document.getElementById('friendUsername').value = '';
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                alert('添加好友失敗，請稍後再試');
+            }
+        });
+
+        // 移除好友
+        async function removeFriend(friendshipId) {
+            if (!confirm('確定要移除這個好友嗎？')) return;
+
+            try {
+                const response = await fetch('@Url.Action("RemoveFriend")', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify({ friendshipId: friendshipId })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    alert(data.message);
+                    location.reload();
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                alert('移除好友失敗，請稍後再試');
+            }
+        }
+    </script>
+}

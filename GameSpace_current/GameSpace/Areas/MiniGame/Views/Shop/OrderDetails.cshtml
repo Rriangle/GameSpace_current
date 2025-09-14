@@ -1,0 +1,79 @@
+@model GameSpace.Models.Order
+@{
+    ViewData["Title"] = "訂單詳情";
+}
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">訂單詳情 #@Model.OrderId</h1>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5 class="mb-0">訂單資訊</h5>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <span class="badge bg-@(Model.Status switch {
+                                "已付款" => "success",
+                                "處理中" => "warning",
+                                "已完成" => "info",
+                                "已取消" => "danger",
+                                _ => "secondary"
+                            }) fs-6">@Model.Status</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p><strong>訂單日期：</strong>@Model.OrderDate.ToString("yyyy/MM/dd HH:mm")</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>總金額：</strong><span class="h5 text-primary">@Model.TotalAmount 點</span></p>
+                        </div>
+                    </div>
+
+                    <h6 class="mb-3">商品清單：</h6>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>商品名稱</th>
+                                    <th>分類</th>
+                                    <th>單價</th>
+                                    <th>數量</th>
+                                    <th>小計</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var detail in Model.OrderDetails)
+                                {
+                                    <tr>
+                                        <td>@detail.ProductInfo?.ProductName</td>
+                                        <td><span class="badge bg-secondary">@detail.ProductInfo?.Category</span></td>
+                                        <td>@detail.UnitPrice 點</td>
+                                        <td>@detail.Quantity</td>
+                                        <td class="text-primary fw-bold">@detail.TotalPrice 點</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr class="table-light">
+                                    <th colspan="4" class="text-end">總計：</th>
+                                    <th class="text-primary">@Model.TotalAmount 點</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <div class="mt-4 text-center">
+                        <a asp-action="Orders" class="btn btn-outline-secondary me-2">返回訂單列表</a>
+                        <a asp-action="Index" class="btn btn-primary">繼續購物</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

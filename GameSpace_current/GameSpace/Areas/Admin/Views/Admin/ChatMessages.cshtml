@@ -1,0 +1,62 @@
+@model List<GameSpace.Models.ChatMessage>
+@{
+    ViewData["Title"] = "聊天訊息管理";
+}
+
+<div class="container-fluid">
+    <h1 class="h3 mb-4">聊天訊息管理</h1>
+
+    <div class="card shadow">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">聊天訊息列表</h6>
+        </div>
+        <div class="card-body">
+            @if (Model?.Any() == true)
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>訊息ID</th>
+                                <th>用戶</th>
+                                <th>內容</th>
+                                <th>發送時間</th>
+                                <th>狀態</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var message in Model)
+                            {
+                                <tr>
+                                    <td>@message.ChatMessageId</td>
+                                    <td>@message.User?.Username</td>
+                                    <td>@(message.Content.Length > 50 ? message.Content.Substring(0, 50) + "..." : message.Content)</td>
+                                    <td>@message.CreatedAt.ToString("yyyy/MM/dd HH:mm")</td>
+                                    <td>
+                                        <span class="badge bg-@(message.IsActive ? "success" : "danger")">
+                                            @(message.IsActive ? "正常" : "已刪除")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (message.IsActive)
+                                        {
+                                            <form asp-action="DeleteChatMessage" method="post" style="display: inline;">
+                                                <input type="hidden" name="id" value="@message.ChatMessageId" />
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('確定要刪除此訊息嗎？')">刪除</button>
+                                            </form>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p class="text-muted text-center">暫無聊天訊息</p>
+            }
+        </div>
+    </div>
+</div>

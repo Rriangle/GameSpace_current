@@ -1,0 +1,103 @@
+// File: CONTRIBUTING_AGENT.txt
+GameSpace — CONTRIBUTING_AGENT.txt
+(Single Source of Truth for process, constraints, module coverage, area partition, runbook, CI/CD, and stage-gated testing)
+A) Start-of-Run Mandatory Reading & Drift Repair (READ THIS FIRST)
+Every time you start, you must re-read these four files, in this order:
+ * CONTRIBUTING_AGENT.txt (this file)
+ * old_0905.txt
+ * new_0905.txt
+ * database.json
+This prevents “spec drift.” If you detect any drift (your current or planned work conflicts with these sources), immediately enter Repair Mode:
+ * Stop adding new scope.
+ * Identify the drift (what conflicts with which source).
+ * Fix the code/docs/tests to comply with this file + old/new + database.json.
+ * Document the fix briefly in the next commit message (“WHY it drifted, HOW corrected”).
+ * Only then resume normal work.
+You are not allowed to proceed with any new changes until drift is repaired.
+0) Global Language Rule (Mandatory)
+All human-readable outputs must be Traditional Chinese (繁體中文).
+This includes:
+ * commit messages, PR descriptions
+ * logs/console output
+ * documentation/READMEs
+ * audit reports, progress/status lines
+ * UI copy/labels/placeholders
+ * and all code comments (C#, Razor, JS/TS, SQL comments, XML doc).
+Do NOT translate or localize code identifiers (class/method/variable names), file paths, or SQL/CLI keywords.
+1) Authority & Arbitration (90% / 10%)
+The three sources are: old_0905.txt, new_0905.txt, and database.json.
+Rule: old_0905.txt + new_0905.txt together describe ~90% of the business spec.
+For the remaining ~10% gaps or conflicts, database.json is the final authority.
+→ Reconcile terms across old/new line-by-line. When ambiguous, take database.json as the ground truth, and note this decision in your commit message.
+2) Visual & Front-End References (put up front)
+ * Public (front site): follow index.txt for layout/interaction (Bootstrap-based).
+ * Admin (back office): use SB Admin (third-party library; do not modify vendor files).
+Each module must declare its UI affiliation (Admin or Public).
+Do not mix Admin and Public assets/styles in the same page or Area.
+Admin layout tip (C08): Extract sidebar/topbar into Area-level partials
+(e.g., Areas/<Area>/Views/Shared/_Sidebar.cshtml, _Topbar.cshtml). Do not edit vendor files.
+3) Continuous Run, WIP/Progress & Single-Line Status (put up front)
+Only stop when the token budget is nearly exhausted.
+Before you touch anything, read docs/WIP_RUN.md (append-only) and docs/PROGRESS.json (per-stage % + overall).
+On START and on STOP, print exactly one status line (and nothing else):
+> 整體進度: <overall>% | 目前階段: <stage>% | 狀態: <short description>
+> 
+NEXT_RUN_PROMPT may be printed only if you completed ≥ 1 code diff and ≥ 1 commit this run.
+The NEXT_RUN_PROMPT must be one line in Traditional Chinese (繁體中文) that resumes the next precise step.
+Delta Plan (C16): Before STOP, append your next mini-plan to docs/WIP_RUN.md → Next (targets, files, tests, risks/assumptions). Do not print the Delta Plan to console.
+4) Master Kickoff Command (paste every run)
+> Read and follow CONTRIBUTING_AGENT.txt. Continue from last WIP. Work in small chunks (<=3 files, <=400 LOC). Only stop when token budget is nearly exhausted. On START and on STOP, print exactly one line: 整體進度: <overall>% | 目前階段: <stage>% | 狀態: <short description>.
+> 
+5) Delivery Format (Notebook/Diff, enforced)
+Deliver all changes in Notebook/Diff form.
+New file format:
+// File: <relative/path>
+<full file content>
+
+Existing files: provide minimal diff (unless a full file is explicitly requested).
+ * No shell commands (PowerShell/Bash/CMD), including redirection (>/>>).
+ * You may use shell locally for non-file-write tasks (e.g., launching, testing), but never include shell in deliverables.
+ * All human-readable explanations inside the diff must be Traditional Chinese (繁體中文) (C11).
+ * Per-batch limits: ≤ 3 files, ≤ 400 LOC. Then build/test → commit → proceed.
+6) Setup & Execution (local run)
+ * Install: Visual Studio 2022+ and SQL Server 2019/2022.
+ * Run ./database.json in SSMS → creates GameSpaceDatabase with initial data.
+ * Open the ASP.NET Core MVC solution in VS2022.
+ * Set appsettings.json connection string (e.g., DefaultConnection) to your SQL Server.
+   * No EF Migrations or schema edits; the schema lives in ./database.json.
+ * Build & Run. The Public site appears on localhost.
+ * Admin login (seeded): zhang_zhiming_01 / Password001@, li_xiaohua_02 / Password001@.
+ * Public check (sample): dragonknight88 / Password001@.
+7) Manual DB Setup & Run Workflow (agent must support)
+ * Seeder/Runner does not auto-run on startup; provide a manual entry point (callable code/admin endpoint).
+ * Provide a DB connectivity check endpoint (e.g., /healthz/db, returning { status:"ok" } or an error).
+ * Seeding must be idempotent, batched (≤ 1000 rows/batch), with Traditional Chinese (繁體中文) structured logs; failures can rollback/retry, with clear comments.
+ * README must include a “Manual DB initialization & local run” section and a brief troubleshooting list.
+...
+11) Database as Single Source of Truth (database.json rules)
+ * Only database.json defines the schema. No EF Migrations or alternate schemas.
+ * Use existing seed data as-is; do not overwrite/delete deterministic keys unless fixing a clear error (document why).
+ * Read queries should use AsNoTracking(); project aggregates to read models (avoid returning entities directly).
+11.1) Fake Data — 以繁體中文呈現，規則明確
+ * database.json already contains part of the fake data — use it directly.
+ * For missing data, the agent must read new_0905.txt, old_0905.txt, and database.json first, then generate realistic data that looks human (daily/weekly rhythms, peaks, revisits/churn, correlated behaviors).
+ * All generated data must be persisted with SQL INSERT into the database. No in-memory-only or cache-only data.
+ * Target size (simple rule): Every table should end up with exactly 200 rows.
+   * If a table has < 200, insert the missing rows up to exactly 200.
+   * If a table already has > 200, do not delete existing rows; add a DEMO-NOTE: in the commit message explaining the exception.
+   * Idempotency: reruns must not duplicate data (enforce via PK/natural key/UNIQUE). Batch size ≤ 1000.
+   * Random yet reproducible: prefer a global seed Demo.Seed + natural-key hashing (same key → same outputs; different keys → varied outputs).
+   * Constraints: all PK/FK/UNIQUE/CHECK/DEFAULT must pass.
+   * Realism: Traditional Chinese (繁體中文) text, plausible URLs/images (Unsplash/Lorem Picsum acceptable), amounts/frequencies with Zipf/log-normal flavor; inject a small rate of failures/refunds (0.5–2%) without breaking rules.
+...
+19) Documentation Deliverables (must-have; C18 “beginner-friendly”)
+ * README.md — overview, quick start, local run, structure (beginner-friendly)
+ * docs/DEPLOYMENT.md — GitHub Actions CI/CD, GCP deployment (Cloud Run + Cloud SQL for SQL Server and/or GCE), env vars & secrets table, SQL Server connectivity, Admin/Public build notes
+ * docs/MODULES.md — per-module features, routes/endpoints, DTO/OpenAPI refs, UI affiliation (Admin/Public)
+ * docs/DATABASE.md — tables from database.json, seed coverage rule (exactly 200 rows per table), relationships, constraints
+ * docs/OPERATIONS.md, docs/PERF_NOTES.md (Stage 7 outputs)
+20) Safety & Prohibited List
+ * ❌ Any schema source besides database.json (including migrations/ad-hoc scripts)
+...
+21) Runbook — Auto-Start on read CONTRIBUTING_AGENT.txt and begin
+ * Re-read A) Start-of-Run Mandatory Reading (this file + old_0905.txt + new_0905.txt + database.json).
