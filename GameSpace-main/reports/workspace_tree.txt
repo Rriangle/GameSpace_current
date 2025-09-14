@@ -1,4 +1,4 @@
-.
+GameSpace-main
 ├── coverlet.runsettings
 ├── docker-compose.prod.yml
 ├── docker-compose.staging.yml
@@ -254,13 +254,14 @@
 ├── README.md
 ├── reports
 │   ├── file_tree.txt
-│   └── _latest
-│       ├── build_status.txt
-│       ├── ci_status.txt
-│       ├── db_table_count.txt
-│       ├── dotnet_build.txt
-│       ├── dotnet_test.txt
-│       └── todo_scan.txt
+│   ├── _latest
+│   │   ├── build_status.txt
+│   │   ├── ci_status.txt
+│   │   ├── db_table_count.txt
+│   │   ├── dotnet_build.txt
+│   │   ├── dotnet_test.txt
+│   │   └── todo_scan.txt
+│   └── workspace_tree.txt
 ├── run-tests.sh
 └── scripts
     ├── backup-db.sh
@@ -301,4 +302,4 @@
     ├── stop.sh
     └── update.sh
 
-56 directories, 246 files
+56 directories, 247 files
