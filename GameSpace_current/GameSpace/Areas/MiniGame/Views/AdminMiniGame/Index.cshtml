@@ -1,0 +1,327 @@
+@model IEnumerable<GameSpace.Models.MiniGame>
+@{
+    ViewData["Title"] = "小遊戲記錄管理";
+    ViewData["BreadcrumbController"] = "小遊戲系統";
+    ViewData["BreadcrumbAction"] = "遊戲記錄";
+    Layout = "_AdminLayout";
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">小遊戲記錄管理</h1>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("Statistics")" class="btn btn-info btn-sm">
+            <i class="fas fa-chart-line me-1"></i>遊戲統計
+        </a>
+        <a href="@Url.Action("Settings")" class="btn btn-warning btn-sm">
+            <i class="fas fa-cogs me-1"></i>遊戲設定（Stub）
+        </a>
+        <button class="btn btn-outline-primary btn-sm" onclick="exportGames()">
+            <i class="fas fa-download me-1"></i>匯出資料
+        </button>
+    </div>
+</div>
+
+<!-- 搜尋篩選區 -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">搜尋篩選</h6>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-2">
+                <label for="result" class="form-label">遊戲結果</label>
+                <select class="form-select" id="result" name="result">
+                    <option value="">全部結果</option>
+                    <option value="Win" @(ViewBag.Result == "Win" ? "selected" : "")>勝利</option>
+                    <option value="Lose" @(ViewBag.Result == "Lose" ? "selected" : "")>失敗</option>
+                    <option value="Abort" @(ViewBag.Result == "Abort" ? "selected" : "")>中途退出</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="level" class="form-label">關卡等級</label>
+                <select class="form-select" id="level" name="level">
+                    <option value="">全部關卡</option>
+                    <option value="1" @(ViewBag.Level == 1 ? "selected" : "")>第 1 關</option>
+                    <option value="2" @(ViewBag.Level == 2 ? "selected" : "")>第 2 關</option>
+                    <option value="3" @(ViewBag.Level == 3 ? "selected" : "")>第 3 關</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="userId" class="form-label">會員ID</label>
+                <input type="number" class="form-control" id="userId" name="userId" 
+                       value="@ViewBag.UserId" placeholder="會員ID">
+            </div>
+            <div class="col-md-2">
+                <label for="startDate" class="form-label">開始日期</label>
+                <input type="date" class="form-control" id="startDate" name="startDate" 
+                       value="@(ViewBag.StartDate?.ToString("yyyy-MM-dd"))">
+            </div>
+            <div class="col-md-2">
+                <label for="endDate" class="form-label">結束日期</label>
+                <input type="date" class="form-control" id="endDate" name="endDate" 
+                       value="@(ViewBag.EndDate?.ToString("yyyy-MM-dd"))">
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <div class="btn-group w-100">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search me-1"></i>搜尋
+                    </button>
+                    <a href="@Url.Action("Index")" class="btn btn-outline-secondary">
+                        <i class="fas fa-times me-1"></i>清除
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 遊戲記錄列表 -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">遊戲記錄列表</h6>
+        <span class="badge bg-info">共 @ViewBag.TotalCount 筆記錄</span>
+    </div>
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>遊戲ID</th>
+                            <th>玩家資訊</th>
+                            <th>關卡資訊</th>
+                            <th>遊戲時間</th>
+                            <th>結果</th>
+                            <th>獎勵</th>
+                            <th>寵物影響</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var game in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="badge bg-secondary">#@game.PlayID</span>
+                                </td>
+                                <td>
+                                    <div>
+                                        <strong>@game.User?.UserName</strong>
+                                        <small class="text-muted d-block">@game.User?.UserNickName</small>
+                                        <a href="@Url.Action("Details", "AdminWallet", new { userId = game.UserID })" 
+                                           class="badge bg-light text-primary text-decoration-none">
+                                            玩家: @game.UserID
+                                        </a>
+                                        <span class="badge bg-light text-secondary">
+                                            寵物: @game.PetID
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <div>
+                                        <span class="badge bg-warning text-dark fs-6">第 @game.Level 關</span>
+                                        <small class="text-muted d-block">@game.MonsterCount 隻怪物</small>
+                                        <small class="text-muted">速度 @game.SpeedMultiplier.ToString("F1")x</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <strong>@game.StartTime.ToString("MM/dd HH:mm")</strong>
+                                        @if (game.EndTime.HasValue)
+                                        {
+                                            <small class="text-muted d-block">
+                                                ~ @game.EndTime.Value.ToString("HH:mm")
+                                            </small>
+                                            @{
+                                                var duration = game.EndTime.Value - game.StartTime;
+                                            }
+                                            <span class="badge bg-light text-dark">
+                                                @duration.TotalMinutes.ToString("F0") 分鐘
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <small class="text-danger d-block">未完成</small>
+                                        }
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge @GetResultBadgeClass(game.Result) fs-6">
+                                        @GetResultText(game.Result)
+                                    </span>
+                                    @if (game.Aborted)
+                                    {
+                                        <small class="text-warning d-block">
+                                            <i class="fas fa-exclamation-triangle me-1"></i>中途退出
+                                        </small>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <div>
+                                        @if (game.PointsChanged > 0)
+                                        {
+                                            <span class="badge bg-success">+@game.PointsChanged 點</span>
+                                        }
+                                        @if (game.ExpGained > 0)
+                                        {
+                                            <span class="badge bg-info d-block mt-1">+@game.ExpGained EXP</span>
+                                        }
+                                        @if (!string.IsNullOrEmpty(game.CouponGained) && game.CouponGained != "0")
+                                        {
+                                            <span class="badge bg-warning text-dark d-block mt-1">
+                                                <i class="fas fa-ticket-alt me-1"></i>@game.CouponGained
+                                            </span>
+                                        }
+                                        @if (game.PointsChanged == 0 && game.ExpGained == 0 && (string.IsNullOrEmpty(game.CouponGained) || game.CouponGained == "0"))
+                                        {
+                                            <span class="text-muted">無獎勵</span>
+                                        }
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <div class="small">
+                                        @if (game.HungerDelta != 0)
+                                        {
+                                            <span class="badge @(game.HungerDelta > 0 ? "bg-success" : "bg-danger")">
+                                                飢餓 @(game.HungerDelta > 0 ? "+" : "")@game.HungerDelta
+                                            </span>
+                                        }
+                                        @if (game.MoodDelta != 0)
+                                        {
+                                            <span class="badge @(game.MoodDelta > 0 ? "bg-success" : "bg-danger") d-block mt-1">
+                                                心情 @(game.MoodDelta > 0 ? "+" : "")@game.MoodDelta
+                                            </span>
+                                        }
+                                        @if (game.StaminaDelta != 0)
+                                        {
+                                            <span class="badge @(game.StaminaDelta > 0 ? "bg-success" : "bg-danger") d-block mt-1">
+                                                體力 @(game.StaminaDelta > 0 ? "+" : "")@game.StaminaDelta
+                                            </span>
+                                        }
+                                        @if (game.CleanlinessDelta != 0)
+                                        {
+                                            <span class="badge @(game.CleanlinessDelta > 0 ? "bg-success" : "bg-danger") d-block mt-1">
+                                                清潔 @(game.CleanlinessDelta > 0 ? "+" : "")@game.CleanlinessDelta
+                                            </span>
+                                        }
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="@Url.Action("Details", new { id = game.PlayID })" 
+                                           class="btn btn-outline-primary" title="查看明細">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-outline-info" 
+                                                onclick="viewGameReplay(@game.PlayID)" title="遊戲回放（Stub）">
+                                            <i class="fas fa-play"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 分頁 -->
+            @if (ViewBag.TotalPages > 1)
+            {
+                <nav aria-label="頁面導航">
+                    <ul class="pagination justify-content-center">
+                        @if (ViewBag.Page > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("Index", new { 
+                                    page = 1, 
+                                    pageSize = ViewBag.PageSize, 
+                                    result = ViewBag.Result,
+                                    level = ViewBag.Level,
+                                    userId = ViewBag.UserId,
+                                    startDate = ViewBag.StartDate?.ToString("yyyy-MM-dd"),
+                                    endDate = ViewBag.EndDate?.ToString("yyyy-MM-dd")
+                                })">
+                                    <i class="fas fa-angle-double-left"></i>
+                                </a>
+                            </li>
+                        }
+
+                        @for (int i = Math.Max(1, ViewBag.Page - 2); i <= Math.Min(ViewBag.TotalPages, ViewBag.Page + 2); i++)
+                        {
+                            <li class="page-item @(i == ViewBag.Page ? "active" : "")">
+                                <a class="page-link" href="@Url.Action("Index", new { 
+                                    page = i, 
+                                    pageSize = ViewBag.PageSize, 
+                                    result = ViewBag.Result,
+                                    level = ViewBag.Level,
+                                    userId = ViewBag.UserId,
+                                    startDate = ViewBag.StartDate?.ToString("yyyy-MM-dd"),
+                                    endDate = ViewBag.EndDate?.ToString("yyyy-MM-dd")
+                                })">@i</a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            }
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-gamepad fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">目前沒有遊戲記錄</h5>
+                <p class="text-muted">請調整搜尋條件或確認資料範圍</p>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function exportGames() {
+            alert('匯出功能開發中');
+        }
+
+        function viewGameReplay(playId) {
+            alert(`遊戲回放功能開發中\n遊戲ID：${playId}\n\n此功能將提供遊戲過程的詳細回放與分析`);
+        }
+
+        // 設定預設日期範圍（最近7天）
+        $(document).ready(function() {
+            if (!$('#startDate').val()) {
+                var lastWeek = new Date();
+                lastWeek.setDate(lastWeek.getDate() - 7);
+                $('#startDate').val(lastWeek.toISOString().split('T')[0]);
+            }
+            
+            if (!$('#endDate').val()) {
+                var today = new Date();
+                $('#endDate').val(today.toISOString().split('T')[0]);
+            }
+        });
+    </script>
+}
+
+@functions {
+    string GetResultBadgeClass(string result)
+    {
+        return result?.ToLower() switch
+        {
+            "win" => "bg-success",
+            "lose" => "bg-danger",
+            "abort" => "bg-warning text-dark",
+            _ => "bg-secondary"
+        };
+    }
+
+    string GetResultText(string result)
+    {
+        return result?.ToLower() switch
+        {
+            "win" => "勝利",
+            "lose" => "失敗",
+            "abort" => "中途退出",
+            _ => "未知"
+        };
+    }
+}

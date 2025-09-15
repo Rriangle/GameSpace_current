@@ -1,0 +1,411 @@
+@model IEnumerable<GameSpace.Models.Pet>
+@{
+    ViewData["Title"] = "寵物管理";
+    ViewData["BreadcrumbController"] = "寵物系統";
+    ViewData["BreadcrumbAction"] = "寵物列表";
+    Layout = "_AdminLayout";
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">寵物管理</h1>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("Statistics")" class="btn btn-info btn-sm">
+            <i class="fas fa-chart-pie me-1"></i>寵物統計
+        </a>
+        <button class="btn btn-outline-warning btn-sm" onclick="batchMaintenance()">
+            <i class="fas fa-tools me-1"></i>批次維護（Stub）
+        </button>
+        <button class="btn btn-outline-primary btn-sm" onclick="exportPets()">
+            <i class="fas fa-download me-1"></i>匯出資料
+        </button>
+    </div>
+</div>
+
+<!-- 搜尋篩選區 -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">搜尋篩選</h6>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label for="search" class="form-label">搜尋</label>
+                <input type="text" class="form-control" id="search" name="search" 
+                       value="@ViewBag.Search" placeholder="寵物名稱或主人帳號">
+            </div>
+            <div class="col-md-2">
+                <label for="minLevel" class="form-label">最低等級</label>
+                <input type="number" class="form-control" id="minLevel" name="minLevel" 
+                       value="@ViewBag.MinLevel" min="0" placeholder="0">
+            </div>
+            <div class="col-md-2">
+                <label for="maxLevel" class="form-label">最高等級</label>
+                <input type="number" class="form-control" id="maxLevel" name="maxLevel" 
+                       value="@ViewBag.MaxLevel" min="0" placeholder="無限制">
+            </div>
+            <div class="col-md-2">
+                <label for="pageSize" class="form-label">每頁筆數</label>
+                <select class="form-select" id="pageSize" name="pageSize">
+                    <option value="20" @(ViewBag.PageSize == 20 ? "selected" : "")>20</option>
+                    <option value="50" @(ViewBag.PageSize == 50 ? "selected" : "")>50</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <div class="btn-group w-100">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search me-1"></i>搜尋
+                    </button>
+                    <a href="@Url.Action("Index")" class="btn btn-outline-secondary">
+                        <i class="fas fa-times me-1"></i>清除
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 寵物列表 -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">寵物列表</h6>
+        <span class="badge bg-info">共 @ViewBag.TotalCount 隻寵物</span>
+    </div>
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>寵物ID</th>
+                            <th>寵物資訊</th>
+                            <th>主人</th>
+                            <th>等級/經驗</th>
+                            <th>五維屬性</th>
+                            <th>外觀設定</th>
+                            <th>最後更新</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var pet in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="badge bg-secondary">#@pet.PetID</span>
+                                </td>
+                                <td>
+                                    <div>
+                                        <strong class="text-primary">@pet.PetName</strong>
+                                        <small class="text-muted d-block">史萊姆寵物</small>
+                                        <span class="badge @GetHealthBadgeClass(pet.Health)">
+                                            @GetHealthStatus(pet.Health)
+                                        </span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <strong>@pet.User?.UserName</strong>
+                                        <small class="text-muted d-block">@pet.User?.UserNickName</small>
+                                        <a href="@Url.Action("Details", "AdminWallet", new { userId = pet.UserID })" 
+                                           class="badge bg-light text-primary text-decoration-none">
+                                            ID: @pet.UserID
+                                        </a>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <div>
+                                        <span class="badge bg-warning text-dark fs-6">Lv.@pet.Level</span>
+                                        <div class="progress mt-2" style="height: 8px;">
+                                            @{
+                                                // 簡化經驗值進度計算（實際應依據升級公式）
+                                                var nextLevelExp = (pet.Level + 1) * 100;
+                                                var currentExp = pet.Experience % 100;
+                                                var progressPercent = Math.Min(100, currentExp);
+                                            }
+                                            <div class="progress-bar bg-info" role="progressbar" 
+                                                 style="width: @progressPercent%" 
+                                                 aria-valuenow="@currentExp" aria-valuemin="0" aria-valuemax="100">
+                                            </div>
+                                        </div>
+                                        <small class="text-muted">@pet.Experience EXP</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="row g-1">
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-drumstick-bite text-warning me-1" title="飢餓"></i>
+                                                <div class="progress flex-fill" style="height: 6px;">
+                                                    <div class="progress-bar @GetAttributeBarClass(pet.Hunger)" 
+                                                         style="width: @pet.Hunger%"></div>
+                                                </div>
+                                                <small class="ms-1">@pet.Hunger</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-smile text-success me-1" title="心情"></i>
+                                                <div class="progress flex-fill" style="height: 6px;">
+                                                    <div class="progress-bar @GetAttributeBarClass(pet.Mood)" 
+                                                         style="width: @pet.Mood%"></div>
+                                                </div>
+                                                <small class="ms-1">@pet.Mood</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-running text-primary me-1" title="體力"></i>
+                                                <div class="progress flex-fill" style="height: 6px;">
+                                                    <div class="progress-bar @GetAttributeBarClass(pet.Stamina)" 
+                                                         style="width: @pet.Stamina%"></div>
+                                                </div>
+                                                <small class="ms-1">@pet.Stamina</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-soap text-info me-1" title="清潔"></i>
+                                                <div class="progress flex-fill" style="height: 6px;">
+                                                    <div class="progress-bar @GetAttributeBarClass(pet.Cleanliness)" 
+                                                         style="width: @pet.Cleanliness%"></div>
+                                                </div>
+                                                <small class="ms-1">@pet.Cleanliness</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 mt-1">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-heart text-danger me-1" title="健康"></i>
+                                                <div class="progress flex-fill" style="height: 8px;">
+                                                    <div class="progress-bar @GetAttributeBarClass(pet.Health)" 
+                                                         style="width: @pet.Health%"></div>
+                                                </div>
+                                                <small class="ms-1"><strong>@pet.Health</strong></small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <div>
+                                        <div class="d-flex align-items-center justify-content-center mb-1">
+                                            <div class="rounded-circle me-2" 
+                                                 style="width: 20px; height: 20px; background-color: @pet.SkinColor;" 
+                                                 title="膚色：@pet.SkinColor"></div>
+                                            <small class="text-muted">@pet.SkinColor</small>
+                                        </div>
+                                        <small class="text-muted d-block">背景：@pet.BackgroundColor</small>
+                                        <small class="text-muted">
+                                            換色：@pet.ColorChangedTime.ToString("MM/dd")
+                                        </small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <small class="text-muted">升級：@pet.LevelUpTime.ToString("yyyy/MM/dd")</small>
+                                        <small class="text-muted d-block">換色：@pet.ColorChangedTime.ToString("yyyy/MM/dd")</small>
+                                        <span class="badge bg-light text-dark">
+                                            @GetTimeAgo(pet.LevelUpTime)
+                                        </span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="@Url.Action("Details", new { id = pet.PetID })" 
+                                           class="btn btn-outline-primary" title="查看明細">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-outline-warning" 
+                                                onclick="adjustPetStatus(@pet.PetID, '@pet.PetName')" title="調整狀態（Stub）">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 分頁 -->
+            @if (ViewBag.TotalPages > 1)
+            {
+                <nav aria-label="頁面導航">
+                    <ul class="pagination justify-content-center">
+                        @if (ViewBag.Page > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("Index", new { 
+                                    page = 1, 
+                                    pageSize = ViewBag.PageSize, 
+                                    search = ViewBag.Search,
+                                    minLevel = ViewBag.MinLevel,
+                                    maxLevel = ViewBag.MaxLevel 
+                                })">
+                                    <i class="fas fa-angle-double-left"></i>
+                                </a>
+                            </li>
+                        }
+
+                        @for (int i = Math.Max(1, ViewBag.Page - 2); i <= Math.Min(ViewBag.TotalPages, ViewBag.Page + 2); i++)
+                        {
+                            <li class="page-item @(i == ViewBag.Page ? "active" : "")">
+                                <a class="page-link" href="@Url.Action("Index", new { 
+                                    page = i, 
+                                    pageSize = ViewBag.PageSize, 
+                                    search = ViewBag.Search,
+                                    minLevel = ViewBag.MinLevel,
+                                    maxLevel = ViewBag.MaxLevel 
+                                })">@i</a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            }
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-paw fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">目前沒有寵物資料</h5>
+                <p class="text-muted">請調整搜尋條件或確認資料範圍</p>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- 寵物狀態調整模態框 -->
+<div class="modal fade" id="adjustPetModal" tabindex="-1" aria-labelledby="adjustPetModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="adjustPetModalLabel">調整寵物狀態</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="adjustPetForm">
+                    <input type="hidden" id="adjustPetId" name="petId">
+                    <div class="mb-3">
+                        <label for="petName" class="form-label">寵物名稱</label>
+                        <input type="text" class="form-control" id="petName" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="adjustmentType" class="form-label">調整類型</label>
+                        <select class="form-select" id="adjustmentType" name="adjustmentType" required>
+                            <option value="">請選擇調整類型</option>
+                            <option value="Level">等級</option>
+                            <option value="Experience">經驗值</option>
+                            <option value="Hunger">飢餓值</option>
+                            <option value="Mood">心情值</option>
+                            <option value="Stamina">體力值</option>
+                            <option value="Cleanliness">清潔值</option>
+                            <option value="Health">健康值</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="adjustValue" class="form-label">調整值</label>
+                        <input type="number" class="form-control" id="adjustValue" name="value" 
+                               placeholder="新的數值" required min="0" max="100">
+                        <div class="form-text">屬性值範圍：0-100，等級和經驗值無上限</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="adjustReason" class="form-label">調整原因</label>
+                        <textarea class="form-control" id="adjustReason" name="reason" rows="3" 
+                                  placeholder="請說明調整原因（必填）" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-warning" onclick="submitPetAdjustment()">確認調整（Stub）</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function exportPets() {
+            alert('匯出功能開發中');
+        }
+
+        function batchMaintenance() {
+            alert('批次維護功能開發中\n\n此功能將提供：\n- 每日屬性衰減\n- 等級獎勵發放\n- 屬性重置\n- 經驗值加成');
+        }
+
+        function adjustPetStatus(petId, petName) {
+            $('#adjustPetId').val(petId);
+            $('#petName').val(petName);
+            $('#adjustmentType').val('');
+            $('#adjustValue').val('');
+            $('#adjustReason').val('');
+            $('#adjustPetModal').modal('show');
+        }
+
+        function submitPetAdjustment() {
+            var petId = $('#adjustPetId').val();
+            var adjustmentType = $('#adjustmentType').val();
+            var value = $('#adjustValue').val();
+            var reason = $('#adjustReason').val();
+
+            if (!adjustmentType || !value || !reason) {
+                alert('請填寫完整的調整資訊');
+                return;
+            }
+
+            // Stub 實作：寵物狀態調整功能
+            alert(`寵物狀態調整功能開發中\n\n寵物ID：${petId}\n調整類型：${adjustmentType}\n調整值：${value}\n原因：${reason}\n\n此功能包含完整驗證與流程說明，實際寫入前先經過後續階段與規格允許再開啟`);
+            $('#adjustPetModal').modal('hide');
+        }
+
+        // 屬性類型變更時調整輸入限制
+        $('#adjustmentType').change(function() {
+            var type = $(this).val();
+            var $valueInput = $('#adjustValue');
+            
+            if (type === 'Level' || type === 'Experience') {
+                $valueInput.attr('max', '999999');
+            } else {
+                $valueInput.attr('max', '100');
+            }
+        });
+    </script>
+}
+
+@functions {
+    string GetHealthBadgeClass(int health)
+    {
+        if (health >= 80) return "bg-success";
+        if (health >= 60) return "bg-info";
+        if (health >= 40) return "bg-warning text-dark";
+        if (health >= 20) return "bg-danger";
+        return "bg-dark";
+    }
+
+    string GetHealthStatus(int health)
+    {
+        if (health >= 80) return "很健康";
+        if (health >= 60) return "健康";
+        if (health >= 40) return "一般";
+        if (health >= 20) return "不佳";
+        return "生病";
+    }
+
+    string GetAttributeBarClass(int value)
+    {
+        if (value >= 80) return "bg-success";
+        if (value >= 60) return "bg-info";
+        if (value >= 40) return "bg-warning";
+        if (value >= 20) return "bg-danger";
+        return "bg-dark";
+    }
+
+    string GetTimeAgo(DateTime time)
+    {
+        var timeSpan = DateTime.Now - time;
+        if (timeSpan.TotalDays >= 1)
+            return $"{(int)timeSpan.TotalDays} 天前";
+        if (timeSpan.TotalHours >= 1)
+            return $"{(int)timeSpan.TotalHours} 小時前";
+        return "今天";
+    }
+}
