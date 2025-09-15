@@ -13,7 +13,7 @@
             <i class="fas fa-chart-pie me-1"></i>寵物統計
         </a>
         <button class="btn btn-outline-warning btn-sm" onclick="batchMaintenance()">
-            <i class="fas fa-tools me-1"></i>批次維護（Stub）
+            <i class="fas fa-tools me-1"></i>批次維護（預留實作）
         </button>
         <button class="btn btn-outline-primary btn-sm" onclick="exportPets()">
             <i class="fas fa-download me-1"></i>匯出資料
@@ -215,7 +215,7 @@
                                             <i class="fas fa-eye"></i>
                                         </a>
                                         <button type="button" class="btn btn-outline-warning" 
-                                                onclick="adjustPetStatus(@pet.PetID, '@pet.PetName')" title="調整狀態（Stub）">
+                                                onclick="adjustPetStatus(@pet.PetID, '@pet.PetName')" title="調整狀態（預留實作）">
                                             <i class="fas fa-edit"></i>
                                         </button>
                                     </div>
@@ -316,7 +316,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-warning" onclick="submitPetAdjustment()">確認調整（Stub）</button>
+                <button type="button" class="btn btn-warning" onclick="submitPetAdjustment()">確認調整（預留實作）</button>
             </div>
         </div>
     </div>
@@ -352,7 +352,7 @@
                 return;
             }
 
-            // Stub 實作：寵物狀態調整功能
+            // 預留實作：寵物狀態調整功能
             alert(`寵物狀態調整功能開發中\n\n寵物ID：${petId}\n調整類型：${adjustmentType}\n調整值：${value}\n原因：${reason}\n\n此功能包含完整驗證與流程說明，實際寫入前先經過後續階段與規格允許再開啟`);
             $('#adjustPetModal').modal('hide');
         }

@@ -148,13 +148,13 @@ namespace GameSpace.Areas.MiniGame.Controllers
                     {
                         controllers = new[] { "AdminPetController" },
                         tables = new[] { "Pet" },
-                        features = new[] { "Read-first查詢", "狀態調整Stub" }
+                        features = new[] { "Read-first查詢", "狀態調整預留實作" }
                     },
                     MiniGame = new
                     {
                         controllers = new[] { "AdminMiniGameController" },
                         tables = new[] { "MiniGame" },
-                        features = new[] { "Read-first查詢", "設定管理Stub" }
+                        features = new[] { "Read-first查詢", "設定管理預留實作" }
                     }
                 },
                 compliance = new
@@ -163,7 +163,7 @@ namespace GameSpace.Areas.MiniGame.Controllers
                     ui_style = "SB Admin 風格",
                     read_first = "優先完成查閱與篩選功能",
                     crud_limitation = "僅型別表提供 CRUD",
-                    stub_approach = "其餘表為審閱頁或不破壞規格的 Stub",
+                    reserved_approach = "其餘表為審閱頁或不破壞規格的預留實作",
                     language = "所有人類可讀輸出皆為 zh-TW"
                 },
                 timestamp = DateTime.UtcNow
