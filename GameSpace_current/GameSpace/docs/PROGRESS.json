@@ -1,11 +1,11 @@
 {
-  "overall": 75,
+  "overall": 85,
   "stages": {
     "stage0": 100,
     "stage1": 100,
-    "stage2": 90,
-    "stage3": 60,
-    "stage4": 50,
+    "stage2": 100,
+    "stage3": 90,
+    "stage4": 80,
     "stage5": 0,
     "stage6": 0,
     "stage7": 0,
