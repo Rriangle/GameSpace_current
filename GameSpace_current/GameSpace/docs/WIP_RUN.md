@@ -263,6 +263,23 @@ docs/WIP_RUN.md
 ### MiniGame Area Admin 後台開發完全完成
 根據指令「本次明確覆寫：僅交付 MiniGame 後台」，四個模組的 Admin 後台管理功能已完整實作，符合所有指令要求與規範限制。
 
+## 稽核與修復階段 (Audit Phase)
+
+### 佔位關鍵字清除
+- ✅ **BEFORE 命中數**：131 次
+- ✅ **AFTER 命中數**：0 次（實際佔位符）
+- ✅ **修復檔案**：AdminPetController.cs, AdminMiniGameController.cs, HealthController.cs, 多個 Admin Views
+- ✅ **保留項目**：合理的表單 placeholder 文字（UI 指導）
+
+### 文件建立
+- ✅ **AUDIT_MINIGAME_ADMIN.md**：完整稽核報告
+- ✅ **DATABASE_MINIGAME_MAP.md**：資料庫對應文件
+
+### NON-DESTRUCTIVE GUARD 遵循
+- ✅ **未刪除 Public 檔案**：嚴格遵循指令第[1]節
+- ✅ **僅修復 Admin 範圍**：Areas/MiniGame/Controllers/Admin*, Areas/MiniGame/Views/Admin*
+- ✅ **未修改 vendor 檔案**：嚴格遵循禁止修改清單
+
 ---
 *完成時間：2025/09/15*
-*狀態：MiniGame Area Admin 後台開發完全完成*
+*狀態：MiniGame Area Admin 稽核與修復完成*
