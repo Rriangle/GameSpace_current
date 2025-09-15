@@ -1,0 +1,287 @@
+is_global = true
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = GameSpace
+build_property.RootNamespace = GameSpace
+build_property.ProjectDir = /workspace/GameSpace_current/GameSpace/
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = /workspace/GameSpace_current/GameSpace
+build_property._RazorSourceGeneratorDebug = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/Admin/Views/Admin/ChatMessages.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvQWRtaW4vVmlld3MvQWRtaW4vQ2hhdE1lc3NhZ2VzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/Admin/Views/Admin/Coupons.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvQWRtaW4vVmlld3MvQWRtaW4vQ291cG9ucy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/Admin/Views/Admin/CreateProduct.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvQWRtaW4vVmlld3MvQWRtaW4vQ3JlYXRlUHJvZHVjdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/Admin/Views/Admin/EditProduct.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvQWRtaW4vVmlld3MvQWRtaW4vRWRpdFByb2R1Y3QuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/Admin/Views/Admin/EVouchers.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvQWRtaW4vVmlld3MvQWRtaW4vRVZvdWNoZXJzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/Admin/Views/Admin/ForumDetails.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvQWRtaW4vVmlld3MvQWRtaW4vRm9ydW1EZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/Admin/Views/Admin/Forums.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvQWRtaW4vVmlld3MvQWRtaW4vRm9ydW1zLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/Admin/Views/Admin/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvQWRtaW4vVmlld3MvQWRtaW4vSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/Admin/Views/Admin/OrderDetails.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvQWRtaW4vVmlld3MvQWRtaW4vT3JkZXJEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/Admin/Views/Admin/Orders.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvQWRtaW4vVmlld3MvQWRtaW4vT3JkZXJzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/Admin/Views/Admin/Pets.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvQWRtaW4vVmlld3MvQWRtaW4vUGV0cy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/Admin/Views/Admin/ProductDetails.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvQWRtaW4vVmlld3MvQWRtaW4vUHJvZHVjdERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/Admin/Views/Admin/Products.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvQWRtaW4vVmlld3MvQWRtaW4vUHJvZHVjdHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/Admin/Views/Admin/Settings.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvQWRtaW4vVmlld3MvQWRtaW4vU2V0dGluZ3MuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/Admin/Views/Admin/UserDetails.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvQWRtaW4vVmlld3MvQWRtaW4vVXNlckRldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/Admin/Views/Admin/Users.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvQWRtaW4vVmlld3MvQWRtaW4vVXNlcnMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/Admin/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvQWRtaW4vVmlld3MvU2hhcmVkL19MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/Admin/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvQWRtaW4vVmlld3MvX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/AdminMiniGame/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvQWRtaW5NaW5pR2FtZS9JbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/AdminPet/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvQWRtaW5QZXQvSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/AdminSignInStats/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvQWRtaW5TaWduSW5TdGF0cy9EZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/AdminSignInStats/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvQWRtaW5TaWduSW5TdGF0cy9JbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/AdminSignInStats/Statistics.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvQWRtaW5TaWduSW5TdGF0cy9TdGF0aXN0aWNzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/AdminWallet/Coupons.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvQWRtaW5XYWxsZXQvQ291cG9ucy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/AdminWallet/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvQWRtaW5XYWxsZXQvRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/AdminWallet/EVouchers.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvQWRtaW5XYWxsZXQvRVZvdWNoZXJzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/AdminWallet/History.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvQWRtaW5XYWxsZXQvSGlzdG9yeS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/AdminWallet/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvQWRtaW5XYWxsZXQvSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/AdminWalletTypes/CouponTypes.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvQWRtaW5XYWxsZXRUeXBlcy9Db3Vwb25UeXBlcy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/AdminWalletTypes/CreateCouponType.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvQWRtaW5XYWxsZXRUeXBlcy9DcmVhdGVDb3Vwb25UeXBlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/AdminWalletTypes/EVoucherTypes.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvQWRtaW5XYWxsZXRUeXBlcy9FVm91Y2hlclR5cGVzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/Community/Chat.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvQ29tbXVuaXR5L0NoYXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/Community/Friends.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvQ29tbXVuaXR5L0ZyaWVuZHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/Community/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvQ29tbXVuaXR5L0luZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/Community/Leaderboard.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvQ29tbXVuaXR5L0xlYWRlcmJvYXJkLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/Community/Profile.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvQ29tbXVuaXR5L1Byb2ZpbGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/Forum/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvRm9ydW0vQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/Forum/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvRm9ydW0vRGVsZXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/Forum/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvRm9ydW0vRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/Forum/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvRm9ydW0vRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/Forum/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvRm9ydW0vSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/Forum/MyForums.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvRm9ydW0vTXlGb3J1bXMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/Home/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvSG9tZS9JbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/MiniGame/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvTWluaUdhbWUvSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/Pet/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvUGV0L0luZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/Shared/_AdminLayout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvU2hhcmVkL19BZG1pbkxheW91dC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvU2hhcmVkL19MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/Shared/_Sidebar.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvU2hhcmVkL19TaWRlYmFyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/Shared/_Topbar.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvU2hhcmVkL19Ub3BiYXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/Shop/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvU2hvcC9EZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/Shop/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvU2hvcC9JbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/Shop/OrderDetails.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvU2hvcC9PcmRlckRldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/Shop/Orders.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvU2hvcC9PcmRlcnMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/SignIn/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvU2lnbkluL0luZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/Wallet/AvailableCoupons.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvV2FsbGV0L0F2YWlsYWJsZUNvdXBvbnMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/Wallet/AvailableEVouchers.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvV2FsbGV0L0F2YWlsYWJsZUVWb3VjaGVycy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/Wallet/Coupons.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvV2FsbGV0L0NvdXBvbnMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/Wallet/EVouchers.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvV2FsbGV0L0VWb3VjaGVycy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/Wallet/History.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvV2FsbGV0L0hpc3RvcnkuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/Wallet/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvV2FsbGV0L0luZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/MiniGame/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvTWluaUdhbWUvVmlld3MvX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/Public/Views/Auth/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvUHVibGljL1ZpZXdzL0F1dGgvTG9naW4uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/Public/Views/Auth/Register.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvUHVibGljL1ZpZXdzL0F1dGgvUmVnaXN0ZXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/Public/Views/Home/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvUHVibGljL1ZpZXdzL0hvbWUvSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/Public/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvUHVibGljL1ZpZXdzL1NoYXJlZC9fTGF5b3V0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/GameSpace_current/GameSpace/Areas/Public/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvUHVibGljL1ZpZXdzL19WaWV3SW1wb3J0cy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
