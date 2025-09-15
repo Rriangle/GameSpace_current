@@ -30,18 +30,18 @@
       "features": ["Read-first查詢", "簽到統計", "歷史記錄"]
     },
     "Pet": {
-      "status": "stub_completed",
-      "progress": 80,
+      "status": "completed",
+      "progress": 100,
       "controllers": ["AdminPetController"],
-      "views": [],
-      "features": ["Read-first查詢", "狀態調整Stub", "統計分析"]
+      "views": ["Index", "Details"],
+      "features": ["Read-first查詢", "狀態調整Stub", "統計分析", "五維屬性視覺化"]
     },
     "MiniGame": {
-      "status": "stub_completed",
-      "progress": 80,
+      "status": "completed",
+      "progress": 100,
       "controllers": ["AdminMiniGameController"],
-      "views": [],
-      "features": ["Read-first查詢", "設定管理Stub", "資料清理Stub"]
+      "views": ["Index", "Statistics"],
+      "features": ["Read-first查詢", "設定管理Stub", "資料清理Stub", "統計報表"]
     }
   },
   "compliance": {
