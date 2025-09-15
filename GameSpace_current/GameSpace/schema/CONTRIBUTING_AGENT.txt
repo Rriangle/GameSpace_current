@@ -1,103 +1,643 @@
-// File: CONTRIBUTING_AGENT.txt
-GameSpace — CONTRIBUTING_AGENT.txt
-(Single Source of Truth for process, constraints, module coverage, area partition, runbook, CI/CD, and stage-gated testing)
+// File: CONTRIBUTING_AGENT.txt GameSpace — CONTRIBUTING_AGENT.txt (Single Source of Truth for process, constraints, module coverage, area partition, runbook, CI/CD, and stage-gated testing)
+  
 A) Start-of-Run Mandatory Reading & Drift Repair (READ THIS FIRST)
+ 
 Every time you start, you must re-read these four files, in this order:
- * CONTRIBUTING_AGENT.txt (this file)
- * old_0905.txt
- * new_0905.txt
- * database.json
-This prevents “spec drift.” If you detect any drift (your current or planned work conflicts with these sources), immediately enter Repair Mode:
- * Stop adding new scope.
- * Identify the drift (what conflicts with which source).
- * Fix the code/docs/tests to comply with this file + old/new + database.json.
- * Document the fix briefly in the next commit message (“WHY it drifted, HOW corrected”).
- * Only then resume normal work.
-You are not allowed to proceed with any new changes until drift is repaired.
-0) Global Language Rule (Mandatory)
-All human-readable outputs must be Traditional Chinese (繁體中文).
-This includes:
- * commit messages, PR descriptions
- * logs/console output
- * documentation/READMEs
- * audit reports, progress/status lines
- * UI copy/labels/placeholders
- * and all code comments (C#, Razor, JS/TS, SQL comments, XML doc).
-Do NOT translate or localize code identifiers (class/method/variable names), file paths, or SQL/CLI keywords.
-1) Authority & Arbitration (90% / 10%)
-The three sources are: old_0905.txt, new_0905.txt, and database.json.
-Rule: old_0905.txt + new_0905.txt together describe ~90% of the business spec.
-For the remaining ~10% gaps or conflicts, database.json is the final authority.
-→ Reconcile terms across old/new line-by-line. When ambiguous, take database.json as the ground truth, and note this decision in your commit message.
-2) Visual & Front-End References (put up front)
- * Public (front site): follow index.txt for layout/interaction (Bootstrap-based).
- * Admin (back office): use SB Admin (third-party library; do not modify vendor files).
-Each module must declare its UI affiliation (Admin or Public).
-Do not mix Admin and Public assets/styles in the same page or Area.
-Admin layout tip (C08): Extract sidebar/topbar into Area-level partials
-(e.g., Areas/<Area>/Views/Shared/_Sidebar.cshtml, _Topbar.cshtml). Do not edit vendor files.
-3) Continuous Run, WIP/Progress & Single-Line Status (put up front)
-Only stop when the token budget is nearly exhausted.
-Before you touch anything, read docs/WIP_RUN.md (append-only) and docs/PROGRESS.json (per-stage % + overall).
-On START and on STOP, print exactly one status line (and nothing else):
-> 整體進度: <overall>% | 目前階段: <stage>% | 狀態: <short description>
-> 
-NEXT_RUN_PROMPT may be printed only if you completed ≥ 1 code diff and ≥ 1 commit this run.
-The NEXT_RUN_PROMPT must be one line in Traditional Chinese (繁體中文) that resumes the next precise step.
-Delta Plan (C16): Before STOP, append your next mini-plan to docs/WIP_RUN.md → Next (targets, files, tests, risks/assumptions). Do not print the Delta Plan to console.
-4) Master Kickoff Command (paste every run)
-> Read and follow CONTRIBUTING_AGENT.txt. Continue from last WIP. Work in small chunks (<=3 files, <=400 LOC). Only stop when token budget is nearly exhausted. On START and on STOP, print exactly one line: 整體進度: <overall>% | 目前階段: <stage>% | 狀態: <short description>.
-> 
-5) Delivery Format (Notebook/Diff, enforced)
-Deliver all changes in Notebook/Diff form.
-New file format:
-// File: <relative/path>
-<full file content>
+ 
+ 
+1.  
+CONTRIBUTING_AGENT.txt (this file)
+ 
+ 
+2.  
+old_0905.txt
+ 
+ 
+3.  
+new_0905.txt
+ 
+ 
+4.  
+database.json
+ 
+ 
 
+ 
+This prevents “spec drift.” If you detect any drift (your current or planned work conflicts with these sources), immediately enter Repair Mode:
+ 
+Stop adding new scope.
+ 
+Identify the drift (what conflicts with which source).
+ 
+Fix the code/docs/tests to comply with this file + old/new + database.json.
+ 
+Document the fix briefly in the next commit message (“WHY it drifted, HOW corrected”).
+ 
+Only then resume normal work.
+ 
+You are not allowed to proceed with any new changes until drift is repaired.
+  
+ 
+1. Global Language Rule (Mandatory)
+ 
+
+ 
+All human-readable outputs must be zh-TW. This includes: commit messages, PR descriptions, logs/console output, documentation/READMEs, audit reports, progress/status lines, UI copy/labels/placeholders, and all code comments (C#, Razor, JS/TS, SQL comments, XML doc). Do NOT translate or localize code identifiers (class/method/variable names), file paths, or SQL/CLI keywords.
+  
+ 
+1. Authority & Arbitration (90% / 10%)
+ 
+
+ 
+The three sources are: old_0905.txt, new_0905.txt, and database.json.
+ 
+Rule: old_0905.txt + new_0905.txt together describe ~90% of the business spec. For the remaining ~10% gaps or conflicts, database.json is the final authority. → Reconcile terms across old/new line-by-line. When ambiguous, take database.json as the ground truth, and note this decision in your commit message.
+  
+ 
+1. Visual & Front-End References (put up front)
+ 
+
+ 
+Public (front site): follow index.txt for layout/interaction (Bootstrap-based).
+ 
+Admin (back office): use SB Admin (third-party library; do not modify vendor files).
+ 
+Each module must declare its UI affiliation (Admin or Public).
+ 
+Do not mix Admin and Public assets/styles in the same page or Area.
+ 
+Admin layout tip (C08): Extract sidebar/topbar into Area-level partials (e.g., Areas//Views/Shared/_Sidebar.cshtml, _Topbar.cshtml). Do not edit vendor files.
+  
+ 
+1. Continuous Run, WIP/Progress & Single-Line Status (put up front)
+ 
+
+ 
+Only stop when the token budget is nearly exhausted.
+ 
+Before you touch anything, read docs/WIP_RUN.md (append-only) and docs/PROGRESS.json (per-stage % + overall).
+ 
+On START and on STOP, print exactly one status line (and nothing else): Overall Progress: % | Current Stage: % | Status: 
+ 
+NEXT_RUN_PROMPT may be printed only if you completed ≥ 1 code diff and ≥ 1 commit this run. The NEXT_RUN_PROMPT must be one line in English that resumes the next precise step.
+ 
+Delta Plan (C16): Before STOP, append your next mini-plan to docs/WIP_RUN.md → Next (targets, files, tests, risks/assumptions). Do not print the Delta Plan to console.
+  
+ 
+1. Master Kickoff Command (paste every run)
+ 
+
+ 
+ 
+Read and follow CONTRIBUTING_AGENT.txt. Continue from last WIP. Work in small chunks (<=3 files, <=400 LOC). Only stop when token budget is nearly exhausted. On START and on STOP, print exactly one line: Overall Progress: % | Current Stage: % | Status: .
+ 
+  
+ 
+1. Delivery Format (Notebook/Diff, enforced)
+ 
+
+ 
+Deliver all changes in Notebook/Diff form. New file format:
+ 
+// File: <relative/path> 
+ 
 Existing files: provide minimal diff (unless a full file is explicitly requested).
- * No shell commands (PowerShell/Bash/CMD), including redirection (>/>>).
- * You may use shell locally for non-file-write tasks (e.g., launching, testing), but never include shell in deliverables.
- * All human-readable explanations inside the diff must be Traditional Chinese (繁體中文) (C11).
- * Per-batch limits: ≤ 3 files, ≤ 400 LOC. Then build/test → commit → proceed.
-6) Setup & Execution (local run)
- * Install: Visual Studio 2022+ and SQL Server 2019/2022.
- * Run ./database.json in SSMS → creates GameSpaceDatabase with initial data.
- * Open the ASP.NET Core MVC solution in VS2022.
- * Set appsettings.json connection string (e.g., DefaultConnection) to your SQL Server.
-   * No EF Migrations or schema edits; the schema lives in ./database.json.
- * Build & Run. The Public site appears on localhost.
- * Admin login (seeded): zhang_zhiming_01 / Password001@, li_xiaohua_02 / Password001@.
- * Public check (sample): dragonknight88 / Password001@.
-7) Manual DB Setup & Run Workflow (agent must support)
- * Seeder/Runner does not auto-run on startup; provide a manual entry point (callable code/admin endpoint).
- * Provide a DB connectivity check endpoint (e.g., /healthz/db, returning { status:"ok" } or an error).
- * Seeding must be idempotent, batched (≤ 1000 rows/batch), with Traditional Chinese (繁體中文) structured logs; failures can rollback/retry, with clear comments.
- * README must include a “Manual DB initialization & local run” section and a brief troubleshooting list.
-...
-11) Database as Single Source of Truth (database.json rules)
- * Only database.json defines the schema. No EF Migrations or alternate schemas.
- * Use existing seed data as-is; do not overwrite/delete deterministic keys unless fixing a clear error (document why).
- * Read queries should use AsNoTracking(); project aggregates to read models (avoid returning entities directly).
-11.1) Fake Data — 以繁體中文呈現，規則明確
- * database.json already contains part of the fake data — use it directly.
- * For missing data, the agent must read new_0905.txt, old_0905.txt, and database.json first, then generate realistic data that looks human (daily/weekly rhythms, peaks, revisits/churn, correlated behaviors).
- * All generated data must be persisted with SQL INSERT into the database. No in-memory-only or cache-only data.
- * Target size (simple rule): Every table should end up with exactly 200 rows.
-   * If a table has < 200, insert the missing rows up to exactly 200.
-   * If a table already has > 200, do not delete existing rows; add a DEMO-NOTE: in the commit message explaining the exception.
-   * Idempotency: reruns must not duplicate data (enforce via PK/natural key/UNIQUE). Batch size ≤ 1000.
-   * Random yet reproducible: prefer a global seed Demo.Seed + natural-key hashing (same key → same outputs; different keys → varied outputs).
-   * Constraints: all PK/FK/UNIQUE/CHECK/DEFAULT must pass.
-   * Realism: Traditional Chinese (繁體中文) text, plausible URLs/images (Unsplash/Lorem Picsum acceptable), amounts/frequencies with Zipf/log-normal flavor; inject a small rate of failures/refunds (0.5–2%) without breaking rules.
-...
-19) Documentation Deliverables (must-have; C18 “beginner-friendly”)
- * README.md — overview, quick start, local run, structure (beginner-friendly)
- * docs/DEPLOYMENT.md — GitHub Actions CI/CD, GCP deployment (Cloud Run + Cloud SQL for SQL Server and/or GCE), env vars & secrets table, SQL Server connectivity, Admin/Public build notes
- * docs/MODULES.md — per-module features, routes/endpoints, DTO/OpenAPI refs, UI affiliation (Admin/Public)
- * docs/DATABASE.md — tables from database.json, seed coverage rule (exactly 200 rows per table), relationships, constraints
- * docs/OPERATIONS.md, docs/PERF_NOTES.md (Stage 7 outputs)
-20) Safety & Prohibited List
- * ❌ Any schema source besides database.json (including migrations/ad-hoc scripts)
-...
-21) Runbook — Auto-Start on read CONTRIBUTING_AGENT.txt and begin
- * Re-read A) Start-of-Run Mandatory Reading (this file + old_0905.txt + new_0905.txt + database.json).
+ 
+No shell commands (PowerShell/Bash/CMD), including redirection (>/>>). You may use shell locally for non-file-write tasks (e.g., launching, testing), but never include shell in deliverables.
+ 
+All human-readable explanations inside the diff must be zh-TW (C11).
+ 
+Per-batch limits: ≤ 3 files, ≤ 400 LOC. Then build/test → commit → proceed.
+  
+ 
+1. Setup & Execution (local run)
+ 
+
+ 
+ 
+1.  
+Install: Visual Studio 2022+ and SQL Server 2019/2022.
+ 
+ 
+2.  
+Run ./database.json in SSMS → creates GameSpaceDatabase with initial data.
+ 
+ 
+3.  
+Open the ASP.NET Core MVC solution in VS2022.
+ 
+ 
+4.  
+Set appsettings.json connection string (e.g., DefaultConnection) to your SQL Server. No EF Migrations or schema edits; the schema lives in ./database.json.
+ 
+ 
+5.  
+Build & Run. The Public site appears on localhost.
+ 
+ 
+6.  
+Admin login (seeded): zhang_zhiming_01 / Password001@, li_xiaohua_02 / Password001@.
+ 
+ 
+7.  
+Public check (sample): dragonknight88 / Password001@.
+ 
+ 
+
+  
+ 
+1. Manual DB Setup & Run Workflow (agent must support)
+ 
+
+ 
+Seeder/Runner does not auto-run on startup; provide a manual entry point (callable code/admin endpoint).
+ 
+Provide a DB connectivity check endpoint (e.g., /healthz/db, returning { status:"ok" } or an error).
+ 
+Seeding must be idempotent, batched (≤ 1000 rows/batch), with structured logs (message in zh-TW, field keys in English); failures can rollback/retry, with clear comments.
+ 
+README must include a “Manual DB initialization & local run” section and a brief troubleshooting list.
+  
+ 
+1. Team Area Partition (STRICT) & Non-modifiable list (C06)
+ 
+
+ 
+Use ASP.NET Core MVC Areas; one module per Area.
+ 
+Your assigned Area for initial delivery: MiniGame (must include 4 modules):
+ 
+ 
+1.  
+User_Wallet (points/coupons/e-vouchers) — tables: User_Wallet, CouponType, Coupon, EVoucherType, EVoucher, EVoucherToken, EVoucherRedeemLog, WalletHistory
+ 
+ 
+2.  
+UserSignInStats
+ 
+ 
+3.  
+Pet
+ 
+ 
+4.  
+MiniGame
+ 
+ 
+
+ 
+Paths: Areas/MiniGame/Controllers|Models|Services|Views/** Area layout: Areas/MiniGame/Views/Shared/_Layout.cshtml Routing: [Area("MiniGame")] → /MiniGame/{controller}/{action}/{id?}
+ 
+Do not edit (unless explicitly authorized):
+ 
+Vendor libs: wwwroot/lib/sb-admin/, wwwroot/lib/bootstrap/, wwwroot/lib/font-awesome/, wwwroot/lib/jquery/
+ 
+Global layout: Views/Shared/_Layout.cshtml
+ 
+Other modules’ code, DB migrations, libman.json, any appsettings*
+ 
+Never mix controllers/views/services across Areas.
+  
+ 
+1. Project Completion Mandate (cover the whole project)
+ 
+
+ 
+The agent must complete the entire project (all modules/Areas). You may not deliver only MiniGame. Progress the whole system, rotating slices across Areas, keeping boundaries and UI separation intact, until the entire site is functional with consistent quality.
+  
+ 
+1. Global Development Policies
+ 
+
+ 
+Small batches: ≤ 3 files / ≤ 400 LOC; build/test → commit → proceed.
+ 
+UTF-8 (prefer no BOM); re-read after write to prevent mojibake.
+ 
+No shell file writes; for cross-platform writes use .NET File.WriteAllText or Node fs.writeFileSync (UTF-8).
+ 
+Contract-first: align DTOs & OpenAPI before coding.
+ 
+Structured logging with Serilog and CorrelationId middleware.
+  
+ 
+1. Database as Single Source of Truth (database.json rules)
+ 
+
+ 
+Only database.json defines the schema. No EF Migrations or alternate schemas.
+ 
+Use existing seed data as-is; do not overwrite/delete deterministic keys unless fixing a clear error (document why).
+ 
+Read queries should use AsNoTracking(); project aggregates to read models (avoid returning entities directly).
+ 
+11.1 Fake Data — plain-English, explicit rules
+ 
+database.json already contains part of the fake data — use it directly.
+ 
+For missing data, the agent must read new_0905.txt, old_0905.txt, and database.json first, then generate realistic data that looks human (daily/weekly rhythms, peaks, revisits/churn, correlated behaviors).
+ 
+All generated data must be persisted with SQL INSERT into the database. No in-memory-only or cache-only data.
+ 
+Target size (simple rule): Every table should end up with exactly 200 rows.
+ 
+If a table has < 200, insert the missing rows up to exactly 200.
+ 
+If a table already has > 200, do not delete existing rows; add a DEMO-NOTE: in the commit message explaining the exception.
+ 
+Idempotency: reruns must not duplicate data (enforce via PK/natural key/UNIQUE). Batch size ≤ 1000.
+ 
+Random yet reproducible: prefer a global seed Demo.Seed + natural-key hashing (same key → same outputs; different keys → varied outputs).
+ 
+Constraints: all PK/FK/UNIQUE/CHECK/DEFAULT must pass.
+ 
+Realism: zh-TW text, plausible URLs/images (Unsplash/Lorem Picsum acceptable), amounts/frequencies with Zipf/log-normal flavor; inject a small rate of failures/refunds (0.5–2%) without breaking rules.
+  
+ 
+1. WIP & Progress (resume mechanism)
+ 
+
+ 
+Maintain two files:
+ 
+ 
+1.  
+docs/WIP_RUN.md (append-only) — Recommended sections: Done / Next / Risks / Assumptions / Files touched / Next-Run Delta Plan
+ 
+ 
+2.  
+docs/PROGRESS.json — per-stage percentages; overall = average. Suggested initial:
+ 
+ 
+
+ 
+{ "overall": 0, "stages": { "stage0": 0, "stage1": 0, "stage2": 0, "stage3": 0, "stage4": 0, "stage5": 0, "stage6": 0, "stage7": 0, "stage8": 0 }, "updatedAt": "" }
+ 
+START/STOP print (single line only): Overall Progress: % | Current Stage: % | Status:  NEXT_RUN_PROMPT: allowed only after ≥1 diff + ≥1 commit; must be one-line English.
+  
+ 
+1. Auto Stage Selection
+ 
+
+ 
+On start, read docs/PROGRESS.json:
+ 
+If stages.stageN < 100 → continue Stage N.
+ 
+If = 100 → advance to Stage N+1.
+ 
+If all done → keep improving docs/tests/small refactors until tokens force stop.
+  
+ 
+1. Stage-Gated Delivery & Test Pipeline (MANDATORY)
+ 
+
+ 
+Gate for every stage (no exceptions):
+ 
+ 
+1.  
+Build: 0 errors / 0 warnings
+ 
+ 
+2.  
+Tests: all green (scope appropriate to the stage)
+ 
+ 
+3.  
+Placeholder sweep: no TODO|FIXME|TBD|NotImplemented|WIP|placeholder (including strings/comments)
+ 
+ 
+4.  
+Spec compliance: Areas, language, Notebook/Diff, DB single source, Fake Data rules (persisted/200 rows/idempotent), Admin/Public separation, module UI affiliation declared
+ 
+ 
+5.  
+Logs & commit in zh-TW (clear WHAT/HOW/VERIFY; English prefixes/tags like Conventional Commits or stage labels allowed)
+ 
+ 
+6.  
+Print the single-line status
+ 
+ 
+
+ 
+Stage 0 — Skeleton & CI
+ 
+Read old/new + database.json + index.txt; create .NET 8 solution skeleton (Domain/Application/Infrastructure/API/MVC)
+ 
+/healthz + Home; Swagger / Serilog / CorrelationId; cross-platform CI (build + unit + analyzers)
+ 
+Minimal README
+ 
+Tests: Smoke for /healthz; 1–2 unit tests
+ 
+Stage 1 — Data Mapping (Read-first)
+ 
+Map read models to database.json (no custom schema)
+ 
+Read-only repos/queries (EF or raw SQL)
+ 
+Strategy wiring for Demo Provider (final data must still be persisted)
+ 
+Minimal GETs
+ 
+Tests: ≥2 DB read integration; update contract snapshots if DTOs added
+ 
+Stage 2 — Breadth Slice R1 (Read-only parity)
+ 
+3–4 modules: wallet aggregate, forum list/detail, leaderboard snapshot, +1
+ 
+Minimal MVC/JSON; consistent layout
+ 
+Tests: one smoke per slice; ≥1 aggregate read integration
+ 
+Stage 3 — Breadth Slice R2 (Writes + Tx + Idempotency + Audit)
+ 
+SignIn: POST /signin (transaction + Idempotency-Key); grant Points/EXP/Coupon; append WalletHistory
+ 
+Pet: minimal updates + leveling logic
+ 
+Redemption: redeem Coupon/EVoucher; write audit
+ 
+Tests: commit/rollback, idempotent retry, edges; one risky E2E (SignIn → WalletHistory visible)
+ 
+Stage 4 — Admin & Governance
+ 
+Admin CRUD: CouponType / EVoucherType (respect database.json)
+ 
+Banned-words filter for forum posting; read-only insights
+ 
+Tests: validators/rules unit; Admin write + RBAC route integration
+ 
+Stage 5 — Cross-cutting Infra
+ 
+RBAC, rate-limit, timeout, retry; unified error model (ProblemDetails / Result)
+ 
+Short-TTL aggregate cache (wallet/leaderboard hot paths)
+ 
+Tests: cache key math, rate-limit & retry unit; cache invalidation/timeout/retry integration
+ 
+Stage 6 — Testing Policy & Templates
+ 
+TESTING_POLICY.md (pyramid, DoD per slice)
+ 
+Unit/integration/E2E templates; parallel runs; DTO/OpenAPI snapshot tests
+ 
+CI time budget (C13): ≤ 3 minutes per slice
+ 
+Tests: templates compile; sample tests green in CI
+ 
+Stage 7 — Performance & Ops Docs
+ 
+Perf budgets; profile hot paths; light load scripts
+ 
+Watch for hotspots: large queries, leaderboard aggregation, image processing (C14)
+ 
+Produce: docs/PERF_NOTES.md, docs/OPERATIONS.md (local run, demo data, troubleshooting, rollback)
+ 
+Stage 8 — Final QA & Sign-off
+ 
+Final a11y, zh-TW proofreading, production build review; Release notes
+ 
+Gate: E2E/Integration/Smoke all green; 0 warnings; tag release
+  
+ 
+1. MiniGame Area — Initial Delivery Scope (start here, but finish the whole project)
+ 
+
+ 
+a) User_Wallet: points, available Coupons/EVouchers; browse EVoucherToken/EVoucherRedeemLog/WalletHistory (UI focus; no schema edits). b) UserSignInStats: daily sign-in list; “sign-in” action stub (contract-ready). c) Pet: profile read + attribute adjust stubs (with basic animations/micro-interactions, optional sound, a11y; richly commented). d) MiniGame: list + basic CRUD stubs; use Areas/MiniGame/Views/Shared/_Layout.cshtml; do not touch global layouts.
+ 
+ 
+Reminder: This is only the starting slice. You must continue across other Areas to deliver the entire project.
+ 
+  
+ 
+1. Audits (always) & Issue Resolution
+ 
+
+ 
+Violation audit: language, Notebook/Diff, DB single source, Fake Data rules (persisted / 200 rows / idempotent), Area boundaries, Admin/Public separation, module UI affiliation declared.
+ 
+Code quality audit: naming, layering, DI, SoC; record findings.
+ 
+Performance audit: measure hot paths (wallet aggregates, sign-in write, pet reads, image processing); optimize; record findings.
+ 
+Frontend UX audit: RWD/usability per module/Area; ensure each module states Admin/Public affiliation.
+ 
+Issues: fix promptly; log in zh-TW.
+  
+ 
+1. Git & CI
+ 
+
+ 
+Branches: feature/-, fix/-
+不可於本地或遠端創新分支，保持只有main分支的狀態（Do not create new branches locally or remotely; keep only the main branch.）
+ 
+CI: build + tests + analyzers must stay green; keep ≤ 3 minutes per slice
+ 
+Commit template:
+ 
+[Stage-][/] WHAT → HOW → VERIFY WHAT: Align with ./database.json and this spec HOW: ≤3 files / ≤400 LOC; respect skeleton & Area boundaries; no shell file-writes VERIFY: build/tests/manual checks (zh-TW, concise)
+  
+ 
+1. Deployment Targets (GitHub & GCP) — high-level rules, no shell commands
+ 
+
+ 
+General
+ 
+Describe checks and requirements only; do not include shell/PowerShell/CMD commands.
+ 
+Production deploys must honor: no schema changes, no EF Migrations; all secrets via secure channels (not in source).
+ 
+A. GitHub (Actions CI/CD)
+ 
+Triggers: push to main, release tags.
+ 
+Quality gates: .NET 8 build; tests all green; analyzers 0 warnings; NuGet cache to speed up.
+ 
+Artifacts: container image pushed to a registry (e.g., GCP Artifact Registry).
+ 
+Security: use OIDC (Workload Identity Federation) to GCP; minimal-privilege Service Accounts. Secrets (examples): DefaultConnection/CONNECTION_STR, GCP_PROJECT_ID, GCP_REGION, CLOUD_SQL_CONN_NAME, feature flags.
+ 
+Deploy step (conceptual): after green checks → publish container → deploy to GCP target (see B) → write back version/status.
+ 
+Verification: workflow logs retained; failures marked; never leak secrets in logs.
+ 
+B. Google Cloud Platform (choose one or both)
+ 
+ 
+1. Cloud Run (recommended)
+ 
+
+ 
+Container service: set port (default 8080), CPU/RAM, max concurrency, min instances (0 or ≥1 to reduce cold starts).
+ 
+Database: Cloud SQL for SQL Server (prefer Private IP). Connect via VPC connector or secure path; do not hardcode credentials.
+ 
+Config: inject env vars/secrets (e.g., ASPNETCORE_ENVIRONMENT=Production, connection string).
+ 
+Health: use /healthz for liveness/readiness; Serilog logs must be visible in Cloud Logging.
+ 
+Checks: rollback available (revisions); Cloud SQL connectivity OK; cold-start/latency within budget.
+ 
+ 
+1. Compute Engine (alternative)
+ 
+
+ 
+Runtime: Kestrel (or IIS on Windows); enable autostart; firewall HTTP/HTTPS.
+ 
+Database: Cloud SQL for SQL Server (Private IP preferred).
+ 
+Monitoring: integrate Cloud Monitoring/Logging; set alerts.
+ 
+Checks: VM sizing/cost, availability, patching/backup documented.
+ 
+C. Env Vars & Secrets
+ 
+Use Secret Manager / GitHub Secrets, never commit secrets.
+ 
+Provide a table in docs/DEPLOYMENT.md describing each key: DefaultConnection, ASPNETCORE_ENVIRONMENT, GCP_PROJECT_ID, GCP_REGION, CLOUD_SQL_CONN_NAME, CONNECTION_STR, feature flags, etc.
+ 
+D. Rollback & Release Tags
+ 
+Must support fast rollback (Cloud Run revisions, GCE images/snapshots).
+ 
+Tag releases and keep a short zh-TW changelog.
+  
+ 
+1. Documentation Deliverables (must-have; C18 “beginner-friendly”)
+ 
+
+ 
+ 
+1.  
+README.md — overview, quick start, local run, structure (beginner-friendly)
+ 
+ 
+2.  
+docs/DEPLOYMENT.md — GitHub Actions CI/CD, GCP deployment (Cloud Run + Cloud SQL for SQL Server and/or GCE), env vars & secrets table, SQL Server connectivity, Admin/Public build notes
+ 
+ 
+3.  
+docs/MODULES.md — per-module features, routes/endpoints, DTO/OpenAPI refs, UI affiliation (Admin/Public)
+ 
+ 
+4.  
+docs/DATABASE.md — tables from database.json, seed coverage rule (exactly 200 rows per table), relationships, constraints
+ 
+ 
+5.  
+docs/OPERATIONS.md, docs/PERF_NOTES.md (Stage 7 outputs)
+ 
+ 
+
+  
+ 
+1. Safety & Prohibited List
+ 
+
+ 
+❌ Any schema source besides database.json (including migrations/ad-hoc scripts)
+ 
+❌ Any shell commands in deliverables (PowerShell/Bash/CMD; including redirection)
+ 
+❌ Batch INSERT > 1000 rows
+ 
+❌ One-shot giant edits (split into small batches)
+ 
+❌ Translating identifiers / API paths / SQL names
+ 
+❌ Mixing Public (index.txt) and Admin (SB Admin) assets/styles in the same page/Area
+ 
+❌ Editing vendor libraries (SB Admin / Bootstrap / Font Awesome / jQuery …)
+ 
+❌ In-memory or cache-only fake data (all generated data must be inserted into DB)
+ 
+(Note: using local shell for non-file-write tasks is fine, but do not include it in deliverables.)
+  
+ 
+1. Runbook — Auto-Start on read CONTRIBUTING_AGENT.txt and begin
+ 
+
+ 
+ 
+1.  
+Re-read A) Start-of-Run Mandatory Reading (this file + old_0905.txt + new_0905.txt + database.json).
+ 
+ 
+2.  
+Print single-line START.
+ 
+ 
+3.  
+Audit: skeleton immutability, Area boundaries, language rule, Notebook/Diff, DB single source, Fake Data rule (persisted/exactly 200 rows/idempotent), Admin/Public separation, whole-project coverage mandate, drift check.
+ 
+ 
+
+ 
+If drift is found → enter Repair Mode immediately (see section A), fix, document, then continue.
+ 
+ 
+1.  
+If folders are missing, create minimal Area-local structure only; do not touch other Areas/skeleton.
+ 
+ 
+2.  
+Enter Stage 0; proceed stage by stage; per batch ≤ 3 files / ≤ 400 LOC; build/test → commit → print single-line status.
+ 
+ 
+3.  
+Continue until tokens are nearly exhausted or you reach a logical checkpoint; before stopping, update WIP/PROGRESS, print single-line STOP; if ≥1 diff + ≥1 commit, print one-line English NEXT_RUN_PROMPT.
+ 
+ 
+
+  
+ 
+1. Per-Stage Micro-Prompts (helper)
+ 
+
+ 
+Stage0: “Create solution skeleton, health check, Swagger, Serilog, CI, minimal README. Target .NET 8.0. Keep chunks small. Print start/stop line.”
+ 
+Stage1: “Map read models to database.json schema; implement read-only repos/queries; wire Demo provider; expose minimal GET endpoints.”
+ 
+Stage2: “Cut read-only slices across 3–4 modules; wallet aggregate read; forum list/detail; leaderboard snapshot; minimal MVC/JSON; smoke/integration tests.”
+ 
+Stage3: “Add write slices with transactions and idempotency; SignIn grants points/exp/coupon + WalletHistory; Pet updates + leveling; coupon/eVoucher redemption + audit; integration + one risky E2E.”
+ 
+Stage4: “Admin CRUD for CouponType/eVoucherType; banned-words filter; insights page; unit + integration tests.”
+ 
+Stage5: “RBAC, rate-limit, timeout, retry; unified error model; short-TTL cache; structured logs; unit + integration tests.”
+ 
+Stage6: “Write TESTING_POLICY.md; provide unit/integration/E2E templates; parallel runs; OpenAPI/DTO snapshot tests.”
+ 
+Stage7: “Perf budgets; profile hot paths; light load test; write OPERATIONS.md and PERF_NOTES.md.”
+ 
+Stage8: “Final QA pass, a11y checks, zh-TW proofreading, production build review, and release notes.”
+  
+Self-Audit (consistency check)
+ 
+Language: Entire document is in zh-TW; the language rule requires zh-TW outputs/comments → consistent.
+ 
+Start-of-Run reading + Repair Mode: At the very top; referenced in the Runbook → consistent.
+ 
+Authority: 90% old/new, 10% database.json final; referenced in §§A, 1, 14 Stage-0 reading → consistent.
+ 
+Fake Data: “exactly 200 rows per table,” persisted via SQL INSERT, idempotent, ≤1000/batch → enforced in §§11.1, 14 (Gate), 21 (Audit) → consistent.
+ 
+Whole-project mandate: Must complete all modules/Areas, not just MiniGame; reinforced in §§9, 15, 21 → consistent.
+ 
+Admin/Public separation + module UI affiliation + Admin partials (C08): present in §§2, 8, 16, 19 → consistent.
+ 
+No shell in deliverables; local shell allowed for non-file-write only: present in §§5, 20 → consistent.
+ 
+CI/CD + GitHub & GCP deployment: explicit in §18 and required in docs §19 → consistent.
+ 
+Gate rules: 0 errors / 0 warnings + all tests green + no TODO/placeholder → §14 → consistent.
+ 
+WIP/Progress single-line status + NEXT_RUN_PROMPT (English, one line, after ≥1 diff+commit) + Delta Plan no-print: §§3, 12, 21 → consistent.
