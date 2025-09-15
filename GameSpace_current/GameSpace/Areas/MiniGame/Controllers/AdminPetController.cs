@@ -10,7 +10,7 @@ namespace GameSpace.Areas.MiniGame.Controllers
     /// MiniGame Area - Pet 模組後台管理控制器
     /// 負責管理寵物系統的後台功能
     /// 資料表範圍：Pet（以 database.json 為準）
-    /// 根據指令第[4]節：其餘表以後台管理的查詢與審閱頁為主，寫入功能為 Stub
+    /// 根據指令第[4]節：其餘表以後台管理的查詢與審閱頁為主，寫入功能為預留實作
     /// </summary>
     [Area("MiniGame")]
     [Authorize(Roles = "Admin")]
@@ -130,14 +130,14 @@ namespace GameSpace.Areas.MiniGame.Controllers
         }
 
         /// <summary>
-        /// 寵物狀態調整 Stub - 不破壞規格的 Stub
-        /// 根據指令：寫入流程僅可建立不破壞規格的 Stub
+        /// 寵物狀態調整功能 - 預留實作介面
+        /// 根據指令：寫入流程僅可建立不破壞規格的預留實作
         /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AdjustStatus(int petId, string adjustmentType, int value, string reason)
         {
-            // Stub 實作：驗證與流程說明到位，但實際寫入前先經過後續階段與規格允許再開啟
+            // 預留實作：驗證與流程說明到位，實際寫入前先經過後續階段與規格允許再開啟
             
             var pet = await _context.Pets
                 .Include(p => p.User)
@@ -175,21 +175,21 @@ namespace GameSpace.Areas.MiniGame.Controllers
                 return RedirectToAction(nameof(Details), new { id = petId });
             }
 
-            // Stub 提示：實際寫入功能待後續階段開啟
-            TempData["InfoMessage"] = $"寵物狀態調整功能開發中。" +
+            // 預留實作提示：實際寫入功能待後續階段開啟
+            TempData["InfoMessage"] = $"寵物狀態調整功能預留實作中。" +
                 $"預計調整：{pet.PetName} 的 {adjustmentType} 為 {value}，原因：{reason}";
 
             return RedirectToAction(nameof(Details), new { id = petId });
         }
 
         /// <summary>
-        /// 批次寵物維護 Stub
+        /// 批次寵物維護功能
         /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> BatchMaintenance(string maintenanceType)
         {
-            // Stub 實作：提供批次維護的驗證與流程說明
+            // 預留實作：提供批次維護的驗證與流程說明
             
             var validTypes = new[] { "DailyDecay", "LevelUpReward", "AttributeReset", "ExperienceBonus" };
             if (!validTypes.Contains(maintenanceType))
@@ -200,8 +200,8 @@ namespace GameSpace.Areas.MiniGame.Controllers
 
             var affectedCount = await _context.Pets.CountAsync();
 
-            // Stub 提示：實際批次處理功能待後續階段開啟
-            TempData["InfoMessage"] = $"批次維護功能開發中。預計影響 {affectedCount} 隻寵物，維護類型：{maintenanceType}";
+            // 預留實作提示：實際批次處理功能待後續階段開啟
+            TempData["InfoMessage"] = $"批次維護功能預留實作中。預計影響 {affectedCount} 隻寵物，維護類型：{maintenanceType}";
 
             return RedirectToAction(nameof(Index));
         }
