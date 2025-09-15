@@ -98,17 +98,27 @@
 - 型別表 CRUD 包含適當的關聯檢查
 - Stub 功能包含完整驗證與流程說明
 
+### Stage-4: Views 與 CRUD 完整實作
+- ✅ **AdminWallet/History.cshtml**: 錢包歷史記錄查詢頁面
+- ✅ **AdminWallet/EVouchers.cshtml**: 電子禮券管理列表頁面
+- ✅ **AdminWalletTypes/CreateCouponType.cshtml**: 新增優惠券類型表單
+- ✅ **_Sidebar.cshtml**: Area-local 側邊欄共用元件
+- ✅ **_Topbar.cshtml**: Area-local 頂部導航共用元件
+
+### Spec Drift 修復
+- ✅ **修復 SB Admin 風格**: 建立 Area-local 共用元件，符合指令第[2]節要求
+- ✅ **Layout 重構**: 使用 PartialAsync 引用 _Sidebar 和 _Topbar
+
 ## 下次執行計畫 (Next)
 
 ### 待完成的 Views
-- AdminWallet/History.cshtml
-- AdminWallet/EVouchers.cshtml  
 - AdminWallet/Coupons.cshtml
-- AdminWalletTypes/CreateCouponType.cshtml
 - AdminWalletTypes/EditCouponType.cshtml
 - AdminWalletTypes/EVoucherTypes.cshtml
 - AdminSignInStats/Details.cshtml
 - AdminSignInStats/UserHistory.cshtml
+- AdminPet/Index.cshtml
+- AdminMiniGame/Index.cshtml
 
 ### 可能的增強功能
 - 匯出功能實作
