@@ -1,0 +1,189 @@
+@model IEnumerable<GameSpace.Models.CouponType>
+@{
+    ViewData["Title"] = "優惠券類型管理";
+    ViewData["BreadcrumbController"] = "券類型設定";
+    ViewData["BreadcrumbAction"] = "優惠券類型";
+    Layout = "_AdminLayout";
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">優惠券類型管理</h1>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("CreateCouponType")" class="btn btn-primary btn-sm">
+            <i class="fas fa-plus me-1"></i>新增類型
+        </a>
+    </div>
+</div>
+
+<!-- 優惠券類型列表 -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">優惠券類型列表</h6>
+        <span class="badge bg-info">共 @Model.Count() 種類型</span>
+    </div>
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>類型ID</th>
+                            <th>名稱</th>
+                            <th>折扣類型</th>
+                            <th>折扣值</th>
+                            <th>最低消費</th>
+                            <th>兌換點數</th>
+                            <th>有效期</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var couponType in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="badge bg-secondary">#@couponType.CouponTypeID</span>
+                                </td>
+                                <td>
+                                    <strong>@couponType.Name</strong>
+                                    @if (!string.IsNullOrEmpty(couponType.Description))
+                                    {
+                                        <small class="text-muted d-block">@couponType.Description</small>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="badge @GetDiscountTypeBadgeClass(couponType.DiscountType)">
+                                        @GetDiscountTypeText(couponType.DiscountType)
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    @if (couponType.DiscountType == "Percent")
+                                    {
+                                        <span class="text-success">@((couponType.DiscountValue * 100).ToString("F0"))% OFF</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-success">-$@couponType.DiscountValue.ToString("N0")</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    @if (couponType.MinSpend > 0)
+                                    {
+                                        <span class="text-muted">滿 $@couponType.MinSpend.ToString("N0")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">無門檻</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <span class="badge bg-warning text-dark">@couponType.PointsCost 點</span>
+                                </td>
+                                <td>
+                                    <div class="small">
+                                        <div>@couponType.ValidFrom.ToString("yyyy/MM/dd")</div>
+                                        <div>~ @couponType.ValidTo.ToString("yyyy/MM/dd")</div>
+                                        @if (couponType.ValidTo < DateTime.Now)
+                                        {
+                                            <span class="badge bg-danger">已過期</span>
+                                        }
+                                        else if (couponType.ValidFrom > DateTime.Now)
+                                        {
+                                            <span class="badge bg-warning">未生效</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-success">有效中</span>
+                                        }
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="@Url.Action("EditCouponType", new { id = couponType.CouponTypeID })" 
+                                           class="btn btn-outline-warning" title="編輯">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-outline-danger" 
+                                                onclick="confirmDelete(@couponType.CouponTypeID, '@couponType.Name')" title="刪除">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-tags fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">目前沒有優惠券類型</h5>
+                <p class="text-muted">點擊上方「新增類型」按鈕建立第一個優惠券類型</p>
+                <a href="@Url.Action("CreateCouponType")" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i>新增類型
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- 刪除確認模態框 -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">確認刪除</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>您確定要刪除優惠券類型 <strong id="deleteTypeName"></strong> 嗎？</p>
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    刪除後將無法復原，且如果已有相關優惠券使用此類型，則無法刪除。
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <form id="deleteForm" method="post" style="display: inline;">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-danger">確認刪除</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmDelete(typeId, typeName) {
+            document.getElementById('deleteTypeName').textContent = typeName;
+            document.getElementById('deleteForm').action = '@Url.Action("DeleteCouponType")/' + typeId;
+            new bootstrap.Modal(document.getElementById('deleteModal')).show();
+        }
+    </script>
+}
+
+@functions {
+    string GetDiscountTypeBadgeClass(string discountType)
+    {
+        return discountType?.ToLower() switch
+        {
+            "percent" => "bg-success",
+            "amount" => "bg-info",
+            _ => "bg-secondary"
+        };
+    }
+
+    string GetDiscountTypeText(string discountType)
+    {
+        return discountType?.ToLower() switch
+        {
+            "percent" => "百分比折扣",
+            "amount" => "固定金額",
+            _ => "未知類型"
+        };
+    }
+}

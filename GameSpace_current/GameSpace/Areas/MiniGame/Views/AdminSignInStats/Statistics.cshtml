@@ -1,0 +1,370 @@
+@{
+    ViewData["Title"] = "簽到統計報表";
+    ViewData["BreadcrumbController"] = "簽到系統";
+    ViewData["BreadcrumbAction"] = "簽到統計";
+    Layout = "_AdminLayout";
+    var dailyStats = ViewBag.DailyStats as List<dynamic>;
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">簽到統計報表</h1>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("Index")" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i>返回列表
+        </a>
+        <button class="btn btn-outline-primary btn-sm" onclick="exportReport()">
+            <i class="fas fa-download me-1"></i>匯出報表
+        </button>
+    </div>
+</div>
+
+<!-- 日期範圍選擇 -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">統計範圍</h6>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <label for="startDate" class="form-label">開始日期</label>
+                <input type="date" class="form-control" id="startDate" name="startDate" 
+                       value="@(ViewBag.StartDate?.ToString("yyyy-MM-dd"))" required>
+            </div>
+            <div class="col-md-4">
+                <label for="endDate" class="form-label">結束日期</label>
+                <input type="date" class="form-control" id="endDate" name="endDate" 
+                       value="@(ViewBag.EndDate?.ToString("yyyy-MM-dd"))" required>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <div class="btn-group w-100">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-chart-line me-1"></i>重新統計
+                    </button>
+                    <button type="button" class="btn btn-outline-info" onclick="setQuickRange('week')">近7天</button>
+                    <button type="button" class="btn btn-outline-info" onclick="setQuickRange('month')">近30天</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 總體統計卡片 -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            總簽到次數
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            @ViewBag.TotalSignIns?.ToString("N0") 次
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-calendar-check fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            發放總點數
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            @ViewBag.TotalPoints?.ToString("N0") 點
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-coins fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            發放總經驗
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            @ViewBag.TotalExp?.ToString("N0") EXP
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-star fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            參與用戶數
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            @ViewBag.UniqueUsers?.ToString("N0") 人
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-users fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 每日統計圖表 -->
+<div class="row">
+    <div class="col-xl-8 col-lg-7">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary">每日簽到趨勢</h6>
+                <div class="dropdown no-arrow">
+                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                        aria-labelledby="dropdownMenuLink">
+                        <div class="dropdown-header">圖表操作:</div>
+                        <a class="dropdown-item" href="#" onclick="toggleChartType()">切換圖表類型</a>
+                        <a class="dropdown-item" href="#" onclick="downloadChart()">下載圖表</a>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="chart-area">
+                    <canvas id="signInChart" width="100%" height="40"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4 col-lg-5">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">優惠券發放統計</h6>
+            </div>
+            <div class="card-body">
+                <div class="chart-pie pt-4 pb-2">
+                    <canvas id="couponChart" width="100%" height="50"></canvas>
+                </div>
+                <div class="mt-4 text-center small">
+                    <span class="mr-2">
+                        <i class="fas fa-circle text-primary"></i> 已發放
+                    </span>
+                    <span class="mr-2">
+                        <i class="fas fa-circle text-success"></i> 已使用
+                    </span>
+                    <span class="mr-2">
+                        <i class="fas fa-circle text-info"></i> 未使用
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 每日明細表格 -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">每日統計明細</h6>
+    </div>
+    <div class="card-body">
+        @if (dailyStats != null && dailyStats.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>日期</th>
+                            <th>星期</th>
+                            <th>簽到人次</th>
+                            <th>發放點數</th>
+                            <th>發放經驗</th>
+                            <th>發放優惠券</th>
+                            <th>平均點數/人</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var stat in dailyStats)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@((DateTime)stat.Date).ToString("yyyy/MM/dd")</strong>
+                                </td>
+                                <td>
+                                    <span class="badge @GetDayBadgeClass((DateTime)stat.Date)">
+                                        @GetDayOfWeekText((DateTime)stat.Date)
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <span class="badge bg-primary fs-6">@stat.Count</span>
+                                </td>
+                                <td class="text-end">
+                                    <span class="text-success">@((int)stat.TotalPoints).ToString("N0")</span>
+                                </td>
+                                <td class="text-end">
+                                    <span class="text-info">@((int)stat.TotalExp).ToString("N0")</span>
+                                </td>
+                                <td class="text-center">
+                                    @if ((int)stat.CouponsGiven > 0)
+                                    {
+                                        <span class="badge bg-warning text-dark">@stat.CouponsGiven</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <small class="text-muted">
+                                        @(stat.Count > 0 ? ((decimal)stat.TotalPoints / stat.Count).ToString("F1") : "0") 點
+                                    </small>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-4">
+                <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">暫無統計資料</h5>
+                <p class="text-muted">請調整日期範圍重新查詢</p>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // 設定快速日期範圍
+        function setQuickRange(type) {
+            var endDate = new Date();
+            var startDate = new Date();
+            
+            if (type === 'week') {
+                startDate.setDate(endDate.getDate() - 6);
+            } else if (type === 'month') {
+                startDate.setDate(endDate.getDate() - 29);
+            }
+            
+            document.getElementById('startDate').value = startDate.toISOString().split('T')[0];
+            document.getElementById('endDate').value = endDate.toISOString().split('T')[0];
+        }
+
+        // 初始化圖表
+        $(document).ready(function() {
+            initSignInChart();
+            initCouponChart();
+        });
+
+        function initSignInChart() {
+            var ctx = document.getElementById('signInChart').getContext('2d');
+            
+            // 準備圖表資料（Stub）
+            var labels = @Html.Raw(Json.Serialize(dailyStats?.Select(s => ((DateTime)s.Date).ToString("MM/dd")).ToArray() ?? new string[0]));
+            var data = @Html.Raw(Json.Serialize(dailyStats?.Select(s => s.Count).ToArray() ?? new int[0]));
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '每日簽到人次',
+                        data: data,
+                        borderColor: '#4e73df',
+                        backgroundColor: 'rgba(78, 115, 223, 0.1)',
+                        borderWidth: 2,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function initCouponChart() {
+            var ctx = document.getElementById('couponChart').getContext('2d');
+            
+            // 優惠券統計資料（Stub）
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['已發放', '已使用', '未使用'],
+                    datasets: [{
+                        data: [@ViewBag.TotalCoupons, Math.floor(@ViewBag.TotalCoupons * 0.6), Math.floor(@ViewBag.TotalCoupons * 0.4)],
+                        backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        function toggleChartType() {
+            alert('圖表類型切換功能開發中');
+        }
+
+        function downloadChart() {
+            alert('圖表下載功能開發中');
+        }
+
+        function exportReport() {
+            alert('報表匯出功能開發中');
+        }
+    </script>
+}
+
+@functions {
+    string GetDayBadgeClass(DateTime date)
+    {
+        var dayOfWeek = date.DayOfWeek;
+        return dayOfWeek == DayOfWeek.Saturday || dayOfWeek == DayOfWeek.Sunday ? "bg-warning" : "bg-light text-dark";
+    }
+
+    string GetDayOfWeekText(DateTime date)
+    {
+        var dayNames = new[] { "日", "一", "二", "三", "四", "五", "六" };
+        return dayNames[(int)date.DayOfWeek];
+    }
+}
