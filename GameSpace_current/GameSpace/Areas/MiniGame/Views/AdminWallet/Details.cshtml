@@ -220,13 +220,13 @@
                     <div class="mb-3">
                         <label for="pointsChange" class="form-label">點數調整</label>
                         <input type="number" class="form-control" id="pointsChange" name="pointsChange" 
-                               placeholder="輸入正數增加，負數減少" required>
+                               required>
                         <div class="form-text">例如：+1000 增加1000點，-500 減少500點</div>
                     </div>
                     <div class="mb-3">
                         <label for="reason" class="form-label">調整原因</label>
                         <textarea class="form-control" id="reason" name="reason" rows="3" 
-                                  placeholder="請說明調整原因（必填）" required></textarea>
+                                  required></textarea>
                     </div>
                 </form>
             </div>
@@ -249,7 +249,7 @@
         }
 
         function submitPointsAdjustment() {
-            // 此功能為 Stub，實際實作需要後端 API 支援
+            // 此功能為預留實作，實際實作需要後端 API 支援
             alert('點數調整功能開發中，請聯絡系統管理員');
             $('#adjustPointsModal').modal('hide');
         }

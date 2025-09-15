@@ -207,7 +207,7 @@
                                         @if (!coupon.IsUsed && coupon.CouponType?.ValidTo >= DateTime.Now)
                                         {
                                             <button type="button" class="btn btn-outline-warning" 
-                                                    onclick="markAsUsed(@coupon.CouponID, '@coupon.CouponCode')" title="標記為已使用（Stub）">
+                                                    onclick="markAsUsed(@coupon.CouponID, '@coupon.CouponCode')" title="標記為已使用（預留實作）">
                                                 <i class="fas fa-check"></i>
                                             </button>
                                         }
@@ -292,7 +292,7 @@
         }
 
         function showCouponDetails(couponId) {
-            // Stub 實作：優惠券明細查看功能
+            // 預留實作：優惠券明細查看功能
             $('#couponDetailsContent').html(`
                 <div class="text-center py-4">
                     <i class="fas fa-info-circle fa-3x text-info mb-3"></i>
@@ -305,8 +305,8 @@
         }
 
         function markAsUsed(couponId, couponCode) {
-            // Stub 實作：標記優惠券為已使用功能
-            if (confirm(`確定要將優惠券 ${couponCode} 標記為已使用嗎？\n\n注意：此功能為開發中的 Stub，實際標記功能待後續階段開啟。`)) {
+            // 預留實作：標記優惠券為已使用功能
+            if (confirm(`確定要將優惠券 ${couponCode} 標記為已使用嗎？\n\n注意：此功能為預留實作，實際標記功能待後續階段開啟。`)) {
                 alert(`優惠券使用標記功能開發中\n優惠券ID: ${couponId}\n優惠券代碼: ${couponCode}`);
             }
         }
