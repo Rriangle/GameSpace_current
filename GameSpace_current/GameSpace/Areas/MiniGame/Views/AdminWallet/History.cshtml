@@ -1,0 +1,262 @@
+@model IEnumerable<GameSpace.Models.WalletHistory>
+@{
+    ViewData["Title"] = "錢包歷史記錄";
+    ViewData["BreadcrumbController"] = "錢包系統";
+    ViewData["BreadcrumbAction"] = "錢包歷史";
+    Layout = "_AdminLayout";
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">錢包歷史記錄</h1>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("Index")" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i>返回錢包列表
+        </a>
+        <button class="btn btn-outline-primary btn-sm" onclick="exportHistory()">
+            <i class="fas fa-download me-1"></i>匯出記錄
+        </button>
+    </div>
+</div>
+
+<!-- 搜尋篩選區 -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">搜尋篩選</h6>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label for="userId" class="form-label">會員ID</label>
+                <input type="number" class="form-control" id="userId" name="userId" 
+                       value="@ViewBag.UserId" placeholder="輸入會員ID">
+            </div>
+            <div class="col-md-3">
+                <label for="changeType" class="form-label">異動類型</label>
+                <select class="form-select" id="changeType" name="changeType">
+                    <option value="">全部類型</option>
+                    <option value="Point" @(ViewBag.ChangeType == "Point" ? "selected" : "")>點數</option>
+                    <option value="Coupon" @(ViewBag.ChangeType == "Coupon" ? "selected" : "")>優惠券</option>
+                    <option value="EVoucher" @(ViewBag.ChangeType == "EVoucher" ? "selected" : "")>電子禮券</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="pageSize" class="form-label">每頁筆數</label>
+                <select class="form-select" id="pageSize" name="pageSize">
+                    <option value="50" @(ViewBag.PageSize == 50 ? "selected" : "")>50</option>
+                    <option value="100" @(ViewBag.PageSize == 100 ? "selected" : "")>100</option>
+                    <option value="200" @(ViewBag.PageSize == 200 ? "selected" : "")>200</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <div class="btn-group w-100">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search me-1"></i>搜尋
+                    </button>
+                    <a href="@Url.Action("History")" class="btn btn-outline-secondary">
+                        <i class="fas fa-times me-1"></i>清除
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 歷史記錄列表 -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">歷史記錄列表</h6>
+        <span class="badge bg-info">共 @ViewBag.TotalCount 筆記錄</span>
+    </div>
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>記錄ID</th>
+                            <th>會員資訊</th>
+                            <th>異動時間</th>
+                            <th>異動類型</th>
+                            <th>點數變化</th>
+                            <th>項目代碼</th>
+                            <th>說明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var history in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="badge bg-secondary">#@history.LogID</span>
+                                </td>
+                                <td>
+                                    <div>
+                                        <strong>@history.User?.UserName</strong>
+                                        <small class="text-muted d-block">@history.User?.UserNickName</small>
+                                        <a href="@Url.Action("Details", new { userId = history.UserID })" 
+                                           class="badge bg-light text-primary text-decoration-none">
+                                            ID: @history.UserID
+                                        </a>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <strong>@history.ChangeTime.ToString("yyyy/MM/dd")</strong>
+                                        <small class="text-muted d-block">@history.ChangeTime.ToString("HH:mm:ss")</small>
+                                        <span class="badge bg-light text-dark">
+                                            @GetTimeAgo(history.ChangeTime)
+                                        </span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge @GetChangeTypeBadgeClass(history.ChangeType)">
+                                        @GetChangeTypeText(history.ChangeType)
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <span class="@(history.PointsChanged >= 0 ? "text-success" : "text-danger") fw-bold">
+                                        @(history.PointsChanged >= 0 ? "+" : "")@history.PointsChanged.ToString("N0")
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    @if (!string.IsNullOrEmpty(history.ItemCode) && history.ItemCode != "0")
+                                    {
+                                        <code class="text-primary">@history.ItemCode</code>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    <small class="text-dark">@history.Description</small>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 分頁 -->
+            @if (ViewBag.TotalPages > 1)
+            {
+                <nav aria-label="頁面導航">
+                    <ul class="pagination justify-content-center">
+                        @if (ViewBag.Page > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("History", new { 
+                                    page = 1, 
+                                    pageSize = ViewBag.PageSize, 
+                                    userId = ViewBag.UserId,
+                                    changeType = ViewBag.ChangeType 
+                                })">
+                                    <i class="fas fa-angle-double-left"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("History", new { 
+                                    page = ViewBag.Page - 1, 
+                                    pageSize = ViewBag.PageSize, 
+                                    userId = ViewBag.UserId,
+                                    changeType = ViewBag.ChangeType 
+                                })">
+                                    <i class="fas fa-angle-left"></i>
+                                </a>
+                            </li>
+                        }
+
+                        @for (int i = Math.Max(1, ViewBag.Page - 2); i <= Math.Min(ViewBag.TotalPages, ViewBag.Page + 2); i++)
+                        {
+                            <li class="page-item @(i == ViewBag.Page ? "active" : "")">
+                                <a class="page-link" href="@Url.Action("History", new { 
+                                    page = i, 
+                                    pageSize = ViewBag.PageSize, 
+                                    userId = ViewBag.UserId,
+                                    changeType = ViewBag.ChangeType 
+                                })">@i</a>
+                            </li>
+                        }
+
+                        @if (ViewBag.Page < ViewBag.TotalPages)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("History", new { 
+                                    page = ViewBag.Page + 1, 
+                                    pageSize = ViewBag.PageSize, 
+                                    userId = ViewBag.UserId,
+                                    changeType = ViewBag.ChangeType 
+                                })">
+                                    <i class="fas fa-angle-right"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("History", new { 
+                                    page = ViewBag.TotalPages, 
+                                    pageSize = ViewBag.PageSize, 
+                                    userId = ViewBag.UserId,
+                                    changeType = ViewBag.ChangeType 
+                                })">
+                                    <i class="fas fa-angle-double-right"></i>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            }
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-history fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">目前沒有歷史記錄</h5>
+                <p class="text-muted">請調整搜尋條件或確認資料範圍</p>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function exportHistory() {
+            alert('匯出功能開發中');
+        }
+    </script>
+}
+
+@functions {
+    string GetChangeTypeBadgeClass(string changeType)
+    {
+        return changeType?.ToLower() switch
+        {
+            "point" => "bg-primary",
+            "coupon" => "bg-warning text-dark",
+            "evoucher" => "bg-success",
+            _ => "bg-secondary"
+        };
+    }
+
+    string GetChangeTypeText(string changeType)
+    {
+        return changeType?.ToLower() switch
+        {
+            "point" => "點數",
+            "coupon" => "優惠券",
+            "evoucher" => "電子禮券",
+            _ => changeType ?? "未知"
+        };
+    }
+
+    string GetTimeAgo(DateTime changeTime)
+    {
+        var timeSpan = DateTime.Now - changeTime;
+        if (timeSpan.TotalDays >= 1)
+            return $"{(int)timeSpan.TotalDays} 天前";
+        if (timeSpan.TotalHours >= 1)
+            return $"{(int)timeSpan.TotalHours} 小時前";
+        if (timeSpan.TotalMinutes >= 1)
+            return $"{(int)timeSpan.TotalMinutes} 分鐘前";
+        return "剛剛";
+    }
+}

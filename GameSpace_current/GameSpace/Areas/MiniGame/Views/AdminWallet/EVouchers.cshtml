@@ -1,0 +1,268 @@
+@model IEnumerable<GameSpace.Models.EVoucher>
+@{
+    ViewData["Title"] = "電子禮券管理";
+    ViewData["BreadcrumbController"] = "錢包系統";
+    ViewData["BreadcrumbAction"] = "電子禮券管理";
+    Layout = "_AdminLayout";
+    var evoucherTypes = ViewBag.EVoucherTypes as List<GameSpace.Models.EVoucherType>;
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">電子禮券管理</h1>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("Index")" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i>返回錢包列表
+        </a>
+        <button class="btn btn-outline-primary btn-sm" onclick="exportEVouchers()">
+            <i class="fas fa-download me-1"></i>匯出資料
+        </button>
+    </div>
+</div>
+
+<!-- 搜尋篩選區 -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">搜尋篩選</h6>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label for="isUsed" class="form-label">使用狀態</label>
+                <select class="form-select" id="isUsed" name="isUsed">
+                    <option value="">全部狀態</option>
+                    <option value="false" @(ViewBag.IsUsed == false ? "selected" : "")>未使用</option>
+                    <option value="true" @(ViewBag.IsUsed == true ? "selected" : "")>已使用</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="typeId" class="form-label">禮券類型</label>
+                <select class="form-select" id="typeId" name="typeId">
+                    <option value="">全部類型</option>
+                    @if (evoucherTypes != null)
+                    {
+                        @foreach (var type in evoucherTypes)
+                        {
+                            <option value="@type.EVoucherTypeID" @(ViewBag.TypeId == type.EVoucherTypeID ? "selected" : "")>
+                                @type.Name
+                            </option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="pageSize" class="form-label">每頁筆數</label>
+                <select class="form-select" id="pageSize" name="pageSize">
+                    <option value="20" @(ViewBag.PageSize == 20 ? "selected" : "")>20</option>
+                    <option value="50" @(ViewBag.PageSize == 50 ? "selected" : "")>50</option>
+                    <option value="100" @(ViewBag.PageSize == 100 ? "selected" : "")>100</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <div class="btn-group w-100">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search me-1"></i>搜尋
+                    </button>
+                    <a href="@Url.Action("EVouchers")" class="btn btn-outline-secondary">
+                        <i class="fas fa-times me-1"></i>清除
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 電子禮券列表 -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">電子禮券列表</h6>
+        <span class="badge bg-info">共 @ViewBag.TotalCount 張禮券</span>
+    </div>
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>禮券ID</th>
+                            <th>禮券代碼</th>
+                            <th>禮券類型</th>
+                            <th>持有者</th>
+                            <th>面額</th>
+                            <th>取得時間</th>
+                            <th>使用狀態</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var evoucher in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="badge bg-secondary">#@evoucher.EVoucherID</span>
+                                </td>
+                                <td>
+                                    <div>
+                                        <code class="text-primary">@evoucher.EVoucherCode</code>
+                                        <button class="btn btn-outline-secondary btn-sm ms-2" 
+                                                onclick="copyToClipboard('@evoucher.EVoucherCode')" title="複製代碼">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <strong>@evoucher.EVoucherType?.Name</strong>
+                                        @if (!string.IsNullOrEmpty(evoucher.EVoucherType?.Description))
+                                        {
+                                            <small class="text-muted d-block">@evoucher.EVoucherType.Description</small>
+                                        }
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <strong>@evoucher.User?.UserName</strong>
+                                        <small class="text-muted d-block">@evoucher.User?.UserNickName</small>
+                                        <a href="@Url.Action("Details", new { userId = evoucher.UserId })" 
+                                           class="badge bg-light text-primary text-decoration-none">
+                                            ID: @evoucher.UserId
+                                        </a>
+                                    </div>
+                                </td>
+                                <td class="text-end">
+                                    <span class="badge bg-success fs-6">
+                                        $@evoucher.EVoucherType?.ValueAmount.ToString("N0")
+                                    </span>
+                                </td>
+                                <td>
+                                    <div>
+                                        <strong>@evoucher.AcquiredTime.ToString("yyyy/MM/dd")</strong>
+                                        <small class="text-muted d-block">@evoucher.AcquiredTime.ToString("HH:mm:ss")</small>
+                                        <span class="badge bg-light text-dark">
+                                            @GetTimeAgo(evoucher.AcquiredTime)
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    @if (evoucher.IsUsed)
+                                    {
+                                        <div>
+                                            <span class="badge bg-danger">已使用</span>
+                                            @if (evoucher.UsedTime.HasValue)
+                                            {
+                                                <small class="text-muted d-block">@evoucher.UsedTime.Value.ToString("yyyy/MM/dd HH:mm")</small>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div>
+                                            <span class="badge bg-success">未使用</span>
+                                            @if (evoucher.EVoucherType != null && evoucher.EVoucherType.ValidTo < DateTime.Now)
+                                            {
+                                                <small class="text-danger d-block">已過期</small>
+                                            }
+                                            else if (evoucher.EVoucherType != null && evoucher.EVoucherType.ValidFrom > DateTime.Now)
+                                            {
+                                                <small class="text-warning d-block">未生效</small>
+                                            }
+                                        </div>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="@Url.Action("EVoucherDetails", new { id = evoucher.EVoucherID })" 
+                                           class="btn btn-outline-primary" title="查看明細">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        @if (!evoucher.IsUsed)
+                                        {
+                                            <button type="button" class="btn btn-outline-info" 
+                                                    onclick="generateQRCode('@evoucher.EVoucherCode')" title="產生 QR Code">
+                                                <i class="fas fa-qrcode"></i>
+                                            </button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 分頁 -->
+            @if (ViewBag.TotalPages > 1)
+            {
+                <nav aria-label="頁面導航">
+                    <ul class="pagination justify-content-center">
+                        @if (ViewBag.Page > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("EVouchers", new { 
+                                    page = 1, 
+                                    pageSize = ViewBag.PageSize, 
+                                    isUsed = ViewBag.IsUsed,
+                                    typeId = ViewBag.TypeId 
+                                })">
+                                    <i class="fas fa-angle-double-left"></i>
+                                </a>
+                            </li>
+                        }
+
+                        @for (int i = Math.Max(1, ViewBag.Page - 2); i <= Math.Min(ViewBag.TotalPages, ViewBag.Page + 2); i++)
+                        {
+                            <li class="page-item @(i == ViewBag.Page ? "active" : "")">
+                                <a class="page-link" href="@Url.Action("EVouchers", new { 
+                                    page = i, 
+                                    pageSize = ViewBag.PageSize, 
+                                    isUsed = ViewBag.IsUsed,
+                                    typeId = ViewBag.TypeId 
+                                })">@i</a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            }
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-gift fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">目前沒有電子禮券</h5>
+                <p class="text-muted">請調整搜尋條件或確認資料範圍</p>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function exportEVouchers() {
+            alert('匯出功能開發中');
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                alert('代碼已複製到剪貼簿：' + text);
+            });
+        }
+
+        function generateQRCode(code) {
+            alert('QR Code 產生功能開發中，代碼：' + code);
+        }
+    </script>
+}
+
+@functions {
+    string GetTimeAgo(DateTime time)
+    {
+        var timeSpan = DateTime.Now - time;
+        if (timeSpan.TotalDays >= 1)
+            return $"{(int)timeSpan.TotalDays} 天前";
+        if (timeSpan.TotalHours >= 1)
+            return $"{(int)timeSpan.TotalHours} 小時前";
+        if (timeSpan.TotalMinutes >= 1)
+            return $"{(int)timeSpan.TotalMinutes} 分鐘前";
+        return "剛剛";
+    }
+}
