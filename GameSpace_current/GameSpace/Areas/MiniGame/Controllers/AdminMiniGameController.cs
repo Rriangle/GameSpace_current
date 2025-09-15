@@ -228,7 +228,7 @@ namespace GameSpace.Areas.MiniGame.Controllers
             }
 
             // 預留實作提示：實際設定更新功能待後續階段開啟
-            TempData["InfoMessage"] = $"遊戲設定更新功能開發中。" +
+            TempData["InfoMessage"] = $"遊戲設定更新功能預留實作。" +
                 $"預計更新：每日次數 {maxDailyPlays}、基礎點數 {basePointReward}、基礎經驗 {baseExpReward}，原因：{reason}";
 
             return RedirectToAction(nameof(Settings));
@@ -258,7 +258,7 @@ namespace GameSpace.Areas.MiniGame.Controllers
             var affectedCount = await query.CountAsync();
 
             // 預留實作提示：實際清理功能待後續階段開啟
-            TempData["InfoMessage"] = $"遊戲資料清理功能開發中。" +
+            TempData["InfoMessage"] = $"遊戲資料清理功能預留實作。" +
                 $"預計清理 {beforeDate:yyyy/MM/dd} 之前的 {affectedCount} 筆記錄" +
                 $"{(includeAborted ? "（僅包含中斷記錄）" : "")}";
 
