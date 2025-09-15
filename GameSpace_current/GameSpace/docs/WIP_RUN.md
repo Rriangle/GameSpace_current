@@ -111,14 +111,32 @@
 
 ## 下次執行計畫 (Next)
 
-### 待完成的 Views
-- AdminWallet/Coupons.cshtml
-- AdminWalletTypes/EditCouponType.cshtml
-- AdminWalletTypes/EVoucherTypes.cshtml
-- AdminSignInStats/Details.cshtml
-- AdminSignInStats/UserHistory.cshtml
-- AdminPet/Index.cshtml
-- AdminMiniGame/Index.cshtml
+### 已完成的 Views（最終階段）
+- ✅ AdminWallet/Coupons.cshtml：優惠券管理列表
+- ✅ AdminWalletTypes/EditCouponType.cshtml：編輯優惠券類型表單
+- ✅ AdminWalletTypes/CreateEVoucherType.cshtml：新增電子禮券類型表單
+- ✅ AdminWalletTypes/EVoucherTypes.cshtml：電子禮券類型列表
+- ✅ AdminSignInStats/Details.cshtml：簽到記錄明細
+- ✅ AdminSignInStats/UserHistory.cshtml：用戶簽到歷史
+- ✅ AdminPet/Index.cshtml：寵物管理列表
+- ✅ AdminMiniGame/Index.cshtml：遊戲記錄列表
+
+### MiniGame Area Admin 完整交付清單
+**Controllers（6個）**：
+- AdminWalletController（錢包管理）
+- AdminWalletTypesController（券類型 CRUD）
+- AdminSignInStatsController（簽到統計）
+- AdminPetController（寵物管理 Stub）
+- AdminMiniGameController（遊戲管理 Stub）
+- HealthController（健康檢查）
+
+**Views（15個）**：
+- _AdminLayout, _Sidebar, _Topbar（共用元件）
+- User_Wallet 模組：Index, Details, History, Coupons, EVouchers
+- 券類型模組：CouponTypes, CreateCouponType, EditCouponType, EVoucherTypes, CreateEVoucherType
+- 簽到模組：Index, Statistics, Details, UserHistory
+- Pet 模組：Index
+- MiniGame 模組：Index
 
 ### 可能的增強功能
 - 匯出功能實作
