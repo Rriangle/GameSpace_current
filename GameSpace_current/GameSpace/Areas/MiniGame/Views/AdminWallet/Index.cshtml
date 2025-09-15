@@ -25,7 +25,7 @@
             <div class="col-md-6">
                 <label for="search" class="form-label">搜尋會員</label>
                 <input type="text" class="form-control" id="search" name="search" 
-                       value="@ViewBag.Search" placeholder="輸入會員帳號或暱稱">
+                       value="@ViewBag.Search">
             </div>
             <div class="col-md-3">
                 <label for="pageSize" class="form-label">每頁筆數</label>
@@ -187,13 +187,13 @@
                     <div class="mb-3">
                         <label for="pointsChange" class="form-label">點數調整</label>
                         <input type="number" class="form-control" id="pointsChange" name="pointsChange" 
-                               placeholder="輸入正數增加，負數減少" required>
+                               required>
                         <div class="form-text">例如：+1000 增加1000點，-500 減少500點</div>
                     </div>
                     <div class="mb-3">
                         <label for="reason" class="form-label">調整原因</label>
                         <textarea class="form-control" id="reason" name="reason" rows="3" 
-                                  placeholder="請說明調整原因（必填）" required></textarea>
+                                  required></textarea>
                     </div>
                 </form>
             </div>
@@ -216,20 +216,20 @@
         }
 
         function submitPointsAdjustment() {
-            // 此功能為 Stub，實際實作需要後端 API 支援
+            // 此功能為預留實作，實際實作需要後端 API 支援
             alert('點數調整功能開發中，請聯絡系統管理員');
             $('#adjustPointsModal').modal('hide');
         }
 
         function exportData() {
-            // 匯出功能 Stub
+            // 匯出功能預留實作
             alert('匯出功能開發中');
         }
 
         // 表格排序功能
         $(document).ready(function() {
             $('th').css('cursor', 'pointer').on('click', function() {
-                // 排序功能 Stub
+                // 排序功能預留實作
                 console.log('排序功能開發中');
             });
         });
