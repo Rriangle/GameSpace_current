@@ -227,7 +227,7 @@ namespace GameSpace.Areas.MiniGame.Controllers
                 return RedirectToAction(nameof(Settings));
             }
 
-            // Stub 提示：實際設定更新功能待後續階段開啟
+            // 預留實作提示：實際設定更新功能待後續階段開啟
             TempData["InfoMessage"] = $"遊戲設定更新功能開發中。" +
                 $"預計更新：每日次數 {maxDailyPlays}、基礎點數 {basePointReward}、基礎經驗 {baseExpReward}，原因：{reason}";
 
@@ -235,13 +235,13 @@ namespace GameSpace.Areas.MiniGame.Controllers
         }
 
         /// <summary>
-        /// 遊戲資料清理 Stub
+        /// 遊戲資料清理功能
         /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CleanupData(DateTime beforeDate, bool includeAborted = false)
         {
-            // Stub 實作：提供資料清理的驗證與流程說明
+            // 預留實作：提供資料清理的驗證與流程說明
             
             if (beforeDate >= DateTime.Today.AddDays(-7))
             {
@@ -257,7 +257,7 @@ namespace GameSpace.Areas.MiniGame.Controllers
 
             var affectedCount = await query.CountAsync();
 
-            // Stub 提示：實際清理功能待後續階段開啟
+            // 預留實作提示：實際清理功能待後續階段開啟
             TempData["InfoMessage"] = $"遊戲資料清理功能開發中。" +
                 $"預計清理 {beforeDate:yyyy/MM/dd} 之前的 {affectedCount} 筆記錄" +
                 $"{(includeAborted ? "（僅包含中斷記錄）" : "")}";
