@@ -11,7 +11,9 @@
     "stage7": 0,
     "stage8": 0
   },
-  "updatedAt": "2025-09-15T06:02:00Z",
+  "updatedAt": "2025-09-15T06:15:00Z",
+  "audit_status": "completed",
+  "early_stop_retracted": true,
   "area": "MiniGame",
   "scope": "Admin 後台管理功能",
   "modules": {
