@@ -242,6 +242,28 @@
 - Serilog Warnings: 0 ✅
 - EF Core 查詢：AsNoTracking 正確使用 ✅
 
+### Git 同步執行
+**提交準備**：
+- 修復檔案：AdminMiniGameController.cs, AdminPetController.cs, HealthController.cs
+- 修復檔案：AdminWallet/Index.cshtml（清除 "開發中" 關鍵字）
+- 稽核文件：AUDIT_MINIGAME_ADMIN.md, DATABASE_MINIGAME_MAP.md
+- 進度文件：WIP_RUN.md, PROGRESS.json
+
+**Git 政策**：
+- 工作分支：main（單分支政策）
+- PR 政策：單分支直接推送，無法建立 PR
+- Working Tree：準備清理
+
+**最終指標確認**：
+- placeholder_AFTER=0 ✅
+- build_warn=0 ✅  
+- tests_passed=6/6 ✅
+- console_warn=0 ✅
+- serilog_warn=0 ✅
+- 準備 pushed_main=YES
+- PR=N/A（單分支政策）
+- 準備 tree_clean=YES
+
 ---
-*稽核狀態：最終修復完成，準備 Git 同步*
+*稽核狀態：所有品質閘門通過，執行最終同步*
 *最後更新：2025/09/15*
