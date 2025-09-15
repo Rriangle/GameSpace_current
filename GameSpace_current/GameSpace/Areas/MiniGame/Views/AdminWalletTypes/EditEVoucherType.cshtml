@@ -1,0 +1,147 @@
+@model GameSpace.Models.EVoucherType
+@{
+    ViewData["Title"] = "編輯電子禮券類型";
+    ViewData["BreadcrumbController"] = "券類型設定";
+    ViewData["BreadcrumbAction"] = "編輯禮券類型";
+    Layout = "_AdminLayout";
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">編輯電子禮券類型</h1>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("EVoucherTypes")" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i>返回列表
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">編輯電子禮券類型資訊</h6>
+            </div>
+            <div class="card-body">
+                <form asp-action="EditEVoucherType" method="post">
+                    <input type="hidden" asp-for="EVoucherTypeID" />
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="Name" class="form-label">類型名稱 <span class="text-danger">*</span></label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="ValueAmount" class="form-label">面額 <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input asp-for="ValueAmount" class="form-control" step="0.01" />
+                            </div>
+                            <span asp-validation-for="ValueAmount" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="PointsCost" class="form-label">兌換所需點數 <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input asp-for="PointsCost" class="form-control" />
+                                <span class="input-group-text">點</span>
+                            </div>
+                            <span asp-validation-for="PointsCost" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="TotalAvailable" class="form-label">發行上限</label>
+                            <input asp-for="TotalAvailable" class="form-control" />
+                            <div class="form-text">留空表示無限制</div>
+                            <span asp-validation-for="TotalAvailable" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="ValidFrom" class="form-label">生效日期 <span class="text-danger">*</span></label>
+                            <input asp-for="ValidFrom" type="date" class="form-control" />
+                            <span asp-validation-for="ValidFrom" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="ValidTo" class="form-label">到期日期 <span class="text-danger">*</span></label>
+                            <input asp-for="ValidTo" type="date" class="form-control" />
+                            <span asp-validation-for="ValidTo" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label">使用說明</label>
+                        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="@Url.Action("EVoucherTypes")" class="btn btn-secondary">
+                            <i class="fas fa-times me-1"></i>取消
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>更新
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-info">目前設定</h6>
+            </div>
+            <div class="card-body">
+                <div class="border rounded p-3">
+                    <div class="text-center mb-3">
+                        <i class="fas fa-gift fa-2x text-success mb-2"></i>
+                        <h5 class="text-primary mb-0">@Model.Name</h5>
+                    </div>
+                    <div class="text-center my-3">
+                        <h3 class="text-success mb-0">$@Model.ValueAmount.ToString("N0")</h3>
+                        <small class="text-muted">@Model.PointsCost 點兌換</small>
+                    </div>
+                    <div class="d-flex justify-content-between text-small">
+                        <span>@Model.ValidFrom.ToString("yyyy/MM/dd")</span>
+                        <span>@Model.ValidTo.ToString("yyyy/MM/dd")</span>
+                    </div>
+                    <div class="mt-2 text-center">
+                        @if (Model.TotalAvailable.HasValue)
+                        {
+                            <span class="badge bg-info">限量 @Model.TotalAvailable 張</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">無限制發行</span>
+                        }
+                    </div>
+                    <div class="mt-2">
+                        <small class="text-muted">@Model.Description</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-warning">使用統計</h6>
+            </div>
+            <div class="card-body">
+                <div class="text-center">
+                    <i class="fas fa-chart-bar fa-2x text-muted mb-3"></i>
+                    <h6 class="text-muted">使用統計功能開發中</h6>
+                    <p class="text-muted small">此處將顯示該類型禮券的發放數量、使用率、剩餘庫存等統計資訊</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
