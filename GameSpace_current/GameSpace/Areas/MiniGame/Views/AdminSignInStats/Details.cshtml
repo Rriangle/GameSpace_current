@@ -1,0 +1,281 @@
+@model GameSpace.Models.UserSignInStats
+@{
+    ViewData["Title"] = "簽到記錄明細";
+    ViewData["BreadcrumbController"] = "簽到系統";
+    ViewData["BreadcrumbAction"] = "簽到明細";
+    Layout = "_AdminLayout";
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">簽到記錄明細</h1>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("Index")" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i>返回列表
+        </a>
+        <a href="@Url.Action("UserHistory", new { userId = Model.UserID })" class="btn btn-primary btn-sm">
+            <i class="fas fa-user-clock me-1"></i>用戶簽到歷史
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- 基本資訊 -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">簽到基本資訊</h6>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-sm-4 text-muted">記錄ID：</div>
+                    <div class="col-sm-8">
+                        <span class="badge bg-secondary fs-6">#@Model.LogID</span>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4 text-muted">簽到時間：</div>
+                    <div class="col-sm-8">
+                        <div>
+                            <strong>@Model.SignTime.ToString("yyyy年MM月dd日 HH:mm:ss")</strong>
+                            <span class="badge @GetDayBadgeClass(Model.SignTime) ms-2">
+                                @GetDayText(Model.SignTime)
+                            </span>
+                        </div>
+                        <small class="text-muted">@GetTimeAgo(Model.SignTime)</small>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4 text-muted">會員資訊：</div>
+                    <div class="col-sm-8">
+                        <div>
+                            <strong>@Model.User?.UserName</strong>
+                            <small class="text-muted d-block">@Model.User?.UserNickName</small>
+                            <a href="@Url.Action("Details", "AdminWallet", new { userId = Model.UserID })" 
+                               class="badge bg-light text-primary text-decoration-none">
+                                <i class="fas fa-wallet me-1"></i>查看錢包
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 獎勵資訊 -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-success">獎勵明細</h6>
+            </div>
+            <div class="card-body">
+                <!-- 點數獎勵 -->
+                <div class="d-flex justify-content-between align-items-center mb-3 p-3 bg-light rounded">
+                    <div>
+                        <h6 class="mb-1">會員點數獎勵</h6>
+                        <small class="text-muted">發放時間：@Model.PointsChangedTime.ToString("HH:mm:ss")</small>
+                    </div>
+                    <div class="text-end">
+                        @if (Model.PointsChanged > 0)
+                        {
+                            <span class="badge bg-success fs-5">+@Model.PointsChanged.ToString("N0") 點</span>
+                        }
+                        else
+                        {
+                            <span class="text-muted">無獎勵</span>
+                        }
+                    </div>
+                </div>
+
+                <!-- 經驗獎勵 -->
+                <div class="d-flex justify-content-between align-items-center mb-3 p-3 bg-light rounded">
+                    <div>
+                        <h6 class="mb-1">寵物經驗獎勵</h6>
+                        <small class="text-muted">發放時間：@Model.ExpGainedTime.ToString("HH:mm:ss")</small>
+                    </div>
+                    <div class="text-end">
+                        @if (Model.ExpGained > 0)
+                        {
+                            <span class="badge bg-info fs-5">+@Model.ExpGained.ToString("N0") EXP</span>
+                        }
+                        else
+                        {
+                            <span class="text-muted">無獎勵</span>
+                        }
+                    </div>
+                </div>
+
+                <!-- 優惠券獎勵 -->
+                <div class="d-flex justify-content-between align-items-center mb-3 p-3 bg-light rounded">
+                    <div>
+                        <h6 class="mb-1">優惠券獎勵</h6>
+                        <small class="text-muted">發放時間：@Model.CouponGainedTime.ToString("HH:mm:ss")</small>
+                    </div>
+                    <div class="text-end">
+                        @if (!string.IsNullOrEmpty(Model.CouponGained) && Model.CouponGained != "0")
+                        {
+                            <div>
+                                <span class="badge bg-warning text-dark fs-6">
+                                    <i class="fas fa-ticket-alt me-1"></i>@Model.CouponGained
+                                </span>
+                                <button class="btn btn-outline-info btn-sm ms-2" 
+                                        onclick="viewCouponDetails('@Model.CouponGained')" title="查看優惠券詳情">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        }
+                        else
+                        {
+                            <span class="text-muted">無獎勵</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 相關統計 -->
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-info">相關統計資訊</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <div class="text-center">
+                            <i class="fas fa-calendar-day fa-2x text-primary mb-2"></i>
+                            <h6>簽到日期</h6>
+                            <p class="text-muted mb-0">@Model.SignTime.ToString("yyyy/MM/dd")</p>
+                            <small class="badge @GetDayBadgeClass(Model.SignTime)">
+                                @GetDayOfWeekText(Model.SignTime)
+                            </small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="text-center">
+                            <i class="fas fa-clock fa-2x text-info mb-2"></i>
+                            <h6>簽到時間</h6>
+                            <p class="text-muted mb-0">@Model.SignTime.ToString("HH:mm:ss")</p>
+                            <small class="text-muted">@GetTimeCategory(Model.SignTime)</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="text-center">
+                            <i class="fas fa-gift fa-2x text-success mb-2"></i>
+                            <h6>總獎勵價值</h6>
+                            <p class="text-muted mb-0">
+                                @{
+                                    var totalValue = Model.PointsChanged;
+                                    // 假設 1 點 = 1 元價值
+                                }
+                                約 $@totalValue.ToString("N0")
+                            </p>
+                            <small class="text-success">點數等值</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="text-center">
+                            <i class="fas fa-trophy fa-2x text-warning mb-2"></i>
+                            <h6>獎勵類型</h6>
+                            <p class="text-muted mb-0">
+                                @{
+                                    var rewardCount = 0;
+                                    if (Model.PointsChanged > 0) rewardCount++;
+                                    if (Model.ExpGained > 0) rewardCount++;
+                                    if (!string.IsNullOrEmpty(Model.CouponGained) && Model.CouponGained != "0") rewardCount++;
+                                }
+                                @rewardCount 種獎勵
+                            </p>
+                            <small class="text-warning">多重獎勵</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 操作記錄 -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-dark">操作選項</h6>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <button class="btn btn-outline-info w-100" onclick="viewUserProfile(@Model.UserID)">
+                    <i class="fas fa-user me-2"></i>查看會員檔案
+                </button>
+            </div>
+            <div class="col-md-4 mb-3">
+                <a href="@Url.Action("UserHistory", new { userId = Model.UserID })" class="btn btn-outline-primary w-100">
+                    <i class="fas fa-history me-2"></i>簽到歷史
+                </a>
+            </div>
+            <div class="col-md-4 mb-3">
+                <button class="btn btn-outline-warning w-100" onclick="auditSignIn(@Model.LogID)">
+                    <i class="fas fa-search me-2"></i>稽核記錄（Stub）
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function viewCouponDetails(couponCode) {
+            alert(`查看優惠券功能開發中\n優惠券代碼：${couponCode}`);
+        }
+
+        function viewUserProfile(userId) {
+            alert(`查看會員檔案功能開發中\n會員ID：${userId}`);
+        }
+
+        function auditSignIn(logId) {
+            alert(`簽到記錄稽核功能開發中\n記錄ID：${logId}\n\n此功能將提供完整的簽到行為稽核軌跡`);
+        }
+    </script>
+}
+
+@functions {
+    string GetDayBadgeClass(DateTime signTime)
+    {
+        var dayOfWeek = signTime.DayOfWeek;
+        return dayOfWeek == DayOfWeek.Saturday || dayOfWeek == DayOfWeek.Sunday ? "bg-warning" : "bg-light text-dark";
+    }
+
+    string GetDayText(DateTime signTime)
+    {
+        var dayOfWeek = signTime.DayOfWeek;
+        return dayOfWeek == DayOfWeek.Saturday || dayOfWeek == DayOfWeek.Sunday ? "假日" : "平日";
+    }
+
+    string GetDayOfWeekText(DateTime signTime)
+    {
+        var dayNames = new[] { "星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六" };
+        return dayNames[(int)signTime.DayOfWeek];
+    }
+
+    string GetTimeCategory(DateTime signTime)
+    {
+        var hour = signTime.Hour;
+        if (hour >= 6 && hour < 12) return "上午";
+        if (hour >= 12 && hour < 18) return "下午";
+        if (hour >= 18 && hour < 24) return "晚上";
+        return "深夜";
+    }
+
+    string GetTimeAgo(DateTime time)
+    {
+        var timeSpan = DateTime.Now - time;
+        if (timeSpan.TotalDays >= 1)
+            return $"{(int)timeSpan.TotalDays} 天前";
+        if (timeSpan.TotalHours >= 1)
+            return $"{(int)timeSpan.TotalHours} 小時前";
+        if (timeSpan.TotalMinutes >= 1)
+            return $"{(int)timeSpan.TotalMinutes} 分鐘前";
+        return "剛剛";
+    }
+}
