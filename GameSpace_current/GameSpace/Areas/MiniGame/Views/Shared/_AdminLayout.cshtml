@@ -194,124 +194,12 @@
 <body>
     <div class="d-flex">
         <!-- 側邊欄 -->
-        <nav class="sidebar">
-            <div class="sidebar-brand">
-                <i class="fas fa-gamepad me-2"></i>
-                MiniGame Admin
-            </div>
-            
-            <ul class="sidebar-nav">
-                <div class="nav-heading">錢包系統</div>
-                <li class="nav-item">
-                    <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminWallet" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")" 
-                       asp-area="MiniGame" asp-controller="AdminWallet" asp-action="Index">
-                        <i class="fas fa-wallet"></i>
-                        錢包列表
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminWallet" && ViewContext.RouteData.Values["action"]?.ToString() == "History" ? "active" : "")" 
-                       asp-area="MiniGame" asp-controller="AdminWallet" asp-action="History">
-                        <i class="fas fa-history"></i>
-                        錢包歷史
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminWallet" && ViewContext.RouteData.Values["action"]?.ToString() == "Coupons" ? "active" : "")" 
-                       asp-area="MiniGame" asp-controller="AdminWallet" asp-action="Coupons">
-                        <i class="fas fa-ticket-alt"></i>
-                        優惠券管理
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminWallet" && ViewContext.RouteData.Values["action"]?.ToString() == "EVouchers" ? "active" : "")" 
-                       asp-area="MiniGame" asp-controller="AdminWallet" asp-action="EVouchers">
-                        <i class="fas fa-gift"></i>
-                        電子禮券管理
-                    </a>
-                </li>
-
-                <div class="nav-heading">券類型設定</div>
-                <li class="nav-item">
-                    <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminWalletTypes" && ViewContext.RouteData.Values["action"]?.ToString() == "CouponTypes" ? "active" : "")" 
-                       asp-area="MiniGame" asp-controller="AdminWalletTypes" asp-action="CouponTypes">
-                        <i class="fas fa-tags"></i>
-                        優惠券類型
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminWalletTypes" && ViewContext.RouteData.Values["action"]?.ToString() == "EVoucherTypes" ? "active" : "")" 
-                       asp-area="MiniGame" asp-controller="AdminWalletTypes" asp-action="EVoucherTypes">
-                        <i class="fas fa-certificate"></i>
-                        禮券類型
-                    </a>
-                </li>
-
-                <div class="nav-heading">簽到系統</div>
-                <li class="nav-item">
-                    <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminSignInStats" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")" 
-                       asp-area="MiniGame" asp-controller="AdminSignInStats" asp-action="Index">
-                        <i class="fas fa-calendar-check"></i>
-                        簽到記錄
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminSignInStats" && ViewContext.RouteData.Values["action"]?.ToString() == "Statistics" ? "active" : "")" 
-                       asp-area="MiniGame" asp-controller="AdminSignInStats" asp-action="Statistics">
-                        <i class="fas fa-chart-bar"></i>
-                        簽到統計
-                    </a>
-                </li>
-
-                <div class="nav-heading">寵物系統</div>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" onclick="alert('寵物管理功能開發中')">
-                        <i class="fas fa-paw"></i>
-                        寵物管理 <span class="badge bg-warning ms-2">開發中</span>
-                    </a>
-                </li>
-
-                <div class="nav-heading">小遊戲系統</div>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" onclick="alert('小遊戲管理功能開發中')">
-                        <i class="fas fa-gamepad"></i>
-                        遊戲管理 <span class="badge bg-warning ms-2">開發中</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
+        @await Html.PartialAsync("_Sidebar")
 
         <!-- 主要內容區域 -->
         <div class="main-content">
             <!-- 頂部導航欄 -->
-            <nav class="topbar d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center">
-                    <button class="btn btn-link d-md-none" type="button" id="sidebarToggle">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb mb-0">
-                            <li class="breadcrumb-item">
-                                <a asp-area="MiniGame" asp-controller="AdminWallet" asp-action="Index">MiniGame 管理</a>
-                            </li>
-                            @if (ViewData["BreadcrumbController"] != null)
-                            {
-                                <li class="breadcrumb-item">@ViewData["BreadcrumbController"]</li>
-                            }
-                            @if (ViewData["BreadcrumbAction"] != null)
-                            {
-                                <li class="breadcrumb-item active" aria-current="page">@ViewData["BreadcrumbAction"]</li>
-                            }
-                        </ol>
-                    </nav>
-                </div>
-                <div class="d-flex align-items-center">
-                    <span class="me-3">管理員：@User.Identity.Name</span>
-                    <a class="btn btn-outline-primary btn-sm" asp-area="" asp-controller="Account" asp-action="Logout">
-                        <i class="fas fa-sign-out-alt me-1"></i>登出
-                    </a>
-                </div>
-            </nav>
+            @await Html.PartialAsync("_Topbar")
 
             <!-- 內容區域 -->
             <div class="content-wrapper">
