@@ -1,0 +1,265 @@
+@model GameSpace.Models.Pet
+@{
+    ViewData["Title"] = "寵物明細";
+    ViewData["BreadcrumbController"] = "寵物系統";
+    ViewData["BreadcrumbAction"] = "寵物明細";
+    Layout = "_AdminLayout";
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">寵物明細</h1>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("Index")" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i>返回列表
+        </a>
+        <button class="btn btn-outline-warning btn-sm" onclick="adjustPetStatus(@Model.PetID, '@Model.PetName')">
+            <i class="fas fa-edit me-1"></i>調整狀態（Stub）
+        </button>
+    </div>
+</div>
+
+<div class="row">
+    <!-- 基本資訊 -->
+    <div class="col-lg-4 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">基本資訊</h6>
+            </div>
+            <div class="card-body text-center">
+                <div class="rounded-circle mx-auto mb-3" 
+                     style="width: 80px; height: 80px; background-color: @Model.SkinColor; border: 3px solid #dee2e6;">
+                </div>
+                <h4 class="text-primary mb-1">@Model.PetName</h4>
+                <p class="text-muted mb-2">史萊姆寵物</p>
+                <span class="badge @GetHealthBadgeClass(Model.Health) fs-6">
+                    @GetHealthStatus(Model.Health)
+                </span>
+                
+                <hr>
+                
+                <div class="row text-center">
+                    <div class="col-6">
+                        <div class="border-end">
+                            <h6 class="text-warning">Lv.@Model.Level</h6>
+                            <small class="text-muted">等級</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <h6 class="text-info">@Model.Experience.ToString("N0")</h6>
+                        <small class="text-muted">經驗值</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 五維屬性 -->
+    <div class="col-lg-8 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-success">五維屬性</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label">
+                            <i class="fas fa-drumstick-bite text-warning me-2"></i>飢餓值
+                        </label>
+                        <div class="progress mb-1" style="height: 20px;">
+                            <div class="progress-bar @GetAttributeBarClass(Model.Hunger)" 
+                                 style="width: @Model.Hunger%" 
+                                 aria-valuenow="@Model.Hunger" aria-valuemin="0" aria-valuemax="100">
+                                @Model.Hunger
+                            </div>
+                        </div>
+                        <small class="text-muted">@GetAttributeStatus("飢餓", Model.Hunger)</small>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label">
+                            <i class="fas fa-smile text-success me-2"></i>心情值
+                        </label>
+                        <div class="progress mb-1" style="height: 20px;">
+                            <div class="progress-bar @GetAttributeBarClass(Model.Mood)" 
+                                 style="width: @Model.Mood%" 
+                                 aria-valuenow="@Model.Mood" aria-valuemin="0" aria-valuemax="100">
+                                @Model.Mood
+                            </div>
+                        </div>
+                        <small class="text-muted">@GetAttributeStatus("心情", Model.Mood)</small>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label">
+                            <i class="fas fa-running text-primary me-2"></i>體力值
+                        </label>
+                        <div class="progress mb-1" style="height: 20px;">
+                            <div class="progress-bar @GetAttributeBarClass(Model.Stamina)" 
+                                 style="width: @Model.Stamina%" 
+                                 aria-valuenow="@Model.Stamina" aria-valuemin="0" aria-valuemax="100">
+                                @Model.Stamina
+                            </div>
+                        </div>
+                        <small class="text-muted">@GetAttributeStatus("體力", Model.Stamina)</small>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label">
+                            <i class="fas fa-soap text-info me-2"></i>清潔值
+                        </label>
+                        <div class="progress mb-1" style="height: 20px;">
+                            <div class="progress-bar @GetAttributeBarClass(Model.Cleanliness)" 
+                                 style="width: @Model.Cleanliness%" 
+                                 aria-valuenow="@Model.Cleanliness" aria-valuemin="0" aria-valuemax="100">
+                                @Model.Cleanliness
+                            </div>
+                        </div>
+                        <small class="text-muted">@GetAttributeStatus("清潔", Model.Cleanliness)</small>
+                    </div>
+
+                    <div class="col-12 mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-heart text-danger me-2"></i>健康值
+                        </label>
+                        <div class="progress mb-1" style="height: 25px;">
+                            <div class="progress-bar @GetAttributeBarClass(Model.Health)" 
+                                 style="width: @Model.Health%" 
+                                 aria-valuenow="@Model.Health" aria-valuemin="0" aria-valuemax="100">
+                                <strong>@Model.Health</strong>
+                            </div>
+                        </div>
+                        <small class="text-muted">@GetAttributeStatus("健康", Model.Health)</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 外觀與歷史 -->
+<div class="row">
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-info">外觀設定</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6">
+                        <label class="form-label">膚色</label>
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle me-3" 
+                                 style="width: 40px; height: 40px; background-color: @Model.SkinColor; border: 2px solid #dee2e6;">
+                            </div>
+                            <div>
+                                <code>@Model.SkinColor</code>
+                                <small class="text-muted d-block">
+                                    更新：@Model.ColorChangedTime.ToString("yyyy/MM/dd")
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label">背景色</label>
+                        <div>
+                            <strong>@Model.BackgroundColor</strong>
+                            <small class="text-muted d-block">
+                                更新：@Model.BackgroundColorChangedTime.ToString("yyyy/MM/dd")
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-warning">重要時間</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12 mb-3">
+                        <label class="form-label">最後升級時間</label>
+                        <div>
+                            <strong>@Model.LevelUpTime.ToString("yyyy/MM/dd HH:mm:ss")</strong>
+                            <span class="badge bg-light text-dark ms-2">
+                                @GetTimeAgo(Model.LevelUpTime)
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label class="form-label">最後換色時間</label>
+                        <div>
+                            <strong>@Model.ColorChangedTime.ToString("yyyy/MM/dd HH:mm:ss")</strong>
+                            <span class="badge bg-light text-dark ms-2">
+                                @GetTimeAgo(Model.ColorChangedTime)
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function adjustPetStatus(petId, petName) {
+            alert(`寵物狀態調整功能開發中\n\n寵物：${petName} (ID: ${petId})\n\n此功能將提供完整的寵物屬性調整介面，包含驗證與流程說明`);
+        }
+    </script>
+}
+
+@functions {
+    string GetHealthBadgeClass(int health)
+    {
+        if (health >= 80) return "bg-success";
+        if (health >= 60) return "bg-info";
+        if (health >= 40) return "bg-warning text-dark";
+        if (health >= 20) return "bg-danger";
+        return "bg-dark";
+    }
+
+    string GetHealthStatus(int health)
+    {
+        if (health >= 80) return "很健康";
+        if (health >= 60) return "健康";
+        if (health >= 40) return "一般";
+        if (health >= 20) return "不佳";
+        return "生病";
+    }
+
+    string GetAttributeBarClass(int value)
+    {
+        if (value >= 80) return "bg-success";
+        if (value >= 60) return "bg-info";
+        if (value >= 40) return "bg-warning";
+        if (value >= 20) return "bg-danger";
+        return "bg-dark";
+    }
+
+    string GetAttributeStatus(string attributeName, int value)
+    {
+        var status = value switch
+        {
+            >= 80 => "極佳",
+            >= 60 => "良好",
+            >= 40 => "普通",
+            >= 20 => "偏低",
+            _ => "極低"
+        };
+        return $"{attributeName}狀態：{status}";
+    }
+
+    string GetTimeAgo(DateTime time)
+    {
+        var timeSpan = DateTime.Now - time;
+        if (timeSpan.TotalDays >= 1)
+            return $"{(int)timeSpan.TotalDays} 天前";
+        if (timeSpan.TotalHours >= 1)
+            return $"{(int)timeSpan.TotalHours} 小時前";
+        return "今天";
+    }
+}

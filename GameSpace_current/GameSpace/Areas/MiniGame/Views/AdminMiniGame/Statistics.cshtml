@@ -1,0 +1,267 @@
+@{
+    ViewData["Title"] = "遊戲統計報表";
+    ViewData["BreadcrumbController"] = "小遊戲系統";
+    ViewData["BreadcrumbAction"] = "遊戲統計";
+    Layout = "_AdminLayout";
+    var levelStats = ViewBag.LevelStats as List<dynamic>;
+    var dailyStats = ViewBag.DailyStats as List<dynamic>;
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">遊戲統計報表</h1>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("Index")" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i>返回列表
+        </a>
+        <button class="btn btn-outline-primary btn-sm" onclick="exportReport()">
+            <i class="fas fa-download me-1"></i>匯出報表
+        </button>
+    </div>
+</div>
+
+<!-- 日期範圍選擇 -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">統計範圍</h6>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <label for="startDate" class="form-label">開始日期</label>
+                <input type="date" class="form-control" id="startDate" name="startDate" 
+                       value="@(ViewBag.StartDate?.ToString("yyyy-MM-dd"))" required>
+            </div>
+            <div class="col-md-4">
+                <label for="endDate" class="form-label">結束日期</label>
+                <input type="date" class="form-control" id="endDate" name="endDate" 
+                       value="@(ViewBag.EndDate?.ToString("yyyy-MM-dd"))" required>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <div class="btn-group w-100">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-chart-line me-1"></i>重新統計
+                    </button>
+                    <button type="button" class="btn btn-outline-info" onclick="setQuickRange('week')">近7天</button>
+                    <button type="button" class="btn btn-outline-info" onclick="setQuickRange('month')">近30天</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 總體統計卡片 -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            總遊戲次數
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            @ViewBag.TotalGames?.ToString("N0") 次
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-gamepad fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            勝率
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            @ViewBag.WinRate?.ToString("F1")%
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-trophy fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            發放總點數
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            @ViewBag.TotalPoints?.ToString("N0") 點
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-coins fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            發放總經驗
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            @ViewBag.TotalExp?.ToString("N0") EXP
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-star fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 關卡統計 -->
+<div class="row">
+    <div class="col-xl-8 col-lg-7">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">關卡統計</h6>
+            </div>
+            <div class="card-body">
+                @if (levelStats != null && levelStats.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>關卡</th>
+                                    <th>遊戲次數</th>
+                                    <th>勝率</th>
+                                    <th>平均點數</th>
+                                    <th>平均經驗</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var stat in levelStats)
+                                {
+                                    <tr>
+                                        <td>
+                                            <span class="badge bg-warning text-dark">第 @stat.Level 關</span>
+                                        </td>
+                                        <td class="text-end">@stat.Count</td>
+                                        <td class="text-end">
+                                            <span class="badge @GetWinRateBadgeClass((double)stat.WinRate)">
+                                                @((double)stat.WinRate).ToString("F1")%
+                                            </span>
+                                        </td>
+                                        <td class="text-end">@((double)stat.AvgPoints).ToString("F0")</td>
+                                        <td class="text-end">@((double)stat.AvgExp).ToString("F0")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4">
+                        <i class="fas fa-chart-bar fa-3x text-muted mb-3"></i>
+                        <h6 class="text-muted">暫無關卡統計資料</h6>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4 col-lg-5">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">結果分佈</h6>
+            </div>
+            <div class="card-body">
+                <div class="chart-pie pt-4 pb-2">
+                    <canvas id="resultChart" width="100%" height="50"></canvas>
+                </div>
+                <div class="mt-4 text-center small">
+                    <span class="mr-2">
+                        <i class="fas fa-circle text-success"></i> 勝利 (@ViewBag.WinCount)
+                    </span>
+                    <span class="mr-2">
+                        <i class="fas fa-circle text-danger"></i> 失敗 (@ViewBag.LoseCount)
+                    </span>
+                    <span class="mr-2">
+                        <i class="fas fa-circle text-warning"></i> 退出 (@ViewBag.AbortCount)
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        function setQuickRange(type) {
+            var endDate = new Date();
+            var startDate = new Date();
+            
+            if (type === 'week') {
+                startDate.setDate(endDate.getDate() - 6);
+            } else if (type === 'month') {
+                startDate.setDate(endDate.getDate() - 29);
+            }
+            
+            document.getElementById('startDate').value = startDate.toISOString().split('T')[0];
+            document.getElementById('endDate').value = endDate.toISOString().split('T')[0];
+        }
+
+        function exportReport() {
+            alert('統計報表匯出功能開發中');
+        }
+
+        // 初始化結果分佈圖表
+        $(document).ready(function() {
+            var ctx = document.getElementById('resultChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['勝利', '失敗', '退出'],
+                    datasets: [{
+                        data: [@ViewBag.WinCount, @ViewBag.LoseCount, @ViewBag.AbortCount],
+                        backgroundColor: ['#1cc88a', '#e74a3b', '#f6c23e']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}
+
+@functions {
+    string GetWinRateBadgeClass(double winRate)
+    {
+        if (winRate >= 80) return "bg-success";
+        if (winRate >= 60) return "bg-info";
+        if (winRate >= 40) return "bg-warning text-dark";
+        return "bg-danger";
+    }
+}
