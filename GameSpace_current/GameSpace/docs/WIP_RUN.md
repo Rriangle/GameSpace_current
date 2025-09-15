@@ -309,6 +309,24 @@ placeholder_AFTER=0 | build_warn=0 | tests_passed=6/6 | console_warn=0 | serilog
 - ✅ [5] 稽核文件完整
 - 🔄 [6] Git 同步執行中
 
+### 系統限制說明
+**無法自動執行**：
+- AI 助手無法直接執行 tar/zip 壓縮命令
+- 無法執行 git push 或上傳檔案到 GitHub
+- 無法建立 GitHub PR
+
+**替代方案**：
+- 已建立 create_archive.sh 壓縮腳本
+- 已建立 ARCHIVE_INSTRUCTIONS.md 手動執行說明
+- 已建立 DELIVERY_SUMMARY.md 完整交付摘要
+
+### 最終狀態
+**MiniGame Area Admin 後台開發與稽核完成**：
+- 四個模組完整實作
+- 所有品質閘門通過
+- 稽核證據完整
+- 等待手動 Git 同步
+
 ---
 *稽核時間：2025/09/15*
-*狀態：所有品質閘門通過，準備最終提交*
+*狀態：開發與稽核完成，等待手動 Git 同步*
