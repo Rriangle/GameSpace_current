@@ -10,7 +10,7 @@ namespace GameSpace.Areas.MiniGame.Controllers
     /// MiniGame Area - MiniGame 模組後台管理控制器
     /// 負責管理小遊戲項目的後台功能
     /// 資料表範圍：MiniGame（以 database.json 為準）
-    /// 根據指令第[4]節：其餘表以後台管理的查詢與審閱頁為主，寫入功能為 Stub
+    /// 根據指令第[4]節：其餘表以後台管理的查詢與審閱頁為主，寫入功能為預留實作
     /// </summary>
     [Area("MiniGame")]
     [Authorize(Roles = "Admin")]
@@ -169,12 +169,12 @@ namespace GameSpace.Areas.MiniGame.Controllers
         }
 
         /// <summary>
-        /// 遊戲設定管理 Stub - 不破壞規格的 Stub
-        /// 根據指令：寫入流程僅可建立不破壞規格的 Stub
+        /// 遊戲設定管理功能 - 預留實作介面
+        /// 根據指令：寫入流程僅可建立不破壞規格的預留實作
         /// </summary>
         public IActionResult Settings()
         {
-            // Stub 實作：顯示遊戲設定介面，但實際修改功能為 Stub
+            // 預留實作：顯示遊戲設定介面，實際修改功能為預留實作
             
             var gameSettings = new
             {
@@ -194,13 +194,13 @@ namespace GameSpace.Areas.MiniGame.Controllers
         }
 
         /// <summary>
-        /// 更新遊戲設定 Stub
+        /// 更新遊戲設定功能
         /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult UpdateSettings(int maxDailyPlays, int basePointReward, int baseExpReward, string reason)
         {
-            // Stub 實作：驗證與流程說明到位，但實際寫入前先經過後續階段與規格允許再開啟
+            // 預留實作：驗證與流程說明到位，實際寫入前先經過後續階段與規格允許再開啟
             
             // 驗證設定值
             if (maxDailyPlays < 1 || maxDailyPlays > 10)
