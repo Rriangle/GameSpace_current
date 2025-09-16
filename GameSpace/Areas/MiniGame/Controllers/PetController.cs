@@ -23,7 +23,7 @@ namespace GameSpace.Areas.MiniGame.Controllers
             var userId = GetCurrentUserID();
             var pet = await _context.Pets
                 .Include(p => p.User)
-                .FirstOrDefaultAsync(p => p.UserId == userId);
+                .FirstOrDefaultAsync(p => p.UserID == userId);
 
             if (pet == null)
             {
@@ -40,7 +40,7 @@ namespace GameSpace.Areas.MiniGame.Controllers
         public async Task<IActionResult> Feed()
         {
             var userId = GetCurrentUserID();
-            var pet = await _context.Pets.FirstOrDefaultAsync(p => p.UserId == userId);
+            var pet = await _context.Pets.FirstOrDefaultAsync(p => p.UserID == userId);
 
             if (pet == null)
             {
@@ -78,7 +78,7 @@ namespace GameSpace.Areas.MiniGame.Controllers
         public async Task<IActionResult> Bath()
         {
             var userId = GetCurrentUserID();
-            var pet = await _context.Pets.FirstOrDefaultAsync(p => p.UserId == userId);
+            var pet = await _context.Pets.FirstOrDefaultAsync(p => p.UserID == userId);
 
             if (pet == null)
             {
@@ -114,7 +114,7 @@ namespace GameSpace.Areas.MiniGame.Controllers
         public async Task<IActionResult> Play()
         {
             var userId = GetCurrentUserID();
-            var pet = await _context.Pets.FirstOrDefaultAsync(p => p.UserId == userId);
+            var pet = await _context.Pets.FirstOrDefaultAsync(p => p.UserID == userId);
 
             if (pet == null)
             {
@@ -152,7 +152,7 @@ namespace GameSpace.Areas.MiniGame.Controllers
         public async Task<IActionResult> Sleep()
         {
             var userId = GetCurrentUserID();
-            var pet = await _context.Pets.FirstOrDefaultAsync(p => p.UserId == userId);
+            var pet = await _context.Pets.FirstOrDefaultAsync(p => p.UserID == userId);
 
             if (pet == null)
             {
@@ -190,8 +190,8 @@ namespace GameSpace.Areas.MiniGame.Controllers
         public async Task<IActionResult> ChangeSkinColor(string color)
         {
             var userId = GetCurrentUserID();
-            var pet = await _context.Pets.FirstOrDefaultAsync(p => p.UserId == userId);
-            var userWallet = await _context.UserWallets.FirstOrDefaultAsync(w => w.UserId == userId);
+            var pet = await _context.Pets.FirstOrDefaultAsync(p => p.UserID == userId);
+            var userWallet = await _context.UserWallets.FirstOrDefaultAsync(w => w.UserID == userId);
 
             if (pet == null || userWallet == null)
             {
@@ -210,14 +210,14 @@ namespace GameSpace.Areas.MiniGame.Controllers
                 // 扣除點數
                 userWallet.UserPoint -= skinColorCost;
                 pet.SkinColor = color;
-                pet.ColorChangedTime = DateTime.UtcNow;
+                pet.SkinColorChangedTime = DateTime.UtcNow;
                 pet.PointsChangedColor = skinColorCost;
-                pet.PointsChangedTimeColor = DateTime.UtcNow;
+                pet.PointsChangedTimeSkinColor = DateTime.UtcNow;
 
                 // 記錄錢包歷史
                 _context.WalletHistories.Add(new WalletHistory
                 {
-                    UserId = userId,
+                    UserID = userId,
                     ChangeType = "Point",
                     PointsChanged = -skinColorCost,
                     Description = "購買寵物膚色",
@@ -247,7 +247,7 @@ namespace GameSpace.Areas.MiniGame.Controllers
         public async Task<IActionResult> ChangeBackgroundColor(string color)
         {
             var userId = GetCurrentUserID();
-            var pet = await _context.Pets.FirstOrDefaultAsync(p => p.UserId == userId);
+            var pet = await _context.Pets.FirstOrDefaultAsync(p => p.UserID == userId);
 
             if (pet == null)
             {
@@ -284,8 +284,8 @@ namespace GameSpace.Areas.MiniGame.Controllers
         public async Task<IActionResult> CheckLevelUp()
         {
             var userId = GetCurrentUserID();
-            var pet = await _context.Pets.FirstOrDefaultAsync(p => p.UserId == userId);
-            var userWallet = await _context.UserWallets.FirstOrDefaultAsync(w => w.UserId == userId);
+            var pet = await _context.Pets.FirstOrDefaultAsync(p => p.UserID == userId);
+            var userWallet = await _context.UserWallets.FirstOrDefaultAsync(w => w.UserID == userId);
 
             if (pet == null || userWallet == null)
             {
@@ -314,7 +314,7 @@ namespace GameSpace.Areas.MiniGame.Controllers
                     // 記錄錢包歷史
                     _context.WalletHistories.Add(new WalletHistory
                     {
-                        UserId = userId,
+                        UserID = userId,
                         ChangeType = "Point",
                         PointsChanged = pointsReward,
                         Description = "寵物升級獎勵",
@@ -346,7 +346,7 @@ namespace GameSpace.Areas.MiniGame.Controllers
         {
             var pet = new Pet
             {
-                UserId = userId,
+                UserID = userId,
                 PetName = "小可愛",
                 Level = 1,
                 Experience = 0,

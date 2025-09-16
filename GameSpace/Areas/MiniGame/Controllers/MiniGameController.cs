@@ -21,9 +21,9 @@ namespace GameSpace.Areas.MiniGame.Controllers
         public async Task<IActionResult> Index()
         {
             var userId = GetCurrentUserID();
-            var pet = await _context.Pets.FirstOrDefaultAsync(p => p.UserId == userId);
+            var pet = await _context.Pets.FirstOrDefaultAsync(p => p.UserID == userId);
             var todayGames = await _context.MiniGames
-                .Where(mg => mg.UserId == userId && mg.StartTime.Date == DateTime.UtcNow.Date)
+                .Where(mg => mg.UserID == userId && mg.StartTime.Date == DateTime.UtcNow.Date)
                 .CountAsync();
 
             var canPlay = pet != null && pet.Health > 0 && todayGames < 3;
@@ -41,7 +41,7 @@ namespace GameSpace.Areas.MiniGame.Controllers
         public async Task<IActionResult> StartGame()
         {
             var userId = GetCurrentUserID();
-            var pet = await _context.Pets.FirstOrDefaultAsync(p => p.UserId == userId);
+            var pet = await _context.Pets.FirstOrDefaultAsync(p => p.UserID == userId);
 
             if (pet == null)
             {
@@ -54,7 +54,7 @@ namespace GameSpace.Areas.MiniGame.Controllers
             }
 
             var todayGames = await _context.MiniGames
-                .Where(mg => mg.UserId == userId && mg.StartTime.Date == DateTime.UtcNow.Date)
+                .Where(mg => mg.UserID == userId && mg.StartTime.Date == DateTime.UtcNow.Date)
                 .CountAsync();
 
             if (todayGames >= 3)
@@ -66,10 +66,10 @@ namespace GameSpace.Areas.MiniGame.Controllers
             try
             {
                 // 創建遊戲記錄
-                var miniGame = new MiniGame
+                var miniGame = new Models.MiniGame
                 {
-                    UserId = userId,
-                    PetId = pet.PetId,
+                    UserID = userId,
+                    PetID = pet.PetID,
                     Level = GetNextLevel(userId),
                     MonsterCount = GetMonsterCount(GetNextLevel(userId)),
                     SpeedMultiplier = GetSpeedMultiplier(GetNextLevel(userId)),
@@ -104,7 +104,7 @@ namespace GameSpace.Areas.MiniGame.Controllers
         {
             var userId = GetCurrentUserID();
             var miniGame = await _context.MiniGames
-                .FirstOrDefaultAsync(mg => mg.PlayId == gameId && mg.UserId == userId);
+                .FirstOrDefaultAsync(mg => mg.PlayID == gameId && mg.UserID == userId);
 
             if (miniGame == null)
             {
@@ -130,7 +130,7 @@ namespace GameSpace.Areas.MiniGame.Controllers
                 miniGame.CleanlinessDelta = rewards.CleanlinessDelta;
 
                 // 更新寵物狀態
-                var pet = await _context.Pets.FirstOrDefaultAsync(p => p.PetId == miniGame.PetId);
+                var pet = await _context.Pets.FirstOrDefaultAsync(p => p.PetID == miniGame.PetId);
                 if (pet != null)
                 {
                     pet.Hunger = Math.Max(0, Math.Min(100, pet.Hunger + rewards.HungerDelta));
@@ -162,7 +162,7 @@ namespace GameSpace.Areas.MiniGame.Controllers
                 // 更新用戶點數
                 if (rewards.PointsChanged > 0)
                 {
-                    var userWallet = await _context.UserWallets.FirstOrDefaultAsync(w => w.UserId == userId);
+                    var userWallet = await _context.UserWallets.FirstOrDefaultAsync(w => w.UserID == userId);
                     if (userWallet != null)
                     {
                         userWallet.UserPoint += rewards.PointsChanged;
@@ -171,7 +171,7 @@ namespace GameSpace.Areas.MiniGame.Controllers
                         // 記錄錢包歷史
                         _context.WalletHistories.Add(new WalletHistory
                         {
-                            UserId = userId,
+                            UserID = userId,
                             ChangeType = "Point",
                             PointsChanged = rewards.PointsChanged,
                             Description = "小遊戲獎勵",
@@ -188,7 +188,7 @@ namespace GameSpace.Areas.MiniGame.Controllers
                     {
                         var coupon = new Coupon
                         {
-                            UserId = userId,
+                            UserID = userId,
                             CouponTypeId = couponType.CouponTypeId,
                             CouponCode = GenerateCouponCode(),
                             IsUsed = false,
@@ -224,7 +224,7 @@ namespace GameSpace.Areas.MiniGame.Controllers
         {
             var userId = GetCurrentUserID();
             var games = await _context.MiniGames
-                .Where(mg => mg.UserId == userId)
+                .Where(mg => mg.UserID == userId)
                 .OrderByDescending(mg => mg.StartTime)
                 .Take(20)
                 .ToListAsync();
@@ -235,7 +235,7 @@ namespace GameSpace.Areas.MiniGame.Controllers
         private int GetNextLevel(int userId)
         {
             var lastGame = _context.MiniGames
-                .Where(mg => mg.UserId == userId && mg.Result == "Win")
+                .Where(mg => mg.UserID == userId && mg.Result == "Win")
                 .OrderByDescending(mg => mg.StartTime)
                 .FirstOrDefault();
 
