@@ -28,9 +28,9 @@ namespace GameSpace.Data
         public DbSet<CouponType> CouponTypes { get; set; }
         public DbSet<Coupon> Coupons { get; set; }
         public DbSet<EVoucherType> EVoucherTypes { get; set; }
-        public DbSet<EVoucher> Evouchers { get; set; }
-        public DbSet<EVoucherToken> EvoucherTokens { get; set; }
-        public DbSet<EVoucherRedeemLog> EvoucherRedeemLogs { get; set; }
+        public DbSet<EVoucher> EVouchers { get; set; }
+        public DbSet<EVoucherToken> EVoucherTokens { get; set; }
+        public DbSet<EVoucherRedeemLog> EVoucherRedeemLogs { get; set; }
 
         // 錢包歷史
         public DbSet<WalletHistory> WalletHistories { get; set; }

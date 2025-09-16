@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GameSpace")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b17fb0420175f6b6099e05bf0f9867076e65d4cf")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+aa7e155fb62ab888a2a21d380590da84ff0d87ea")]
 [assembly: System.Reflection.AssemblyProductAttribute("GameSpace")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GameSpace")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
