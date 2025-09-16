@@ -49,6 +49,7 @@ namespace GameSpace.Data
         // 社群相關
         public DbSet<Relation> Relations { get; set; }
         public DbSet<RelationStatus> RelationStatuses { get; set; }
+        public DbSet<Friendship> Friendships { get; set; }
         public DbSet<ChatMessage> ChatMessages { get; set; }
         public DbSet<Group> Groups { get; set; }
         public DbSet<GroupMember> GroupMembers { get; set; }
@@ -64,7 +65,9 @@ namespace GameSpace.Data
         // 商城相關
         public DbSet<ProductInfo> ProductInfos { get; set; }
         public DbSet<OrderInfo> OrderInfos { get; set; }
+        public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<WalletTransaction> WalletTransactions { get; set; }
         public DbSet<Supplier> Suppliers { get; set; }
         public DbSet<OfficialStoreRanking> OfficialStoreRankings { get; set; }
 

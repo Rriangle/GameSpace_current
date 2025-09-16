@@ -97,7 +97,7 @@ namespace GameSpace.Middleware
 
     public static class RateLimitingMiddlewareExtensions
     {
-        public static IApplicationBuilder UseRateLimiting(this IApplicationBuilder builder, RateLimitOptions options = null)
+        public static IApplicationBuilder UseRateLimiting(this IApplicationBuilder builder, RateLimitOptions? options = null)
         {
             return builder.UseMiddleware<RateLimitingMiddleware>(options ?? new RateLimitOptions());
         }

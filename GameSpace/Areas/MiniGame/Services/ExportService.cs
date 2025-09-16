@@ -115,7 +115,7 @@ namespace GameSpace.Areas.MiniGame.Services
         /// <param name="data">原始資料</param>
         /// <param name="metadata">中繼資料</param>
         /// <returns>包含中繼資料的匯出物件</returns>
-        public static object CreateExportData<T>(IEnumerable<T> data, object metadata = null)
+        public static object CreateExportData<T>(IEnumerable<T> data, object? metadata = null)
         {
             return new
             {

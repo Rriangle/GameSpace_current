@@ -267,7 +267,7 @@ namespace GameSpace.Areas.MiniGame.Controllers
             };
         }
 
-        private (int ExpGained, int PointsChanged, int CouponGained, int HungerDelta, int MoodDelta, int StaminaDelta, int CleanlinessDelta) CalculateRewards(MiniGame miniGame, string result, int monstersDefeated, int timeSpent)
+        private (int ExpGained, int PointsChanged, int CouponGained, int HungerDelta, int MoodDelta, int StaminaDelta, int CleanlinessDelta) CalculateRewards(Models.MiniGame miniGame, string result, int monstersDefeated, int timeSpent)
         {
             if (result == "Abort")
             {

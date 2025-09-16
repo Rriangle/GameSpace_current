@@ -1,4 +1,5 @@
 using GameSpace.Services;
+using GameSpace.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 

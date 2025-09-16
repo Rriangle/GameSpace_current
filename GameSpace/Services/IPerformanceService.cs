@@ -70,14 +70,4 @@ namespace GameSpace.Services
         public DateTime LastUpdated { get; set; }
     }
 
-    /// <summary>
-    /// 健康狀態
-    /// </summary>
-    public class HealthStatus
-    {
-        public bool IsHealthy { get; set; }
-        public string Status { get; set; } = string.Empty;
-        public string[] Issues { get; set; } = Array.Empty<string>();
-        public DateTime CheckedAt { get; set; }
-    }
 }

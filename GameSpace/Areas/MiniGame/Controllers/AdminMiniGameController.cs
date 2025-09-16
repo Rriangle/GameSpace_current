@@ -382,7 +382,7 @@ namespace GameSpace.Areas.MiniGame.Controllers
         /// <summary>
         /// 建立遊戲記錄查詢（可重用）
         /// </summary>
-        private IQueryable<MiniGame> BuildMiniGameQuery(string result, int? level, int? userId, DateTime? startDate, DateTime? endDate)
+        private IQueryable<Models.MiniGame> BuildMiniGameQuery(string result, int? level, int? userId, DateTime? startDate, DateTime? endDate)
         {
             var query = _context.MiniGames
                 .Include(m => m.User)

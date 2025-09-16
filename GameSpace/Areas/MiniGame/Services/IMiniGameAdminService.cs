@@ -254,7 +254,7 @@ namespace GameSpace.Areas.MiniGame.Services
     public class PetDetailReadModel
     {
         public Pet Pet { get; set; } = new();
-        public List<MiniGame> RecentGames { get; set; } = new();
+        public List<Models.MiniGame> RecentGames { get; set; } = new();
         public int TotalGamesPlayed { get; set; }
         public double WinRate { get; set; }
     }
@@ -335,7 +335,7 @@ namespace GameSpace.Areas.MiniGame.Services
     /// </summary>
     public class GameDetailReadModel
     {
-        public MiniGame Game { get; set; } = new();
+        public Models.MiniGame Game { get; set; } = new();
         public Pet Pet { get; set; } = new();
         public User User { get; set; } = new();
         public TimeSpan? Duration { get; set; }
