@@ -97,10 +97,10 @@ namespace GameSpace.Data
             // 設定主鍵
             modelBuilder.Entity<User>().HasKey(u => u.UserId);
             modelBuilder.Entity<UserIntroduce>().HasKey(ui => ui.UserId);
-            modelBuilder.Entity<UserRights>().HasKey(ur => ur.UserId);
-            modelBuilder.Entity<UserWallet>().HasKey(uw => uw.UserId);
-            modelBuilder.Entity<Pet>().HasKey(p => p.PetId);
-            modelBuilder.Entity<MiniGame>().HasKey(mg => mg.PlayId);
+            modelBuilder.Entity<UserRight>().HasKey(ur => ur.UserId);
+            modelBuilder.Entity<UserWallet>().HasKey(uw => uw.UserID);
+            modelBuilder.Entity<Pet>().HasKey(p => p.PetID);
+            modelBuilder.Entity<MiniGame>().HasKey(mg => mg.PlayID);
             modelBuilder.Entity<CouponType>().HasKey(ct => ct.CouponTypeId);
             modelBuilder.Entity<Coupon>().HasKey(c => c.CouponId);
             modelBuilder.Entity<EVoucherType>().HasKey(evt => evt.EVoucherTypeId);
@@ -116,30 +116,30 @@ namespace GameSpace.Data
                 .WithOne(u => u.UserIntroduce)
                 .HasForeignKey<UserIntroduce>(ui => ui.UserId);
 
-            modelBuilder.Entity<UserRights>()
+            modelBuilder.Entity<UserRight>()
                 .HasOne(ur => ur.User)
-                .WithOne(u => u.UserRights)
-                .HasForeignKey<UserRights>(ur => ur.UserId);
+                .WithOne(u => u.UserRight)
+                .HasForeignKey<UserRight>(ur => ur.UserId);
 
             modelBuilder.Entity<UserWallet>()
                 .HasOne(uw => uw.User)
                 .WithOne(u => u.UserWallet)
-                .HasForeignKey<UserWallet>(uw => uw.UserId);
+                .HasForeignKey<UserWallet>(uw => uw.UserID);
 
             modelBuilder.Entity<Pet>()
                 .HasOne(p => p.User)
                 .WithMany(u => u.Pets)
-                .HasForeignKey(p => p.UserId);
+                .HasForeignKey(p => p.UserID);
 
             modelBuilder.Entity<MiniGame>()
                 .HasOne(mg => mg.User)
                 .WithMany(u => u.MiniGames)
-                .HasForeignKey(mg => mg.UserId);
+                .HasForeignKey(mg => mg.UserID);
 
             modelBuilder.Entity<MiniGame>()
                 .HasOne(mg => mg.Pet)
                 .WithMany(p => p.MiniGames)
-                .HasForeignKey(mg => mg.PetId);
+                .HasForeignKey(mg => mg.PetID);
 
             modelBuilder.Entity<Coupon>()
                 .HasOne(c => c.User)

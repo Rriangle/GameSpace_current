@@ -61,6 +61,9 @@ builder.Services.AddScoped<ISecurityService, SecurityService>();
 builder.Services.AddScoped<IHealthCheckService, HealthCheckService>();
 builder.Services.AddScoped<IErrorTrackingService, ErrorTrackingService>();
 
+// 註冊 MiniGame Admin RBAC 服務
+builder.Services.AddScoped<GameSpace.Areas.MiniGame.Services.IMiniGameAdminGate, GameSpace.Areas.MiniGame.Services.MiniGameAdminGate>();
+
 // 設定資料保護
 builder.Services.AddDataProtection()
     .SetApplicationName("GameSpace")
