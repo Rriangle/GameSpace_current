@@ -86,6 +86,13 @@ WHERE r.Manager_Id = @ManagerId
 
 ## 審計檢查清單
 
+### ✅ RBAC DI 註冊檢查
+**Program.cs 註冊位置**: GameSpace/Program.cs:65
+```csharp
+builder.Services.AddScoped<GameSpace.Areas.MiniGame.Services.IMiniGameAdminGate, GameSpace.Areas.MiniGame.Services.MiniGameAdminGate>();
+```
+**狀態**: ✅ PASS
+
 ### ✅ 控制器裝飾檢查
 所有 MiniGame Admin 控制器/頁面都已裝飾 `[MiniGameAdminOnly]`：
 
@@ -102,6 +109,11 @@ WHERE r.Manager_Id = @ManagerId
 | AdminDiagnosticsController | ✅ PASS | Areas/MiniGame/Controllers/AdminDiagnosticsController.cs:17 |
 
 **總計**: 9/9 控制器 (100%) ✅
+
+### ✅ 範例 RBAC 日誌
+```
+RBAC MiniGame: manager=123 emailConfirmed=1 lockout=disabled roles=2 petRight=1 result=ALLOW
+```
 
 ### ✅ .AsNoTracking() 使用檢查
 所有 RBAC 相關查詢都使用 `.AsNoTracking()`：

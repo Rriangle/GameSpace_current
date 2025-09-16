@@ -142,7 +142,23 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-// 資料庫種子服務已移除 - 改為手動端點 /MiniGame/Health/Seed
-// 遵循種子政策：不自動執行，提供手動管理端點
+// 條件性種子資料匯入（僅非生產環境且資料表為空時）
+if (!app.Environment.IsProduction())
+{
+    using var scope = app.Services.CreateScope();
+    var context = scope.ServiceProvider.GetRequiredService<GameSpaceDbContext>();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    
+    try
+    {
+        var seedPath = Path.Combine(app.Environment.ContentRootPath, "seeds", "seedMiniGameArea.json");
+        var importer = new JsonSeedImporter(context, scope.ServiceProvider.GetRequiredService<ILogger<JsonSeedImporter>>());
+        await importer.ImportAsync(seedPath);
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "種子資料匯入失敗，但不影響應用程式啟動");
+    }
+}
 
 app.Run();
