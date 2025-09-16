@@ -103,6 +103,7 @@ namespace GameSpace.Areas.MiniGame.Controllers
                     PointsChanged = -couponType.PointsCost,
                     ItemCode = coupon.CouponCode,
                     Description = $"兌換優惠券：{couponType.Name}",
+                    RelatedID = coupon.CouponID, // 關聯到優惠券ID以確保DB欄位100%覆蓋
                     ChangeTime = DateTime.UtcNow
                 });
 
@@ -176,6 +177,7 @@ namespace GameSpace.Areas.MiniGame.Controllers
                     PointsChanged = -evoucherType.PointsCost,
                     ItemCode = evoucher.EVoucherCode,
                     Description = $"兌換禮券：{evoucherType.Name}",
+                    RelatedID = evoucher.EVoucherID, // 關聯到電子券ID以確保DB欄位100%覆蓋
                     ChangeTime = DateTime.UtcNow
                 });
 

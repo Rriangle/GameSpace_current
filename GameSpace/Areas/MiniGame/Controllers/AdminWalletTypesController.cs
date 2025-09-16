@@ -105,6 +105,8 @@ namespace GameSpace.Areas.MiniGame.Controllers
             {
                 try
                 {
+                    // 手動設置UpdatedAt以確保DB欄位100%覆蓋
+                    couponType.UpdatedAt = DateTime.UtcNow;
                     _context.Update(couponType);
                     await _context.SaveChangesAsync();
                     TempData["SuccessMessage"] = "優惠券類型更新成功";
@@ -254,6 +256,8 @@ namespace GameSpace.Areas.MiniGame.Controllers
             {
                 try
                 {
+                    // 手動設置UpdatedAt以確保DB欄位100%覆蓋
+                    evoucherType.UpdatedAt = DateTime.UtcNow;
                     _context.Update(evoucherType);
                     await _context.SaveChangesAsync();
                     TempData["SuccessMessage"] = "電子禮券類型更新成功";
