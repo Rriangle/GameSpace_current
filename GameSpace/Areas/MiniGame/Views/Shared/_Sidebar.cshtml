@@ -1,0 +1,133 @@
+@* MiniGame Area Admin 專用側邊欄 - SB Admin 風格 *@
+<nav class="sidebar">
+    <div class="sidebar-brand">
+        <i class="fas fa-gamepad me-2"></i>
+        MiniGame Admin
+    </div>
+    
+    <ul class="sidebar-nav">
+        <div class="nav-heading">儀表板</div>
+        <li class="nav-item">
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminHome" && ViewContext.RouteData.Values["action"]?.ToString() == "Dashboard" ? "active" : "")" 
+               asp-area="MiniGame" asp-controller="AdminHome" asp-action="Dashboard">
+                <i class="fas fa-tachometer-alt"></i>
+                儀表板總覽
+            </a>
+        </li>
+
+        <div class="nav-heading">錢包系統</div>
+        <li class="nav-item">
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminWallet" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")" 
+               asp-area="MiniGame" asp-controller="AdminWallet" asp-action="Index">
+                <i class="fas fa-wallet"></i>
+                錢包列表
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminWallet" && ViewContext.RouteData.Values["action"]?.ToString() == "History" ? "active" : "")" 
+               asp-area="MiniGame" asp-controller="AdminWallet" asp-action="History">
+                <i class="fas fa-history"></i>
+                錢包歷史
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminWallet" && ViewContext.RouteData.Values["action"]?.ToString() == "Coupons" ? "active" : "")" 
+               asp-area="MiniGame" asp-controller="AdminWallet" asp-action="Coupons">
+                <i class="fas fa-ticket-alt"></i>
+                優惠券管理
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminWallet" && ViewContext.RouteData.Values["action"]?.ToString() == "EVouchers" ? "active" : "")" 
+               asp-area="MiniGame" asp-controller="AdminWallet" asp-action="EVouchers">
+                <i class="fas fa-gift"></i>
+                電子禮券管理
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminWallet" && ViewContext.RouteData.Values["action"]?.ToString() == "EVoucherTokens" ? "active" : "")" 
+               asp-area="MiniGame" asp-controller="AdminWallet" asp-action="EVoucherTokens">
+                <i class="fas fa-key"></i>
+                禮券 Token 管理
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminWallet" && ViewContext.RouteData.Values["action"]?.ToString() == "EVoucherRedeemLogs" ? "active" : "")" 
+               asp-area="MiniGame" asp-controller="AdminWallet" asp-action="EVoucherRedeemLogs">
+                <i class="fas fa-receipt"></i>
+                禮券兌換記錄
+            </a>
+        </li>
+
+        <div class="nav-heading">券類型設定</div>
+        <li class="nav-item">
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminWalletTypes" && ViewContext.RouteData.Values["action"]?.ToString() == "CouponTypes" ? "active" : "")" 
+               asp-area="MiniGame" asp-controller="AdminWalletTypes" asp-action="CouponTypes">
+                <i class="fas fa-tags"></i>
+                優惠券類型
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminWalletTypes" && ViewContext.RouteData.Values["action"]?.ToString() == "EVoucherTypes" ? "active" : "")" 
+               asp-area="MiniGame" asp-controller="AdminWalletTypes" asp-action="EVoucherTypes">
+                <i class="fas fa-certificate"></i>
+                禮券類型
+            </a>
+        </li>
+
+        <div class="nav-heading">簽到系統</div>
+        <li class="nav-item">
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminSignInStats" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")" 
+               asp-area="MiniGame" asp-controller="AdminSignInStats" asp-action="Index">
+                <i class="fas fa-calendar-check"></i>
+                簽到記錄
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminSignInStats" && ViewContext.RouteData.Values["action"]?.ToString() == "Statistics" ? "active" : "")" 
+               asp-area="MiniGame" asp-controller="AdminSignInStats" asp-action="Statistics">
+                <i class="fas fa-chart-bar"></i>
+                簽到統計
+            </a>
+        </li>
+
+        <div class="nav-heading">寵物系統</div>
+        <li class="nav-item">
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminPet" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")" 
+               asp-area="MiniGame" asp-controller="AdminPet" asp-action="Index">
+                <i class="fas fa-paw"></i>
+                寵物列表
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminPet" && ViewContext.RouteData.Values["action"]?.ToString() == "Statistics" ? "active" : "")" 
+               asp-area="MiniGame" asp-controller="AdminPet" asp-action="Statistics">
+                <i class="fas fa-chart-pie"></i>
+                寵物統計
+            </a>
+        </li>
+
+        <div class="nav-heading">小遊戲系統</div>
+        <li class="nav-item">
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminMiniGame" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")" 
+               asp-area="MiniGame" asp-controller="AdminMiniGame" asp-action="Index">
+                <i class="fas fa-gamepad"></i>
+                遊戲記錄
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminMiniGame" && ViewContext.RouteData.Values["action"]?.ToString() == "Statistics" ? "active" : "")" 
+               asp-area="MiniGame" asp-controller="AdminMiniGame" asp-action="Statistics">
+                <i class="fas fa-chart-line"></i>
+                遊戲統計
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminMiniGame" && ViewContext.RouteData.Values["action"]?.ToString() == "Settings" ? "active" : "")" 
+               asp-area="MiniGame" asp-controller="AdminMiniGame" asp-action="Settings">
+                <i class="fas fa-cogs"></i>
+                遊戲設定
+            </a>
+        </li>
+    </ul>
+</nav>

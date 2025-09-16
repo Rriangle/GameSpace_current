@@ -1,0 +1,37 @@
+name: CI/CD Pipeline
+on:
+  push:
+    branches: [ main, dev, "**" ]
+  pull_request:
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with: { dotnet-version: "8.0.x" }
+      - name: SAFE RESET 檢查
+        run: |
+          test -f docs/AUDIT.md && [ $(wc -c < docs/AUDIT.md) -eq 0 ]
+          test -f docs/WIP.md   && [ $(wc -c < docs/WIP.md)   -eq 0 ]
+          tr -d "\n" < progress.json | grep -qx "{\"version\":\"1.0\",\"entries\":[]}"
+      - name: Restore & Build
+        run: |
+          dotnet restore
+          dotnet build --nologo -warnaserror
+      - name: Test（含覆蓋率）
+        run: |
+          dotnet test --collect:"XPlat Code Coverage" || true
+          mkdir -p reports/_latest
+          cp -r TestResults/*/coverage.cobertura.xml reports/_latest/coverage.xml 2>/dev/null || true
+      - name: 產生樹狀檔
+        run: |
+          if command -v tree >/dev/null; then
+            tree -a -I ".git|bin|obj|node_modules|artifacts" > reports/file_tree.txt
+          else
+            find . -not -path "*/.git/*" | sort > reports/file_tree.txt
+          fi
+      - name: 清理舊報表
+        run: |
+          find reports -maxdepth 1 -type f -name "file_tree_*.txt" -delete || true

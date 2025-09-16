@@ -1,0 +1,71 @@
+@model List<GameSpace.Models.Forum>
+@{
+    ViewData["Title"] = "我的討論";
+}
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">我的討論</h1>
+
+    @if (Model?.Any() == true)
+    {
+        <div class="row">
+            @foreach (var forum in Model)
+            {
+                <div class="col-12 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h5 class="card-title">
+                                        <a asp-action="Details" asp-route-id="@forum.ForumId" class="text-decoration-none">
+                                            @forum.Title
+                                        </a>
+                                    </h5>
+                                    <p class="card-text text-muted">
+                                        @(forum.Content.Length > 100 ? forum.Content.Substring(0, 100) + "..." : forum.Content)
+                                    </p>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <div class="mb-2">
+                                        <small class="text-muted">
+                                            發表時間：@forum.CreatedAt.ToString("yyyy/MM/dd HH:mm")
+                                        </small>
+                                    </div>
+                                    <div class="mb-2">
+                                        <span class="badge bg-primary">瀏覽 @forum.ViewCount</span>
+                                        <span class="badge bg-success">評論 @forum.ForumComments?.Count</span>
+                                    </div>
+                                    @if (forum.UpdatedAt > forum.CreatedAt)
+                                    {
+                                        <div class="mb-2">
+                                            <small class="text-muted">
+                                                最後更新：@forum.UpdatedAt.ToString("yyyy/MM/dd HH:mm")
+                                            </small>
+                                        </div>
+                                    }
+                                    <div class="btn-group">
+                                        <a asp-action="Edit" asp-route-id="@forum.ForumId" class="btn btn-outline-primary btn-sm">編輯</a>
+                                        <a asp-action="Delete" asp-route-id="@forum.ForumId" class="btn btn-outline-danger btn-sm">刪除</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-center">
+            <p class="text-muted">您還沒有發表任何討論</p>
+            <a asp-action="Create" class="btn btn-primary">發表第一個討論</a>
+        </div>
+    }
+
+    <div class="row mt-4">
+        <div class="col-12 text-center">
+            <a asp-action="Index" class="btn btn-outline-secondary">返回論壇</a>
+        </div>
+    </div>
+</div>

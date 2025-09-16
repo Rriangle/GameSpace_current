@@ -1,0 +1,260 @@
+@model GameSpace.Models.CouponType
+@{
+    ViewData["Title"] = "新增優惠券類型";
+    ViewData["BreadcrumbController"] = "券類型設定";
+    ViewData["BreadcrumbAction"] = "新增優惠券類型";
+    Layout = "~/Areas/MiniGame/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">新增優惠券類型</h1>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("CouponTypes")" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i>返回列表
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">優惠券類型資訊</h6>
+            </div>
+            <div class="card-body">
+                <form asp-action="CreateCouponType" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="Name" class="form-label">類型名稱 <span class="text-danger">*</span></label>
+                            <input asp-for="Name" class="form-control" placeholder="例如：滿額折扣100券" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="DiscountType" class="form-label">折扣類型 <span class="text-danger">*</span></label>
+                            <select asp-for="DiscountType" class="form-select" id="discountTypeSelect">
+                                <option value="">請選擇折扣類型</option>
+                                <option value="Amount">固定金額折扣</option>
+                                <option value="Percent">百分比折扣</option>
+                            </select>
+                            <span asp-validation-for="DiscountType" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="DiscountValue" class="form-label">
+                                <span id="discountValueLabel">折扣值</span> <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text" id="discountValuePrefix">$</span>
+                                <input asp-for="DiscountValue" class="form-control" id="discountValueInput" 
+                                       placeholder="輸入折扣值" step="0.01" />
+                                <span class="input-group-text" id="discountValueSuffix" style="display: none;"></span>
+                            </div>
+                            <div class="form-text" id="discountValueHelp">
+                                請輸入折扣值
+                            </div>
+                            <span asp-validation-for="DiscountValue" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="MinSpend" class="form-label">最低消費門檻</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input asp-for="MinSpend" class="form-control" placeholder="0 表示無門檻" />
+                            </div>
+                            <div class="form-text">設定為 0 表示無最低消費限制</div>
+                            <span asp-validation-for="MinSpend" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="ValidFrom" class="form-label">生效日期 <span class="text-danger">*</span></label>
+                            <input asp-for="ValidFrom" type="date" class="form-control" />
+                            <span asp-validation-for="ValidFrom" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="ValidTo" class="form-label">到期日期 <span class="text-danger">*</span></label>
+                            <input asp-for="ValidTo" type="date" class="form-control" />
+                            <span asp-validation-for="ValidTo" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="PointsCost" class="form-label">兌換所需點數 <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input asp-for="PointsCost" class="form-control" placeholder="例如：500" />
+                            <span class="input-group-text">點</span>
+                        </div>
+                        <div class="form-text">會員需要消耗的點數來兌換此優惠券</div>
+                        <span asp-validation-for="PointsCost" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label">使用說明</label>
+                        <textarea asp-for="Description" class="form-control" rows="3" 
+                                  placeholder="例如：適用於所有商品，不可與其他優惠併用"></textarea>
+                        <div class="form-text">詳細說明此優惠券的使用限制和適用範圍</div>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="@Url.Action("CouponTypes")" class="btn btn-secondary">
+                            <i class="fas fa-times me-1"></i>取消
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>儲存
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-success">預覽效果</h6>
+            </div>
+            <div class="card-body">
+                <div class="border rounded p-3" id="couponPreview">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge bg-warning text-dark" id="previewName">優惠券名稱</span>
+                        <span class="badge bg-primary" id="previewPoints">0 點</span>
+                    </div>
+                    <div class="text-center my-3">
+                        <h4 class="text-success mb-0" id="previewDiscount">折扣內容</h4>
+                        <small class="text-muted" id="previewMinSpend">使用門檻</small>
+                    </div>
+                    <div class="d-flex justify-content-between text-small">
+                        <span id="previewValidFrom">生效日期</span>
+                        <span id="previewValidTo">到期日期</span>
+                    </div>
+                    <div class="mt-2">
+                        <small class="text-muted" id="previewDescription">使用說明</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-info">填寫提示</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <i class="fas fa-info-circle text-info me-2"></i>
+                        <strong>固定金額：</strong>直接扣除指定金額
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-info-circle text-info me-2"></i>
+                        <strong>百分比折扣：</strong>輸入 0.15 表示 85 折
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-info-circle text-info me-2"></i>
+                        <strong>最低消費：</strong>設為 0 表示無門檻
+                    </li>
+                    <li class="mb-0">
+                        <i class="fas fa-info-circle text-info me-2"></i>
+                        <strong>兌換點數：</strong>建議設定為折扣值的 5-10 倍
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // 初始化日期
+            var today = new Date().toISOString().split('T')[0];
+            var nextMonth = new Date();
+            nextMonth.setMonth(nextMonth.getMonth() + 1);
+            var nextMonthStr = nextMonth.toISOString().split('T')[0];
+            
+            if (!$('#ValidFrom').val()) {
+                $('#ValidFrom').val(today);
+            }
+            if (!$('#ValidTo').val()) {
+                $('#ValidTo').val(nextMonthStr);
+            }
+
+            // 折扣類型變更處理
+            $('#discountTypeSelect').change(function() {
+                updateDiscountValueInput($(this).val());
+                updatePreview();
+            });
+
+            // 即時預覽更新
+            $('input, select, textarea').on('input change', function() {
+                updatePreview();
+            });
+
+            // 初始預覽
+            updatePreview();
+        });
+
+        function updateDiscountValueInput(discountType) {
+            var $label = $('#discountValueLabel');
+            var $prefix = $('#discountValuePrefix');
+            var $suffix = $('#discountValueSuffix');
+            var $help = $('#discountValueHelp');
+            var $input = $('#discountValueInput');
+
+            if (discountType === 'Amount') {
+                $label.text('折扣金額');
+                $prefix.text('$').show();
+                $suffix.hide();
+                $help.text('輸入固定折扣金額，例如：100 表示折扣 $100');
+                $input.attr('placeholder', '例如：100');
+            } else if (discountType === 'Percent') {
+                $label.text('折扣比例');
+                $prefix.hide();
+                $suffix.text('%').show();
+                $help.text('輸入折扣比例，例如：15 表示 85 折（折扣 15%）');
+                $input.attr('placeholder', '例如：15');
+            } else {
+                $label.text('折扣值');
+                $prefix.text('$').show();
+                $suffix.hide();
+                $help.text('請先選擇折扣類型');
+                $input.attr('placeholder', '輸入折扣值');
+            }
+        }
+
+        function updatePreview() {
+            var name = $('#Name').val() || '優惠券名稱';
+            var discountType = $('#discountTypeSelect').val();
+            var discountValue = parseFloat($('#discountValueInput').val()) || 0;
+            var minSpend = parseFloat($('#MinSpend').val()) || 0;
+            var pointsCost = parseInt($('#PointsCost').val()) || 0;
+            var validFrom = $('#ValidFrom').val();
+            var validTo = $('#ValidTo').val();
+            var description = $('#Description').val() || '使用說明';
+
+            $('#previewName').text(name);
+            $('#previewPoints').text(pointsCost + ' 點');
+
+            var discountText = '折扣內容';
+            if (discountType === 'Amount' && discountValue > 0) {
+                discountText = '折扣 $' + discountValue.toFixed(0);
+            } else if (discountType === 'Percent' && discountValue > 0) {
+                discountText = (100 - discountValue).toFixed(0) + ' 折';
+            }
+            $('#previewDiscount').text(discountText);
+
+            var minSpendText = minSpend > 0 ? '滿 $' + minSpend.toFixed(0) + ' 可用' : '無使用門檻';
+            $('#previewMinSpend').text(minSpendText);
+
+            $('#previewValidFrom').text(validFrom || '生效日期');
+            $('#previewValidTo').text(validTo || '到期日期');
+            $('#previewDescription').text(description);
+        }
+    </script>
+    
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

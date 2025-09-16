@@ -1,0 +1,183 @@
+@{
+    ViewData["Title"] = "簽到規則預覽";
+    ViewData["BreadcrumbController"] = "簽到系統";
+    ViewData["BreadcrumbAction"] = "規則預覽";
+    Layout = "~/Areas/MiniGame/Views/Shared/_AdminLayout.cshtml";
+    var rules = ViewBag.Rules as dynamic;
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">簽到規則預覽</h1>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("Index")" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i>返回簽到記錄
+        </a>
+        <a href="@Url.Action("Adjust")" class="btn btn-outline-primary btn-sm">
+            <i class="fas fa-edit me-1"></i>補簽/撤銷
+        </a>
+    </div>
+</div>
+
+<div class="alert alert-info" role="alert">
+    <i class="fas fa-info-circle me-2"></i>
+    <strong>說明：</strong>此頁面展示目前系統的簽到規則設定。規則來源為程式常數，如需修改請聯繫系統開發人員更新配置檔案。
+    <strong>不改變資料庫 schema，暫不提供後台可寫入功能。</strong>
+</div>
+
+<div class="row">
+    <!-- 基本獎勵規則 -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">基本獎勵規則</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <td class="fw-bold">每日簽到獎勵點數：</td>
+                                <td>
+                                    <span class="badge bg-success fs-6">@rules.DailyRewardPoints 點</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">每日簽到獎勵經驗值：</td>
+                                <td>
+                                    <span class="badge bg-info fs-6">@rules.DailyRewardExp EXP</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">每日最大簽到次數：</td>
+                                <td>
+                                    <span class="badge bg-warning text-dark fs-6">@rules.MaxDailySignIns 次</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">簽到重設時間：</td>
+                                <td>
+                                    <span class="badge bg-secondary fs-6">@rules.ResetTime</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 連續簽到獎勵 -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-success">連續簽到獎勵</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <td class="fw-bold">連續簽到門檻：</td>
+                                <td>
+                                    <span class="badge bg-primary fs-6">@rules.StreakBonusThreshold 天</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">連續獎勵點數：</td>
+                                <td>
+                                    <span class="badge bg-success fs-6">+@rules.StreakBonusPoints 點</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">獎勵觸發方式：</td>
+                                <td>
+                                    <span class="text-muted">達到連續天數後額外獲得</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">中斷處理：</td>
+                                <td>
+                                    <span class="text-muted">連續天數重新計算</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 規則詳細說明 -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">詳細規則說明</h6>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h6 class="text-primary">簽到機制</h6>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-check text-success me-2"></i>每日限制簽到 @rules.MaxDailySignIns 次</li>
+                    <li><i class="fas fa-check text-success me-2"></i>簽到時間以 @rules.ResetTime 為分界</li>
+                    <li><i class="fas fa-check text-success me-2"></i>獎勵即時發放到會員錢包</li>
+                    <li><i class="fas fa-check text-success me-2"></i>簽到記錄永久保存</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <h6 class="text-success">連續簽到</h6>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-star text-warning me-2"></i>連續 @rules.StreakBonusThreshold 天簽到可獲得額外獎勵</li>
+                    <li><i class="fas fa-star text-warning me-2"></i>中斷簽到後連續天數重新計算</li>
+                    <li><i class="fas fa-star text-warning me-2"></i>獎勵累積發放，無上限</li>
+                    <li><i class="fas fa-star text-warning me-2"></i>管理員補簽同樣計入連續天數</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 配置資訊 -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-warning">配置資訊</h6>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="border-start border-primary border-4 ps-3">
+                    <h6 class="text-primary">配置來源</h6>
+                    <p class="text-muted mb-0">@rules.ConfigSource</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="border-start border-success border-4 ps-3">
+                    <h6 class="text-success">最後更新</h6>
+                    <p class="text-muted mb-0">@rules.LastUpdated</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="border-start border-warning border-4 ps-3">
+                    <h6 class="text-warning">修改方式</h6>
+                    <p class="text-muted mb-0">更新配置檔案或程式常數</p>
+                </div>
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="alert alert-warning" role="alert">
+            <h6 class="alert-heading">
+                <i class="fas fa-exclamation-triangle me-1"></i>重要說明
+            </h6>
+            <p class="mb-2">
+                <strong>規則修改限制：</strong>為確保資料一致性和系統穩定性，簽到規則目前採用程式常數配置，
+                不提供後台即時修改功能。
+            </p>
+            <p class="mb-0">
+                <strong>修改流程：</strong>如需調整規則，請聯繫系統開發人員修改配置檔案並重新部署應用程式。
+                所有修改都會經過完整測試以確保系統穩定運行。
+            </p>
+        </div>
+    </div>
+</div>

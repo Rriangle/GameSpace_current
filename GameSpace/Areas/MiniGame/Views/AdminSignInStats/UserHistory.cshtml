@@ -1,0 +1,320 @@
+@model IEnumerable<GameSpace.Models.UserSignInStats>
+@{
+    ViewData["Title"] = "用戶簽到歷史";
+    ViewData["BreadcrumbController"] = "簽到系統";
+    ViewData["BreadcrumbAction"] = "用戶簽到歷史";
+    Layout = "~/Areas/MiniGame/Views/Shared/_AdminLayout.cshtml";
+    var user = ViewBag.User as GameSpace.Models.User;
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">用戶簽到歷史</h1>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("Index")" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i>返回列表
+        </a>
+        <button class="btn btn-outline-primary btn-sm" onclick="exportUserHistory()">
+            <i class="fas fa-download me-1"></i>匯出記錄
+        </button>
+    </div>
+</div>
+
+<!-- 用戶資訊卡片 -->
+<div class="row mb-4">
+    <div class="col-lg-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">用戶資訊</h6>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <i class="fas fa-user-circle fa-3x text-primary mb-2"></i>
+                    <h5 class="mb-1">@user?.UserName</h5>
+                    <p class="text-muted mb-0">@user?.UserNickName</p>
+                    <span class="badge bg-secondary">ID: @user?.UserID</span>
+                </div>
+                <hr>
+                <div class="row text-center">
+                    <div class="col-6">
+                        <div class="border-end">
+                            <h6 class="text-primary">@ViewBag.TotalSignInDays</h6>
+                            <small class="text-muted">總簽到天數</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <h6 class="text-success">@ViewBag.CurrentStreak</h6>
+                        <small class="text-muted">當前連續</small>
+                    </div>
+                </div>
+                <hr>
+                <div class="text-center">
+                    <h6 class="text-warning">@ViewBag.LongestStreak</h6>
+                    <small class="text-muted">最長連續簽到</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <div class="card border-left-primary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    總簽到次數
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    @ViewBag.TotalCount 次
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-calendar-check fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    獲得總點數
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    @Model.Sum(s => s.PointsChanged).ToString("N0") 點
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-coins fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <div class="card border-left-info shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                    獲得總經驗
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    @Model.Sum(s => s.ExpGained).ToString("N0") EXP
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-star fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 簽到歷史列表 -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">簽到歷史記錄</h6>
+        <span class="badge bg-info">共 @ViewBag.TotalCount 筆記錄</span>
+    </div>
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>記錄ID</th>
+                            <th>簽到日期</th>
+                            <th>簽到時間</th>
+                            <th>點數獲得</th>
+                            <th>經驗獲得</th>
+                            <th>優惠券</th>
+                            <th>連續天數</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            var signInDates = Model.Select(s => s.SignTime.Date).OrderByDescending(d => d).ToList();
+                        }
+                        @foreach (var stat in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="badge bg-secondary">#@stat.LogID</span>
+                                </td>
+                                <td>
+                                    <div>
+                                        <strong>@stat.SignTime.ToString("yyyy/MM/dd")</strong>
+                                        <span class="badge @GetDayBadgeClass(stat.SignTime) ms-2">
+                                            @GetDayOfWeekText(stat.SignTime)
+                                        </span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <strong>@stat.SignTime.ToString("HH:mm:ss")</strong>
+                                        <small class="text-muted d-block">@GetTimeCategory(stat.SignTime)</small>
+                                    </div>
+                                </td>
+                                <td class="text-end">
+                                    @if (stat.PointsChanged > 0)
+                                    {
+                                        <span class="badge bg-success fs-6">+@stat.PointsChanged</span>
+                                        <small class="text-muted d-block">@stat.PointsChangedTime.ToString("HH:mm")</small>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    @if (stat.ExpGained > 0)
+                                    {
+                                        <span class="badge bg-info fs-6">+@stat.ExpGained</span>
+                                        <small class="text-muted d-block">@stat.ExpGainedTime.ToString("HH:mm")</small>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @if (!string.IsNullOrEmpty(stat.CouponGained) && stat.CouponGained != "0")
+                                    {
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="fas fa-ticket-alt me-1"></i>@stat.CouponGained
+                                        </span>
+                                        <small class="text-muted d-block">@stat.CouponGainedTime.ToString("HH:mm")</small>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @{
+                                        var streakAtDate = CalculateStreakAtDate(signInDates, stat.SignTime.Date);
+                                    }
+                                    <span class="badge @GetStreakBadgeClass(streakAtDate)">
+                                        @streakAtDate 天
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 分頁 -->
+            @if (ViewBag.TotalPages > 1)
+            {
+                <nav aria-label="頁面導航">
+                    <ul class="pagination justify-content-center">
+                        @if (ViewBag.Page > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("UserHistory", new { 
+                                    userId = user?.UserID, 
+                                    page = 1, 
+                                    pageSize = ViewBag.PageSize 
+                                })">
+                                    <i class="fas fa-angle-double-left"></i>
+                                </a>
+                            </li>
+                        }
+
+                        @for (int i = Math.Max(1, ViewBag.Page - 2); i <= Math.Min(ViewBag.TotalPages, ViewBag.Page + 2); i++)
+                        {
+                            <li class="page-item @(i == ViewBag.Page ? "active" : "")">
+                                <a class="page-link" href="@Url.Action("UserHistory", new { 
+                                    userId = user?.UserID, 
+                                    page = i, 
+                                    pageSize = ViewBag.PageSize 
+                                })">@i</a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            }
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">此用戶尚未有簽到記錄</h5>
+                <p class="text-muted">用戶可能尚未開始使用簽到功能</p>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function exportUserHistory() {
+            alert('用戶簽到記錄匯出功能開發中');
+        }
+    </script>
+}
+
+@functions {
+    string GetDayBadgeClass(DateTime signTime)
+    {
+        var dayOfWeek = signTime.DayOfWeek;
+        return dayOfWeek == DayOfWeek.Saturday || dayOfWeek == DayOfWeek.Sunday ? "bg-warning" : "bg-light text-dark";
+    }
+
+    string GetDayOfWeekText(DateTime signTime)
+    {
+        var dayNames = new[] { "日", "一", "二", "三", "四", "五", "六" };
+        return "星期" + dayNames[(int)signTime.DayOfWeek];
+    }
+
+    string GetTimeCategory(DateTime signTime)
+    {
+        var hour = signTime.Hour;
+        if (hour >= 6 && hour < 12) return "上午";
+        if (hour >= 12 && hour < 18) return "下午";
+        if (hour >= 18 && hour < 24) return "晚上";
+        return "深夜";
+    }
+
+    string GetStreakBadgeClass(int streak)
+    {
+        if (streak >= 30) return "bg-danger";
+        if (streak >= 14) return "bg-warning text-dark";
+        if (streak >= 7) return "bg-success";
+        if (streak >= 3) return "bg-info";
+        return "bg-light text-dark";
+    }
+
+    int CalculateStreakAtDate(List<DateTime> allSignInDates, DateTime targetDate)
+    {
+        var streak = 0;
+        var checkDate = targetDate;
+        
+        foreach (var date in allSignInDates.Where(d => d <= targetDate).OrderByDescending(d => d))
+        {
+            if (date == checkDate)
+            {
+                streak++;
+                checkDate = checkDate.AddDays(-1);
+            }
+            else
+            {
+                break;
+            }
+        }
+        
+        return streak;
+    }
+}

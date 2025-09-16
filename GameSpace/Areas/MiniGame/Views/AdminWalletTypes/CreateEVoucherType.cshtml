@@ -1,0 +1,203 @@
+@model GameSpace.Models.EVoucherType
+@{
+    ViewData["Title"] = "新增電子禮券類型";
+    ViewData["BreadcrumbController"] = "券類型設定";
+    ViewData["BreadcrumbAction"] = "新增禮券類型";
+    Layout = "~/Areas/MiniGame/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">新增電子禮券類型</h1>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("EVoucherTypes")" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i>返回列表
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">電子禮券類型資訊</h6>
+            </div>
+            <div class="card-body">
+                <form asp-action="CreateEVoucherType" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="Name" class="form-label">類型名稱 <span class="text-danger">*</span></label>
+                            <input asp-for="Name" class="form-control" placeholder="例如：500元現金券" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="ValueAmount" class="form-label">面額 <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input asp-for="ValueAmount" class="form-control" placeholder="例如：500" step="0.01" />
+                            </div>
+                            <span asp-validation-for="ValueAmount" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="PointsCost" class="form-label">兌換所需點數 <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input asp-for="PointsCost" class="form-control" placeholder="例如：2500" />
+                                <span class="input-group-text">點</span>
+                            </div>
+                            <div class="form-text">建議設定為面額的 5-10 倍</div>
+                            <span asp-validation-for="PointsCost" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="TotalAvailable" class="form-label">發行上限</label>
+                            <input asp-for="TotalAvailable" class="form-control" placeholder="留空表示無限制" />
+                            <div class="form-text">限制此類型禮券的總發行數量</div>
+                            <span asp-validation-for="TotalAvailable" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="ValidFrom" class="form-label">生效日期 <span class="text-danger">*</span></label>
+                            <input asp-for="ValidFrom" type="date" class="form-control" />
+                            <span asp-validation-for="ValidFrom" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="ValidTo" class="form-label">到期日期 <span class="text-danger">*</span></label>
+                            <input asp-for="ValidTo" type="date" class="form-control" />
+                            <span asp-validation-for="ValidTo" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label">使用說明</label>
+                        <textarea asp-for="Description" class="form-control" rows="3" 
+                                  placeholder="例如：可於合作實體店兌換現金或指定商品，不可轉讓"></textarea>
+                        <div class="form-text">詳細說明此電子禮券的使用方式和限制</div>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="@Url.Action("EVoucherTypes")" class="btn btn-secondary">
+                            <i class="fas fa-times me-1"></i>取消
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>儲存
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-success">預覽效果</h6>
+            </div>
+            <div class="card-body">
+                <div class="border rounded p-3" id="evoucherPreview">
+                    <div class="text-center mb-3">
+                        <i class="fas fa-gift fa-2x text-success mb-2"></i>
+                        <h5 class="text-primary mb-0" id="previewName">電子禮券名稱</h5>
+                    </div>
+                    <div class="text-center my-3">
+                        <h3 class="text-success mb-0" id="previewValue">面額</h3>
+                        <small class="text-muted" id="previewPoints">兌換點數</small>
+                    </div>
+                    <div class="d-flex justify-content-between text-small">
+                        <span id="previewValidFrom">生效日期</span>
+                        <span id="previewValidTo">到期日期</span>
+                    </div>
+                    <div class="mt-2 text-center">
+                        <span class="badge bg-info" id="previewAvailable">發行上限</span>
+                    </div>
+                    <div class="mt-2">
+                        <small class="text-muted" id="previewDescription">使用說明</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-info">填寫提示</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <i class="fas fa-info-circle text-info me-2"></i>
+                        <strong>面額設定：</strong>建議設定為整數金額
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-info-circle text-info me-2"></i>
+                        <strong>兌換點數：</strong>建議為面額的 5-10 倍
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-info-circle text-info me-2"></i>
+                        <strong>發行上限：</strong>留空表示無限制發行
+                    </li>
+                    <li class="mb-0">
+                        <i class="fas fa-info-circle text-info me-2"></i>
+                        <strong>使用說明：</strong>應說明兌換方式和使用限制
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // 初始化日期
+            var today = new Date().toISOString().split('T')[0];
+            var nextYear = new Date();
+            nextYear.setFullYear(nextYear.getFullYear() + 1);
+            var nextYearStr = nextYear.toISOString().split('T')[0];
+            
+            if (!$('#ValidFrom').val()) {
+                $('#ValidFrom').val(today);
+            }
+            if (!$('#ValidTo').val()) {
+                $('#ValidTo').val(nextYearStr);
+            }
+
+            // 即時預覽更新
+            $('input, textarea').on('input', function() {
+                updatePreview();
+            });
+
+            // 初始預覽
+            updatePreview();
+        });
+
+        function updatePreview() {
+            var name = $('#Name').val() || '電子禮券名稱';
+            var valueAmount = parseFloat($('#ValueAmount').val()) || 0;
+            var pointsCost = parseInt($('#PointsCost').val()) || 0;
+            var totalAvailable = parseInt($('#TotalAvailable').val()) || null;
+            var validFrom = $('#ValidFrom').val();
+            var validTo = $('#ValidTo').val();
+            var description = $('#Description').val() || '使用說明';
+
+            $('#previewName').text(name);
+            $('#previewValue').text(valueAmount > 0 ? '$' + valueAmount.toFixed(0) : '面額');
+            $('#previewPoints').text(pointsCost > 0 ? pointsCost + ' 點兌換' : '兌換點數');
+            $('#previewValidFrom').text(validFrom || '生效日期');
+            $('#previewValidTo').text(validTo || '到期日期');
+            $('#previewDescription').text(description);
+            
+            if (totalAvailable) {
+                $('#previewAvailable').text('限量 ' + totalAvailable + ' 張');
+            } else {
+                $('#previewAvailable').text('無限制發行');
+            }
+        }
+    </script>
+    
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

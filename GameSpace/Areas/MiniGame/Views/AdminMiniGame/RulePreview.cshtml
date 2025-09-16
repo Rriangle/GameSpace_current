@@ -1,0 +1,353 @@
+@{
+    ViewData["Title"] = "小遊戲規則預覽";
+    ViewData["BreadcrumbController"] = "小遊戲系統";
+    ViewData["BreadcrumbAction"] = "規則預覽";
+    Layout = "~/Areas/MiniGame/Views/Shared/_AdminLayout.cshtml";
+    var gameRules = ViewBag.GameRules as dynamic;
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">小遊戲規則預覽</h1>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("Index")" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i>返回遊戲記錄
+        </a>
+        <a href="@Url.Action("Statistics")" class="btn btn-outline-info btn-sm">
+            <i class="fas fa-chart-line me-1"></i>遊戲統計
+        </a>
+    </div>
+</div>
+
+<div class="alert alert-info" role="alert">
+    <i class="fas fa-info-circle me-2"></i>
+    <strong>說明：</strong>此頁面展示目前小遊戲系統的規則設定。
+    <strong>唯讀設定來源：appsettings 或常數（未入庫）</strong>。
+    如需修改請聯繫系統開發人員更新配置檔案。
+</div>
+
+<div class="row">
+    <!-- 基本遊戲參數 -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">基本遊戲參數</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <td class="fw-bold">每關怪物數量：</td>
+                                <td>
+                                    <span class="badge bg-danger fs-6">@gameRules.MonsterCount 隻</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">角色移動速度：</td>
+                                <td>
+                                    <span class="badge bg-primary fs-6">@gameRules.MovementSpeed</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">基礎攻擊力：</td>
+                                <td>
+                                    <span class="badge bg-success fs-6">@gameRules.AttackPower</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">基礎防禦力：</td>
+                                <td>
+                                    <span class="badge bg-info fs-6">@gameRules.DefensePower</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 等級與難度 -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-success">等級與難度</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <td class="fw-bold">最高等級：</td>
+                                <td>
+                                    <span class="badge bg-warning text-dark fs-6">Lv.@gameRules.MaxLevel</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">升級經驗值需求：</td>
+                                <td>
+                                    <span class="badge bg-info fs-6">@gameRules.LevelUpExpRequired EXP</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">難度遞增係數：</td>
+                                <td>
+                                    <span class="badge bg-secondary fs-6">×@gameRules.DifficultyScaling</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">等級獎勵倍數：</td>
+                                <td>
+                                    <span class="badge bg-success fs-6">×@gameRules.LevelMultiplier</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- 獎勵機制 -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-warning">獎勵機制</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <td class="fw-bold">基礎點數獎勵：</td>
+                                <td>
+                                    <span class="badge bg-success fs-6">@gameRules.BasePointsReward 點</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">基礎經驗值獎勵：</td>
+                                <td>
+                                    <span class="badge bg-info fs-6">@gameRules.BaseExpReward EXP</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">完美通關加成：</td>
+                                <td>
+                                    <span class="badge bg-warning text-dark fs-6">+@((gameRules.PerfectClearBonus * 100).ToString("F0"))%</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h6 class="text-muted mt-3">獎勵計算公式</h6>
+                <div class="bg-light p-3 rounded">
+                    <code>
+                        最終獎勵 = (基礎獎勵 × 等級倍數) × (1 + 完美加成)
+                    </code>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 優惠券獎勵 -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-info">優惠券獎勵</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <td class="fw-bold">優惠券掉落機率：</td>
+                                <td>
+                                    <span class="badge bg-primary fs-6">@((gameRules.CouponDropRate * 100).ToString("F0"))%</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">稀有優惠券機率：</td>
+                                <td>
+                                    <span class="badge bg-danger fs-6">@((gameRules.RareCouponRate * 100).ToString("F1"))%</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h6 class="text-muted mt-3">優惠券類型</h6>
+                <div class="d-flex flex-wrap gap-2">
+                    @foreach (var couponType in gameRules.CouponTypes)
+                    {
+                        <span class="badge bg-secondary">@couponType</span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- 遊戲限制 -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-danger">遊戲限制</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <td class="fw-bold">每日遊玩上限：</td>
+                                <td>
+                                    <span class="badge bg-danger fs-6">@gameRules.DailyPlayLimit 次</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">每次體力消耗：</td>
+                                <td>
+                                    <span class="badge bg-warning text-dark fs-6">@gameRules.EnergyConsumption 點</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">冷卻時間：</td>
+                                <td>
+                                    <span class="badge bg-info fs-6">@gameRules.CooldownMinutes 分鐘</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 時間限制 -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-secondary">時間限制</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <td class="fw-bold">遊戲時間限制：</td>
+                                <td>
+                                    <span class="badge bg-primary fs-6">@gameRules.GameTimeLimit 秒</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">閒置超時：</td>
+                                <td>
+                                    <span class="badge bg-secondary fs-6">@gameRules.IdleTimeout 秒</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="alert alert-warning mt-3" role="alert">
+                    <small>
+                        <i class="fas fa-clock me-1"></i>
+                        超過時間限制或閒置超時將自動結束遊戲
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 規則詳細說明 -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">詳細規則說明</h6>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4">
+                <h6 class="text-primary">遊戲機制</h6>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-gamepad text-primary me-2"></i>回合制戰鬥系統</li>
+                    <li><i class="fas fa-level-up-alt text-success me-2"></i>等級提升增強能力</li>
+                    <li><i class="fas fa-trophy text-warning me-2"></i>完美通關額外獎勵</li>
+                    <li><i class="fas fa-clock text-info me-2"></i>限時挑戰增加刺激</li>
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <h6 class="text-success">獎勵系統</h6>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-coins text-warning me-2"></i>點數可用於商店購物</li>
+                    <li><i class="fas fa-star text-info me-2"></i>經驗值提升角色等級</li>
+                    <li><i class="fas fa-ticket-alt text-success me-2"></i>優惠券隨機獲得</li>
+                    <li><i class="fas fa-gift text-danger me-2"></i>稀有獎勵機率掉落</li>
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <h6 class="text-danger">限制機制</h6>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-calendar-times text-danger me-2"></i>每日次數限制防沉迷</li>
+                    <li><i class="fas fa-battery-half text-warning me-2"></i>體力系統控制節奏</li>
+                    <li><i class="fas fa-hourglass-half text-secondary me-2"></i>冷卻時間平衡體驗</li>
+                    <li><i class="fas fa-stopwatch text-primary me-2"></i>時間限制增加挑戰</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 配置資訊 -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-warning">配置資訊</h6>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="border-start border-primary border-4 ps-3">
+                    <h6 class="text-primary">規則版本</h6>
+                    <p class="text-muted mb-0">v@gameRules.Version</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="border-start border-success border-4 ps-3">
+                    <h6 class="text-success">配置來源</h6>
+                    <p class="text-muted mb-0">@gameRules.ConfigSource</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="border-start border-info border-4 ps-3">
+                    <h6 class="text-info">最後更新</h6>
+                    <p class="text-muted mb-0">@gameRules.LastUpdated</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="border-start border-warning border-4 ps-3">
+                    <h6 class="text-warning">修改方式</h6>
+                    <p class="text-muted mb-0">更新程式常數</p>
+                </div>
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="alert alert-warning" role="alert">
+            <h6 class="alert-heading">
+                <i class="fas fa-exclamation-triangle me-1"></i>重要說明
+            </h6>
+            <p class="mb-2">
+                <strong>規則修改限制：</strong>為確保遊戲平衡性和資料一致性，遊戲規則目前採用程式常數配置，
+                不提供後台即時修改功能。
+            </p>
+            <p class="mb-0">
+                <strong>修改流程：</strong>如需調整規則，請聯繫系統開發人員修改程式常數並重新編譯部署。
+                所有修改都會經過遊戲平衡性測試以確保良好的遊戲體驗。
+            </p>
+        </div>
+    </div>
+</div>

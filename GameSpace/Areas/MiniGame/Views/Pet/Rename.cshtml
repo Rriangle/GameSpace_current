@@ -1,0 +1,133 @@
+@{
+    ViewData["Title"] = "寵物改名";
+    Layout = "~/Areas/MiniGame/Views/Shared/_Layout.cshtml";
+    var pet = ViewBag.Pet as GameSpace.Models.Pet;
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-edit me-2"></i>寵物改名
+                    </h4>
+                </div>
+                <div class="card-body">
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    @if (TempData["Info"] != null)
+                    {
+                        <div class="alert alert-info alert-dismissible fade show" role="alert">
+                            <i class="fas fa-info-circle me-2"></i>@TempData["Info"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <!-- 當前寵物資訊 -->
+                    <div class="text-center mb-4">
+                        <div class="rounded-circle mx-auto mb-3" 
+                             style="width: 100px; height: 100px; background-color: @pet.SkinColor; border: 3px solid @pet.BackgroundColor;">
+                        </div>
+                        <h5 class="text-primary">當前名稱：@pet.PetName</h5>
+                        <p class="text-muted">Lv.@pet.Level (經驗值: @pet.Experience)</p>
+                    </div>
+
+                    <!-- 改名表單 -->
+                    <form method="post" asp-action="Rename">
+                        @Html.AntiForgeryToken()
+                        
+                        <div class="mb-3">
+                            <label for="petName" class="form-label">
+                                <i class="fas fa-paw me-1 text-primary"></i>新的寵物名稱
+                            </label>
+                            <input type="text" class="form-control" id="petName" name="petName" 
+                                   value="@pet.PetName" maxlength="50" required
+                                   placeholder="請輸入新的寵物名稱">
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                支援中文、英文、數字和空格，最多 50 個字元
+                            </div>
+                        </div>
+
+                        <div class="alert alert-warning" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>注意：</strong>改名後將立即生效，請確認新名稱正確無誤。
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary" onclick="return confirmRename()">
+                                <i class="fas fa-save me-2"></i>確認改名
+                            </button>
+                            <a href="@Url.Action("Index")" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>取消並返回
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmRename() {
+            const newName = document.getElementById('petName').value.trim();
+            const currentName = '@pet.PetName';
+            
+            if (!newName) {
+                alert('請輸入寵物名稱');
+                return false;
+            }
+            
+            if (newName === currentName) {
+                alert('新名稱與目前名稱相同');
+                return false;
+            }
+            
+            if (newName.length > 50) {
+                alert('寵物名稱不能超過 50 個字元');
+                return false;
+            }
+            
+            const message = `確定要將寵物名稱改為「${newName}」嗎？\n\n` +
+                          `目前名稱：${currentName}\n` +
+                          `新的名稱：${newName}\n\n` +
+                          `改名後將立即生效！`;
+            
+            return confirm(message);
+        }
+
+        // 即時字數統計
+        document.getElementById('petName').addEventListener('input', function() {
+            const length = this.value.length;
+            const formText = this.nextElementSibling;
+            
+            if (length > 50) {
+                formText.className = 'form-text text-danger';
+                formText.innerHTML = '<i class="fas fa-exclamation-triangle me-1"></i>名稱過長！最多 50 個字元';
+            } else if (length > 40) {
+                formText.className = 'form-text text-warning';
+                formText.innerHTML = `<i class="fas fa-info-circle me-1"></i>還可輸入 ${50 - length} 個字元`;
+            } else {
+                formText.className = 'form-text';
+                formText.innerHTML = '<i class="fas fa-info-circle me-1"></i>支援中文、英文、數字和空格，最多 50 個字元';
+            }
+        });
+    </script>
+}

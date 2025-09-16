@@ -1,0 +1,232 @@
+@model dynamic
+
+@{
+    // 從 ViewData 或 Model 取得參數
+    var title = ViewData["ChartTitle"]?.ToString() ?? Model?.Title ?? "圖表";
+    var endpoint = ViewData["ChartEndpoint"]?.ToString() ?? Model?.Endpoint ?? "";
+    var canvasId = ViewData["ChartCanvasId"]?.ToString() ?? Model?.CanvasId ?? $"chart_{Guid.NewGuid().ToString("N")[..8]}";
+    var chartType = ViewData["ChartType"]?.ToString() ?? Model?.Type ?? "line"; // line, bar, mixed
+    var ySeriesStr = ViewData["ChartYSeries"]?.ToString() ?? Model?.YSeries ?? "count";
+    var ySeriesArray = ySeriesStr.Split(',').Select(s => s.Trim()).ToArray();
+    var height = ViewData["ChartHeight"]?.ToString() ?? Model?.Height ?? "300";
+    var refreshOnLoad = ViewData["ChartRefreshOnLoad"]?.ToString() ?? Model?.RefreshOnLoad ?? "true";
+}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">@title</h6>
+    </div>
+    <div class="card-body">
+        <div id="@(canvasId)_loading" class="text-center py-3">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">載入中...</span>
+            </div>
+            <div class="mt-2 text-muted">載入圖表資料中...</div>
+        </div>
+        
+        <div id="@(canvasId)_error" class="alert alert-warning d-none">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <span id="@(canvasId)_error_msg">圖表資料載入失敗</span>
+        </div>
+        
+        <div id="@(canvasId)_container" class="d-none">
+            <canvas id="@canvasId" style="height: @(height)px;"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+// 確保 Chart.js 已載入
+if (typeof Chart === 'undefined') {
+    // 動態載入 Chart.js CDN
+    const chartScript = document.createElement('script');
+    chartScript.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+    chartScript.onload = function() {
+        if ('@refreshOnLoad'.toLowerCase() === 'true') {
+            loadChart_@(canvasId.Replace("-", "_"))();
+        }
+    };
+    document.head.appendChild(chartScript);
+} else {
+    // Chart.js 已載入
+    if ('@refreshOnLoad'.toLowerCase() === 'true') {
+        document.addEventListener('DOMContentLoaded', function() {
+            loadChart_@(canvasId.Replace("-", "_"))();
+        });
+    }
+}
+
+// 圖表載入函數（唯一命名避免衝突）
+async function loadChart_@(canvasId.Replace("-", "_"))() {
+    const canvasId = '@canvasId';
+    const endpoint = '@Html.Raw(endpoint)';
+    const chartType = '@chartType';
+    const ySeriesArray = @Html.Raw(Json.Serialize(ySeriesArray));
+    
+    try {
+        // 顯示載入中
+        document.getElementById(canvasId + '_loading').classList.remove('d-none');
+        document.getElementById(canvasId + '_error').classList.add('d-none');
+        document.getElementById(canvasId + '_container').classList.add('d-none');
+        
+        const response = await fetch(endpoint);
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.status === 'ok' && data.series && Array.isArray(data.series)) {
+            renderChart_@(canvasId.Replace("-", "_"))(data.series, ySeriesArray, chartType);
+        } else {
+            throw new Error(data.message || '資料格式錯誤');
+        }
+    } catch (error) {
+        console.error('圖表載入失敗:', error);
+        showChartError_@(canvasId.Replace("-", "_"))(error.message);
+    }
+}
+
+function renderChart_@(canvasId.Replace("-", "_"))(series, ySeriesArray, chartType) {
+    const canvasId = '@canvasId';
+    const ctx = document.getElementById(canvasId).getContext('2d');
+    
+    // 準備資料
+    const labels = series.map(s => s.date);
+    const datasets = [];
+    
+    // 顏色配置
+    const colors = [
+        { border: '#4e73df', bg: 'rgba(78, 115, 223, 0.1)' }, // 藍
+        { border: '#1cc88a', bg: 'rgba(28, 200, 138, 0.1)' }, // 綠
+        { border: '#36b9cc', bg: 'rgba(54, 185, 204, 0.1)' }, // 青
+        { border: '#f6c23e', bg: 'rgba(246, 194, 62, 0.1)' }, // 黃
+        { border: '#e74a3b', bg: 'rgba(231, 74, 59, 0.1)' }   // 紅
+    ];
+    
+    ySeriesArray.forEach((yField, index) => {
+        const color = colors[index % colors.length];
+        const dataset = {
+            label: getFieldLabel_@(canvasId.Replace("-", "_"))(yField),
+            data: series.map(s => s[yField] || 0),
+            borderColor: color.border,
+            backgroundColor: color.bg,
+            borderWidth: 2,
+            fill: chartType === 'line' ? false : true
+        };
+        
+        // 根據圖表類型設定
+        if (chartType === 'mixed' && ySeriesArray.length > 1) {
+            dataset.type = index === 0 ? 'line' : 'bar';
+            dataset.yAxisID = index === 0 ? 'y' : 'y1';
+        } else if (chartType === 'bar') {
+            dataset.type = 'bar';
+        } else {
+            dataset.type = 'line';
+        }
+        
+        datasets.push(dataset);
+    });
+    
+    // Chart.js 配置
+    const config = {
+        type: chartType === 'mixed' ? 'line' : chartType,
+        data: {
+            labels: labels,
+            datasets: datasets
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: '日期'
+                    }
+                },
+                y: {
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                    title: {
+                        display: true,
+                        text: getFieldLabel_@(canvasId.Replace("-", "_"))(ySeriesArray[0])
+                    },
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    display: ySeriesArray.length > 1
+                },
+                tooltip: {
+                    callbacks: {
+                        title: function(context) {
+                            return '日期：' + context[0].label;
+                        },
+                        label: function(context) {
+                            return context.dataset.label + '：' + context.parsed.y.toLocaleString();
+                        }
+                    }
+                }
+            }
+        }
+    };
+    
+    // 雙軸配置（混合圖表）
+    if (chartType === 'mixed' && ySeriesArray.length > 1) {
+        config.options.scales.y1 = {
+            type: 'linear',
+            display: true,
+            position: 'right',
+            title: {
+                display: true,
+                text: getFieldLabel_@(canvasId.Replace("-", "_"))(ySeriesArray[1])
+            },
+            beginAtZero: true,
+            grid: {
+                drawOnChartArea: false,
+            }
+        };
+    }
+    
+    // 建立圖表
+    new Chart(ctx, config);
+    
+    // 隱藏載入中，顯示圖表
+    document.getElementById(canvasId + '_loading').classList.add('d-none');
+    document.getElementById(canvasId + '_container').classList.remove('d-none');
+}
+
+function getFieldLabel_@(canvasId.Replace("-", "_"))(field) {
+    const fieldLabels = {
+        'count': '筆數',
+        'pointsSum': '點數加總',
+        'sessions': '場次',
+        'expSum': 'EXP 加總',
+        'couponCount': '優惠券數',
+        'signInCount': '簽到數',
+        'rewardPointsSum': '獎勵點數',
+        'rewardExpSum': '獎勵 EXP',
+        'pointsGainedSum': '獲得點數'
+    };
+    return fieldLabels[field] || field;
+}
+
+function showChartError_@(canvasId.Replace("-", "_"))(message) {
+    const canvasId = '@canvasId';
+    document.getElementById(canvasId + '_loading').classList.add('d-none');
+    document.getElementById(canvasId + '_error').classList.remove('d-none');
+    document.getElementById(canvasId + '_error_msg').textContent = message;
+}
+
+// 全域刷新函數（供外部呼叫）
+window['refreshChart_@(canvasId.Replace("-", "_"))'] = function() {
+    loadChart_@(canvasId.Replace("-", "_"))();
+};
+</script>

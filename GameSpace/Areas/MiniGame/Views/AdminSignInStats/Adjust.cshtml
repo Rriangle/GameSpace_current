@@ -1,0 +1,319 @@
+@{
+    ViewData["Title"] = "簽到補簽/撤銷";
+    ViewData["BreadcrumbController"] = "簽到系統";
+    ViewData["BreadcrumbAction"] = "補簽撤銷";
+    Layout = "~/Areas/MiniGame/Views/Shared/_AdminLayout.cshtml";
+    var selectedUser = ViewBag.SelectedUser as GameSpace.Models.User;
+    var recentSignIns = ViewBag.RecentSignIns as List<GameSpace.Models.UserSignInStats>;
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">簽到補簽/撤銷</h1>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("Index")" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i>返回簽到記錄
+        </a>
+        <a href="@Url.Action("RulePreview")" class="btn btn-outline-info btn-sm">
+            <i class="fas fa-book me-1"></i>查看規則
+        </a>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- 用戶選擇 -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">選擇會員</h6>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-8">
+                <label for="userId" class="form-label">會員 ID</label>
+                <input type="number" class="form-control" id="userId" name="userId" 
+                       value="@(selectedUser?.User_ID)" placeholder="請輸入會員 ID">
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-search me-1"></i>載入會員資料
+                </button>
+            </div>
+        </form>
+
+        @if (selectedUser != null)
+        {
+            <hr>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center">
+                        <div class="rounded-circle me-3 d-flex align-items-center justify-content-center" 
+                             style="width: 50px; height: 50px; background-color: #e9ecef;">
+                            <i class="fas fa-user text-gray-600"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">@selectedUser.UserNickName</h6>
+                            <small class="text-muted">@selectedUser.UserName (ID: @selectedUser.User_ID)</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <small class="text-muted">已選擇此會員進行操作</small>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@if (selectedUser != null)
+{
+    <div class="row">
+        <!-- 補簽功能 -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-success">補簽功能</h6>
+                </div>
+                <div class="card-body">
+                    <form method="post" asp-action="Adjust">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="action" value="AddSign">
+                        <input type="hidden" name="userId" value="@selectedUser.User_ID">
+
+                        <div class="mb-3">
+                            <label for="signDate" class="form-label">
+                                <i class="fas fa-calendar me-1 text-success"></i>補簽日期
+                            </label>
+                            <input type="date" class="form-control" id="signDate" name="signDate" required>
+                            <div class="form-text">選擇需要補簽的日期</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="addPoints" class="form-label">獎勵點數</label>
+                                <input type="number" class="form-control" id="addPoints" name="points" 
+                                       value="10" min="0" max="1000">
+                                <div class="form-text">預設 10 點</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="addExp" class="form-label">獎勵經驗值</label>
+                                <input type="number" class="form-control" id="addExp" name="exp" 
+                                       value="5" min="0" max="1000">
+                                <div class="form-text">預設 5 EXP</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="addReason" class="form-label">
+                                <i class="fas fa-comment me-1 text-success"></i>補簽原因
+                            </label>
+                            <textarea class="form-control" id="addReason" name="reason" rows="3" 
+                                      placeholder="請詳細說明補簽原因" required></textarea>
+                        </div>
+
+                        <div class="alert alert-info" role="alert">
+                            <i class="fas fa-info-circle me-1"></i>
+                            補簽將建立新的簽到記錄，並發放對應的點數和經驗值到會員錢包。
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100" onclick="return confirmAddSign()">
+                            <i class="fas fa-plus me-1"></i>確認補簽
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 撤銷功能 -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-danger">撤銷功能</h6>
+                </div>
+                <div class="card-body">
+                    <form method="post" asp-action="Adjust">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="action" value="Revoke">
+                        <input type="hidden" name="userId" value="@selectedUser.User_ID">
+
+                        <div class="mb-3">
+                            <label for="logId" class="form-label">
+                                <i class="fas fa-list me-1 text-danger"></i>選擇要撤銷的記錄
+                            </label>
+                            <select class="form-select" id="logId" name="logId" required>
+                                <option value="">請選擇簽到記錄</option>
+                                @if (recentSignIns != null && recentSignIns.Any())
+                                {
+                                    @foreach (var signIn in recentSignIns)
+                                    {
+                                        <option value="@signIn.LogID">
+                                            @signIn.SignTime.ToString("yyyy-MM-dd HH:mm") 
+                                            (點數: @signIn.PointsGained, EXP: @signIn.ExpGained)
+                                        </option>
+                                    }
+                                }
+                            </select>
+                            <div class="form-text">
+                                @if (recentSignIns?.Any() == true)
+                                {
+                                    <span>顯示最近 10 筆簽到記錄</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">該會員暫無簽到記錄</span>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="revokeReason" class="form-label">
+                                <i class="fas fa-comment me-1 text-danger"></i>撤銷原因
+                            </label>
+                            <textarea class="form-control" id="revokeReason" name="reason" rows="3" 
+                                      placeholder="請詳細說明撤銷原因" required></textarea>
+                        </div>
+
+                        <div class="alert alert-warning" role="alert">
+                            <i class="fas fa-exclamation-triangle me-1"></i>
+                            撤銷將刪除簽到記錄並扣回對應的點數和經驗值。請確認會員點數足夠扣除。
+                        </div>
+
+                        <button type="submit" class="btn btn-danger w-100" onclick="return confirmRevoke()" 
+                                @(recentSignIns?.Any() != true ? "disabled" : "")>
+                            <i class="fas fa-trash me-1"></i>確認撤銷
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 最近簽到記錄 -->
+    @if (recentSignIns?.Any() == true)
+    {
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">最近簽到記錄</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>記錄 ID</th>
+                                <th>簽到時間</th>
+                                <th>簽到日期</th>
+                                <th>獲得點數</th>
+                                <th>獲得經驗值</th>
+                                <th>點數發放時間</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var signIn in recentSignIns)
+                            {
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-secondary">@signIn.LogID</span>
+                                    </td>
+                                    <td>@signIn.SignTime.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                                    <td>@signIn.SignInDate.ToString("yyyy-MM-dd")</td>
+                                    <td>
+                                        <span class="badge bg-success">+@signIn.PointsGained</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">+@signIn.ExpGained</span>
+                                    </td>
+                                    <td>
+                                        @if (signIn.PointsGainedTime.HasValue)
+                                        {
+                                            <span class="text-muted">@signIn.PointsGainedTime.Value.ToString("yyyy-MM-dd HH:mm:ss")</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <div class="card shadow">
+        <div class="card-body text-center py-5">
+            <i class="fas fa-user-plus fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">請先選擇要操作的會員</h5>
+            <p class="text-muted mb-0">輸入會員 ID 並點擊「載入會員資料」開始操作</p>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        function confirmAddSign() {
+            const signDate = document.getElementById('signDate').value;
+            const points = document.getElementById('addPoints').value;
+            const exp = document.getElementById('addExp').value;
+            const reason = document.getElementById('addReason').value.trim();
+            
+            if (!signDate) {
+                alert('請選擇補簽日期');
+                return false;
+            }
+            
+            if (!reason) {
+                alert('請填寫補簽原因');
+                return false;
+            }
+            
+            const message = `確定要為會員 @(selectedUser?.UserNickName) 補簽嗎？\n\n` +
+                          `補簽日期：${signDate}\n` +
+                          `獎勵點數：${points}\n` +
+                          `獎勵經驗值：${exp}\n` +
+                          `補簽原因：${reason}`;
+            
+            return confirm(message);
+        }
+        
+        function confirmRevoke() {
+            const logSelect = document.getElementById('logId');
+            const selectedOption = logSelect.options[logSelect.selectedIndex];
+            const reason = document.getElementById('revokeReason').value.trim();
+            
+            if (!logSelect.value) {
+                alert('請選擇要撤銷的簽到記錄');
+                return false;
+            }
+            
+            if (!reason) {
+                alert('請填寫撤銷原因');
+                return false;
+            }
+            
+            const message = `確定要撤銷會員 @(selectedUser?.UserNickName) 的簽到記錄嗎？\n\n` +
+                          `記錄：${selectedOption.text}\n` +
+                          `撤銷原因：${reason}\n\n` +
+                          `注意：此操作將扣回對應的點數和經驗值！`;
+            
+            return confirm(message);
+        }
+    </script>
+}

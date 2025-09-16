@@ -1,0 +1,313 @@
+@model IEnumerable<GameSpace.Models.UserSignInStats>
+@{
+    ViewData["Title"] = "簽到記錄管理";
+    ViewData["BreadcrumbController"] = "簽到系統";
+    ViewData["BreadcrumbAction"] = "簽到記錄";
+    Layout = "~/Areas/MiniGame/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">簽到記錄管理</h1>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("Statistics")" class="btn btn-info btn-sm">
+            <i class="fas fa-chart-bar me-1"></i>統計報表
+        </a>
+        <a href="@Url.Action("RulePreview")" class="btn btn-outline-info btn-sm">
+            <i class="fas fa-book me-1"></i>查看規則
+        </a>
+        <a href="@Url.Action("Adjust")" class="btn btn-outline-primary btn-sm">
+            <i class="fas fa-edit me-1"></i>補簽/撤銷
+        </a>
+        @{
+            ViewData["ExportCsvAction"] = "IndexExportCsv";
+            ViewData["ExportJsonAction"] = "IndexExportJson";
+            ViewData["ExportParams"] = new { 
+                startDate = ViewBag.StartDate?.ToString("yyyy-MM-dd"),
+                endDate = ViewBag.EndDate?.ToString("yyyy-MM-dd"),
+                userId = ViewBag.UserId,
+                userSearch = ViewBag.UserSearch
+            };
+        }
+        @await Html.PartialAsync("_ExportButtons")
+    </div>
+</div>
+
+<!-- 圖表區域 -->
+<div class="row mb-4">
+    <div class="col-12">
+        @{
+            ViewData["ChartTitle"] = "每日簽到數";
+            ViewData["ChartEndpoint"] = Url.Action("SignInOverview", "AdminAnalytics", new { 
+                from = ViewBag.StartDate?.ToString("yyyy-MM-dd"), 
+                to = ViewBag.EndDate?.ToString("yyyy-MM-dd") 
+            });
+            ViewData["ChartCanvasId"] = "signInStatsChart";
+            ViewData["ChartType"] = "line";
+            ViewData["ChartYSeries"] = "signInCount";
+            ViewData["ChartHeight"] = "300";
+        }
+        @await Html.PartialAsync("_ChartCard")
+    </div>
+</div>
+
+<!-- 日期範圍工具列 -->
+@await Html.PartialAsync("_DateRangeToolbar")
+
+<!-- 其他篩選區 -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">其他篩選條件</h6>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <!-- 保留日期參數 -->
+            @if (!string.IsNullOrEmpty(ViewBag.StartDate?.ToString()))
+            {
+                <input type="hidden" name="startDate" value="@ViewBag.StartDate.Value.ToString("yyyy-MM-dd")">
+            }
+            @if (!string.IsNullOrEmpty(ViewBag.EndDate?.ToString()))
+            {
+                <input type="hidden" name="endDate" value="@ViewBag.EndDate.Value.ToString("yyyy-MM-dd")">
+            }
+
+            <div class="col-md-6">
+                <label for="userSearch" class="form-label">搜尋會員</label>
+                <input type="text" class="form-control" id="userSearch" name="userSearch" 
+                       value="@ViewBag.UserSearch" placeholder="帳號或暱稱">
+            </div>
+            <div class="col-md-3">
+                <label for="pageSize" class="form-label">每頁筆數</label>
+                <select class="form-select" id="pageSize" name="pageSize">
+                    <option value="20" @(ViewBag.PageSize == 20 ? "selected" : "")>20</option>
+                    <option value="50" @(ViewBag.PageSize == 50 ? "selected" : "")>50</option>
+                    <option value="100" @(ViewBag.PageSize == 100 ? "selected" : "")>100</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <div class="btn-group w-100">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search me-1"></i>搜尋
+                    </button>
+                    <a href="@Url.Action("Index")" class="btn btn-outline-secondary">
+                        <i class="fas fa-times me-1"></i>清除
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 簽到記錄列表 -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">簽到記錄列表</h6>
+        <span class="badge bg-info">共 @ViewBag.TotalCount 筆資料</span>
+    </div>
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>記錄ID</th>
+                            <th>會員資訊</th>
+                            <th>簽到時間</th>
+                            <th>點數獲得</th>
+                            <th>經驗獲得</th>
+                            <th>優惠券</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var stat in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="badge bg-secondary">#@stat.LogID</span>
+                                </td>
+                                <td>
+                                    <div>
+                                        <strong>@stat.User?.UserName</strong>
+                                        <small class="text-muted d-block">@stat.User?.UserNickName</small>
+                                        <span class="badge bg-light text-dark">ID: @stat.UserID</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <strong>@stat.SignTime.ToString("yyyy/MM/dd")</strong>
+                                        <small class="text-muted d-block">@stat.SignTime.ToString("HH:mm:ss")</small>
+                                        <span class="badge @GetDayBadgeClass(stat.SignTime)">
+                                            @GetDayText(stat.SignTime)
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="text-end">
+                                    @if (stat.PointsGained > 0)
+                                    {
+                                        <span class="badge bg-success fs-6">+@stat.PointsGained.ToString("N0")</span>
+                                        <small class="text-muted d-block">@stat.PointsGainedTime.ToString("HH:mm")</small>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    @if (stat.ExpGained > 0)
+                                    {
+                                        <span class="badge bg-info fs-6">+@stat.ExpGained.ToString("N0")</span>
+                                        <small class="text-muted d-block">@stat.ExpGainedTime.ToString("HH:mm")</small>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @if (!string.IsNullOrEmpty(stat.CouponGained) && stat.CouponGained != "0")
+                                    {
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="fas fa-ticket-alt me-1"></i>@stat.CouponGained
+                                        </span>
+                                        <small class="text-muted d-block">@stat.CouponGainedTime.ToString("HH:mm")</small>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="@Url.Action("Details", new { id = stat.LogID })" 
+                                           class="btn btn-outline-primary" title="查看明細">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="@Url.Action("UserHistory", new { userId = stat.UserID })" 
+                                           class="btn btn-outline-info" title="用戶簽到歷史">
+                                            <i class="fas fa-user-clock"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 分頁 -->
+            @if (ViewBag.TotalPages > 1)
+            {
+                <nav aria-label="頁面導航">
+                    <ul class="pagination justify-content-center">
+                        @if (ViewBag.Page > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("Index", new { 
+                                    page = 1, 
+                                    pageSize = ViewBag.PageSize, 
+                                    startDate = ViewBag.StartDate?.ToString("yyyy-MM-dd"),
+                                    endDate = ViewBag.EndDate?.ToString("yyyy-MM-dd"),
+                                    userSearch = ViewBag.UserSearch 
+                                })">
+                                    <i class="fas fa-angle-double-left"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("Index", new { 
+                                    page = ViewBag.Page - 1, 
+                                    pageSize = ViewBag.PageSize, 
+                                    startDate = ViewBag.StartDate?.ToString("yyyy-MM-dd"),
+                                    endDate = ViewBag.EndDate?.ToString("yyyy-MM-dd"),
+                                    userSearch = ViewBag.UserSearch 
+                                })">
+                                    <i class="fas fa-angle-left"></i>
+                                </a>
+                            </li>
+                        }
+
+                        @for (int i = Math.Max(1, ViewBag.Page - 2); i <= Math.Min(ViewBag.TotalPages, ViewBag.Page + 2); i++)
+                        {
+                            <li class="page-item @(i == ViewBag.Page ? "active" : "")">
+                                <a class="page-link" href="@Url.Action("Index", new { 
+                                    page = i, 
+                                    pageSize = ViewBag.PageSize, 
+                                    startDate = ViewBag.StartDate?.ToString("yyyy-MM-dd"),
+                                    endDate = ViewBag.EndDate?.ToString("yyyy-MM-dd"),
+                                    userSearch = ViewBag.UserSearch 
+                                })">@i</a>
+                            </li>
+                        }
+
+                        @if (ViewBag.Page < ViewBag.TotalPages)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("Index", new { 
+                                    page = ViewBag.Page + 1, 
+                                    pageSize = ViewBag.PageSize, 
+                                    startDate = ViewBag.StartDate?.ToString("yyyy-MM-dd"),
+                                    endDate = ViewBag.EndDate?.ToString("yyyy-MM-dd"),
+                                    userSearch = ViewBag.UserSearch 
+                                })">
+                                    <i class="fas fa-angle-right"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("Index", new { 
+                                    page = ViewBag.TotalPages, 
+                                    pageSize = ViewBag.PageSize, 
+                                    startDate = ViewBag.StartDate?.ToString("yyyy-MM-dd"),
+                                    endDate = ViewBag.EndDate?.ToString("yyyy-MM-dd"),
+                                    userSearch = ViewBag.UserSearch 
+                                })">
+                                    <i class="fas fa-angle-double-right"></i>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            }
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">目前沒有簽到記錄</h5>
+                <p class="text-muted">請調整搜尋條件或確認資料範圍</p>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+
+        // 設定預設日期範圍（最近7天）
+        $(document).ready(function() {
+            if (!$('#startDate').val()) {
+                var lastWeek = new Date();
+                lastWeek.setDate(lastWeek.getDate() - 7);
+                $('#startDate').val(lastWeek.toISOString().split('T')[0]);
+            }
+            
+            if (!$('#endDate').val()) {
+                var today = new Date();
+                $('#endDate').val(today.toISOString().split('T')[0]);
+            }
+        });
+    </script>
+}
+
+@functions {
+    string GetDayBadgeClass(DateTime signTime)
+    {
+        var dayOfWeek = signTime.DayOfWeek;
+        return dayOfWeek == DayOfWeek.Saturday || dayOfWeek == DayOfWeek.Sunday ? "bg-warning" : "bg-light text-dark";
+    }
+
+    string GetDayText(DateTime signTime)
+    {
+        var dayOfWeek = signTime.DayOfWeek;
+        return dayOfWeek == DayOfWeek.Saturday || dayOfWeek == DayOfWeek.Sunday ? "假日" : "平日";
+    }
+}

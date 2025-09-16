@@ -1,0 +1,187 @@
+@model GameSpace.Models.EVoucherRedeemLog
+@{
+    ViewData["Title"] = "兌換記錄詳細";
+    ViewData["BreadcrumbController"] = "錢包系統";
+    ViewData["BreadcrumbAction"] = "兌換記錄詳細";
+    Layout = "~/Areas/MiniGame/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">兌換記錄詳細</h1>
+        <a href="@Url.Action("EVoucherRedeemLogs")" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> 返回列表
+        </a>
+    </div>
+
+    <div class="row">
+        <!-- 兌換記錄基本資訊 -->
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">兌換記錄基本資訊</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label text-muted">記錄 ID</label>
+                                <div class="fw-bold">@Model.RedeemID</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted">電子禮券 ID</label>
+                                <div class="fw-bold">
+                                    <a href="@Url.Action("Details", new { id = Model.EVoucherID })" class="text-decoration-none">
+                                        @Model.EVoucherID
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted">禮券代碼</label>
+                                <div>
+                                    <code class="bg-light p-2 rounded">@Model.EVoucher.EVoucherCode</code>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted">使用者 ID</label>
+                                <div class="fw-bold">@Model.UserID</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label text-muted">持有者</label>
+                                <div class="fw-bold">
+                                    @Model.EVoucher.User.UserName
+                                    <small class="text-muted d-block">@Model.EVoucher.User.UserNickName</small>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted">掃描時間</label>
+                                <div class="fw-bold">@Model.ScannedAt.ToString("yyyy/MM/dd HH:mm:ss")</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted">兌換狀態</label>
+                                <div>
+                                    @switch (Model.Status)
+                                    {
+                                        case "Approved":
+                                            <span class="badge bg-success fs-6">已核准</span>
+                                            break;
+                                        case "Rejected":
+                                            <span class="badge bg-danger fs-6">已拒絕</span>
+                                            break;
+                                        case "Expired":
+                                            <span class="badge bg-warning fs-6">已過期</span>
+                                            break;
+                                        case "AlreadyUsed":
+                                            <span class="badge bg-secondary fs-6">已使用</span>
+                                            break;
+                                        case "Revoked":
+                                            <span class="badge bg-dark fs-6">已撤銷</span>
+                                            break;
+                                        default:
+                                            <span class="badge bg-light text-dark fs-6">@Model.Status</span>
+                                            break;
+                                    }
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted">Token ID</label>
+                                <div>
+                                    @if (Model.TokenID.HasValue)
+                                    {
+                                        <a href="@Url.Action("EVoucherTokenDetails", new { id = Model.TokenID.Value })" class="text-decoration-none fw-bold">
+                                            @Model.TokenID.Value
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">無（直接輸入券碼）</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 相關禮券資訊 -->
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">相關禮券資訊</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label text-muted">禮券類型</label>
+                        <div class="fw-bold">@Model.EVoucher.EVoucherType.Name</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted">面額</label>
+                        <div class="fw-bold text-success">NT$ @Model.EVoucher.EVoucherType.ValueAmount.ToString("N0")</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted">禮券獲得時間</label>
+                        <div>@Model.EVoucher.AcquiredTime.ToString("yyyy/MM/dd HH:mm")</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted">禮券使用狀態</label>
+                        <div>
+                            @if (Model.EVoucher.IsUsed)
+                            {
+                                <span class="badge bg-secondary">已使用</span>
+                                @if (Model.EVoucher.UsedTime.HasValue)
+                                {
+                                    <small class="text-muted d-block">@Model.EVoucher.UsedTime.Value.ToString("yyyy/MM/dd HH:mm")</small>
+                                }
+                            }
+                            else
+                            {
+                                <span class="badge bg-primary">未使用</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.EVoucherToken != null)
+            {
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">相關 Token 資訊</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Token</label>
+                            <div class="bg-light p-2 rounded">
+                                <code class="text-break">@Model.EVoucherToken.Token</code>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Token 到期時間</label>
+                            <div>@Model.EVoucherToken.ExpiresAt.ToString("yyyy/MM/dd HH:mm:ss")</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Token 狀態</label>
+                            <div>
+                                @if (Model.EVoucherToken.IsRevoked)
+                                {
+                                    <span class="badge bg-danger">已撤銷</span>
+                                }
+                                else if (Model.EVoucherToken.ExpiresAt < DateTime.UtcNow)
+                                {
+                                    <span class="badge bg-warning">已過期</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success">有效</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

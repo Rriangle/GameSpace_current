@@ -1,0 +1,348 @@
+@{
+    ViewData["Title"] = "MiniGame 後台儀表板";
+    ViewData["BreadcrumbController"] = "儀表板";
+    ViewData["BreadcrumbAction"] = "總覽";
+    Layout = "~/Areas/MiniGame/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- 頁面標題與日期範圍表單 -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">MiniGame 後台儀表板</h1>
+        <div class="card">
+            <div class="card-body p-3">
+                <form method="get" class="d-flex gap-3 align-items-end">
+                    <div>
+                        <label for="from" class="form-label small">開始日期</label>
+                        <input type="date" class="form-control form-control-sm" id="from" name="from" 
+                               value="@(ViewBag.From?.ToString("yyyy-MM-dd"))">
+                    </div>
+                    <div>
+                        <label for="to" class="form-label small">結束日期</label>
+                        <input type="date" class="form-control form-control-sm" id="to" name="to" 
+                               value="@(ViewBag.To?.ToString("yyyy-MM-dd"))">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="fas fa-sync me-1"></i>更新
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 關鍵指標卡片 -->
+    <div class="row mb-4">
+        <!-- 錢包異動 -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                錢包異動（區間）
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @ViewBag.WalletHistoryCount?.ToString("N0") 筆
+                            </div>
+                            <small class="text-muted">@ViewBag.DateRangeText</small>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-wallet fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- EVoucher Tokens -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                EVoucher Tokens（總數）
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @ViewBag.EVoucherTokenTotalCount?.ToString("N0") 個
+                            </div>
+                            <small class="text-muted">系統總計</small>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-key fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 兌換紀錄 -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                兌換紀錄（區間）
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @ViewBag.RedeemLogCount?.ToString("N0") 次
+                            </div>
+                            <small class="text-muted">@ViewBag.DateRangeText</small>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-receipt fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 簽到筆數 -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                簽到筆數（區間）
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @ViewBag.SignInStatsCount?.ToString("N0") 次
+                            </div>
+                            <small class="text-muted">日均 @ViewBag.AvgSignInsPerDay 次</small>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-check fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第二行指標 -->
+    <div class="row mb-4">
+        <!-- MiniGame 場次 -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                MiniGame 場次（區間）
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @ViewBag.MiniGameCount?.ToString("N0") 場
+                            </div>
+                            <small class="text-muted">日均 @ViewBag.AvgGamesPerDay 場</small>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-gamepad fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 快速連結卡片 -->
+        <div class="col-xl-9 col-md-6 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">快速導航</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row g-2">
+                        <div class="col-md-2">
+                            <a href="@Url.Action("History", "AdminWallet")" class="btn btn-outline-primary btn-sm w-100">
+                                <i class="fas fa-history"></i><br>錢包歷史
+                            </a>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="@Url.Action("Tokens", "AdminWallet")" class="btn btn-outline-success btn-sm w-100">
+                                <i class="fas fa-key"></i><br>Tokens
+                            </a>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="@Url.Action("RedeemLogs", "AdminWallet")" class="btn btn-outline-info btn-sm w-100">
+                                <i class="fas fa-receipt"></i><br>兌換記錄
+                            </a>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="@Url.Action("Statistics", "AdminSignInStats")" class="btn btn-outline-warning btn-sm w-100">
+                                <i class="fas fa-chart-bar"></i><br>簽到統計
+                            </a>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="@Url.Action("Statistics", "AdminMiniGame")" class="btn btn-outline-danger btn-sm w-100">
+                                <i class="fas fa-chart-line"></i><br>遊戲統計
+                            </a>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="@Url.Action("Tables", "Health")" class="btn btn-outline-secondary btn-sm w-100">
+                                <i class="fas fa-heartbeat"></i><br>Health
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 日期範圍工具列 -->
+    @await Html.PartialAsync("_DateRangeToolbar")
+
+    <!-- 圖表區域 -->
+    <div class="row mb-4">
+        <div class="col-xl-6 col-lg-12 mb-4">
+            @{
+                ViewData["ChartTitle"] = "每日簽到數";
+                ViewData["ChartEndpoint"] = Url.Action("SignInOverview", "AdminAnalytics", new { 
+                    from = ViewBag.From?.ToString("yyyy-MM-dd"), 
+                    to = ViewBag.To?.ToString("yyyy-MM-dd") 
+                });
+                ViewData["ChartCanvasId"] = "dashboardSignInChart";
+                ViewData["ChartType"] = "line";
+                ViewData["ChartYSeries"] = "signInCount";
+                ViewData["ChartHeight"] = "250";
+            }
+            @await Html.PartialAsync("_ChartCard")
+        </div>
+        <div class="col-xl-6 col-lg-12 mb-4">
+            @{
+                ViewData["ChartTitle"] = "每日兌換數";
+                ViewData["ChartEndpoint"] = Url.Action("RedeemLogsDaily", "AdminAnalytics", new { 
+                    from = ViewBag.From?.ToString("yyyy-MM-dd"), 
+                    to = ViewBag.To?.ToString("yyyy-MM-dd") 
+                });
+                ViewData["ChartCanvasId"] = "dashboardRedeemChart";
+                ViewData["ChartType"] = "bar";
+                ViewData["ChartYSeries"] = "count";
+                ViewData["ChartHeight"] = "250";
+            }
+            @await Html.PartialAsync("_ChartCard")
+        </div>
+    </div>
+
+    <!-- 欄位覆蓋度診斷 -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">欄位覆蓋度診斷</h6>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-info alert-sm">
+                <i class="fas fa-info-circle me-2"></i>
+                此區以 <code>/MiniGame/AdminDiagnostics/FieldCoverage</code> JSON 為準
+            </div>
+            
+            <div id="diagnosticsLoading" class="text-center py-3">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">載入中...</span>
+                </div>
+                <div class="mt-2 text-muted">載入診斷資料中...</div>
+            </div>
+
+            <div id="diagnosticsError" class="alert alert-danger d-none">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                診斷資料載入失敗
+            </div>
+
+            <div id="diagnosticsTable" class="d-none">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col">Table</th>
+                                <th scope="col">Schema Fields</th>
+                                <th scope="col">Entity Fields</th>
+                                <th scope="col">View Fields</th>
+                                <th scope="col">Missing in View</th>
+                                <th scope="col">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="diagnosticsTableBody">
+                            <!-- 動態載入 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDiagnostics();
+        });
+
+        async function loadDiagnostics() {
+            try {
+                const response = await fetch('/MiniGame/AdminDiagnostics/FieldCoverage');
+                const data = await response.json();
+                
+                if (data.tables && Array.isArray(data.tables)) {
+                    renderDiagnosticsTable(data.tables);
+                } else {
+                    showDiagnosticsError();
+                }
+            } catch (error) {
+                console.error('診斷載入失敗:', error);
+                showDiagnosticsError();
+            }
+        }
+
+        function renderDiagnosticsTable(tables) {
+            const tbody = document.getElementById('diagnosticsTableBody');
+            tbody.innerHTML = '';
+
+            tables.forEach(table => {
+                const row = document.createElement('tr');
+                
+                const missingCount = table.missingInView ? table.missingInView.length : 0;
+                const statusInfo = getStatusInfo(missingCount);
+                const missingTooltip = table.missingInView && table.missingInView.length > 0 
+                    ? table.missingInView.slice(0, 5).join(', ') + (table.missingInView.length > 5 ? ` +${table.missingInView.length - 5} more` : '')
+                    : '無缺失';
+
+                row.innerHTML = `
+                    <td><code>${table.table}</code></td>
+                    <td class="text-center"><span class="badge bg-light text-dark">${table.schemaCount}</span></td>
+                    <td class="text-center"><span class="badge bg-secondary">${table.entityCount}</span></td>
+                    <td class="text-center"><span class="badge bg-info">${table.viewFieldCount}</span></td>
+                    <td class="text-center">
+                        <span class="badge ${statusInfo.badgeClass}" title="${missingTooltip}">
+                            ${missingCount}
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        <span class="badge ${statusInfo.badgeClass}">
+                            ${statusInfo.text}
+                        </span>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+
+            // 顯示表格，隱藏載入中
+            document.getElementById('diagnosticsLoading').classList.add('d-none');
+            document.getElementById('diagnosticsTable').classList.remove('d-none');
+        }
+
+        function getStatusInfo(missingCount) {
+            if (missingCount === 0) {
+                return { badgeClass: 'bg-success', text: 'OK' };
+            } else if (missingCount <= 2) {
+                return { badgeClass: 'bg-warning', text: 'WARN' };
+            } else {
+                return { badgeClass: 'bg-danger', text: 'FAIL' };
+            }
+        }
+
+        function showDiagnosticsError() {
+            document.getElementById('diagnosticsLoading').classList.add('d-none');
+            document.getElementById('diagnosticsError').classList.remove('d-none');
+        }
+    </script>
+}

@@ -1,0 +1,360 @@
+@model IEnumerable<GameSpace.Models.Coupon>
+@{
+    ViewData["Title"] = "優惠券管理";
+    ViewData["BreadcrumbController"] = "錢包系統";
+    ViewData["BreadcrumbAction"] = "優惠券管理";
+    Layout = "~/Areas/MiniGame/Views/Shared/_AdminLayout.cshtml";
+    var couponTypes = ViewBag.CouponTypes as List<GameSpace.Models.CouponType>;
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">優惠券管理</h1>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("Index")" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i>返回錢包列表
+        </a>
+        <a href="@Url.Action("CouponsExportCsv", new { 
+            isUsed = ViewBag.IsUsed, 
+            typeId = ViewBag.TypeId, 
+            userId = ViewBag.UserId,
+            from = ViewBag.From?.ToString("yyyy-MM-dd"),
+            to = ViewBag.To?.ToString("yyyy-MM-dd")
+        })" class="btn btn-outline-primary btn-sm">
+            <i class="fas fa-file-csv me-1"></i>CSV 匯出
+        </a>
+        <a href="@Url.Action("CouponsExportJson", new { 
+            isUsed = ViewBag.IsUsed, 
+            typeId = ViewBag.TypeId, 
+            userId = ViewBag.UserId,
+            from = ViewBag.From?.ToString("yyyy-MM-dd"),
+            to = ViewBag.To?.ToString("yyyy-MM-dd")
+        })" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-file-code me-1"></i>JSON 匯出
+        </a>
+    </div>
+</div>
+
+<!-- 圖表區域 -->
+<div class="row mb-4">
+    <div class="col-12">
+        @{
+            ViewData["ChartTitle"] = "每日 Coupon 數";
+            ViewData["ChartEndpoint"] = Url.Action("CouponsDaily", "AdminAnalytics", new { 
+                from = ViewBag.From?.ToString("yyyy-MM-dd"), 
+                to = ViewBag.To?.ToString("yyyy-MM-dd") 
+            });
+            ViewData["ChartCanvasId"] = "couponsChart";
+            ViewData["ChartType"] = "line";
+            ViewData["ChartYSeries"] = "count";
+            ViewData["ChartHeight"] = "300";
+        }
+        @await Html.PartialAsync("_ChartCard")
+    </div>
+</div>
+
+<!-- 日期範圍工具列 -->
+@await Html.PartialAsync("_DateRangeToolbar")
+
+<!-- 搜尋篩選區 -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">搜尋篩選</h6>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label for="isUsed" class="form-label">使用狀態</label>
+                <select class="form-select" id="isUsed" name="isUsed">
+                    <option value="">全部狀態</option>
+                    <option value="false" @(ViewBag.IsUsed == false ? "selected" : "")>未使用</option>
+                    <option value="true" @(ViewBag.IsUsed == true ? "selected" : "")>已使用</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="typeId" class="form-label">優惠券類型</label>
+                <select class="form-select" id="typeId" name="typeId">
+                    <option value="">全部類型</option>
+                    @if (couponTypes != null)
+                    {
+                        @foreach (var type in couponTypes)
+                        {
+                            <option value="@type.CouponTypeID" @(ViewBag.TypeId == type.CouponTypeID ? "selected" : "")>
+                                @type.Name
+                            </option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="pageSize" class="form-label">每頁筆數</label>
+                <select class="form-select" id="pageSize" name="pageSize">
+                    <option value="20" @(ViewBag.PageSize == 20 ? "selected" : "")>20</option>
+                    <option value="50" @(ViewBag.PageSize == 50 ? "selected" : "")>50</option>
+                    <option value="100" @(ViewBag.PageSize == 100 ? "selected" : "")>100</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <div class="btn-group w-100">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search me-1"></i>搜尋
+                    </button>
+                    <a href="@Url.Action("Coupons")" class="btn btn-outline-secondary">
+                        <i class="fas fa-times me-1"></i>清除
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 優惠券列表 -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">優惠券列表</h6>
+        <span class="badge bg-info">共 @ViewBag.TotalCount 張優惠券</span>
+    </div>
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>優惠券ID</th>
+                            <th>優惠券代碼</th>
+                            <th>優惠券類型</th>
+                            <th>持有者</th>
+                            <th>折扣內容</th>
+                            <th>取得時間</th>
+                            <th>使用狀態</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var coupon in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="badge bg-secondary">#@coupon.CouponID</span>
+                                </td>
+                                <td>
+                                    <div>
+                                        <code class="text-primary">@coupon.CouponCode</code>
+                                        <button class="btn btn-outline-secondary btn-sm ms-2" 
+                                                onclick="copyToClipboard('@coupon.CouponCode')" title="複製代碼">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <strong>@coupon.CouponType?.Name</strong>
+                                        @if (!string.IsNullOrEmpty(coupon.CouponType?.Description))
+                                        {
+                                            <small class="text-muted d-block">@coupon.CouponType.Description</small>
+                                        }
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <strong>@coupon.User?.UserName</strong>
+                                        <small class="text-muted d-block">@coupon.User?.UserNickName</small>
+                                        <a href="@Url.Action("Details", new { userId = coupon.UserId })" 
+                                           class="badge bg-light text-primary text-decoration-none">
+                                            ID: @coupon.UserId
+                                        </a>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    @if (coupon.CouponType != null)
+                                    {
+                                        <div>
+                                            @if (coupon.CouponType.DiscountType == "Percent")
+                                            {
+                                                <span class="badge bg-success fs-6">
+                                                    @((100 - coupon.CouponType.DiscountValue * 100).ToString("F0")) 折
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-success fs-6">
+                                                    -$@coupon.CouponType.DiscountValue.ToString("N0")
+                                                </span>
+                                            }
+                                            @if (coupon.CouponType.MinSpend > 0)
+                                            {
+                                                <small class="text-muted d-block">滿 $@coupon.CouponType.MinSpend.ToString("N0")</small>
+                                            }
+                                        </div>
+                                    }
+                                </td>
+                                <td>
+                                    <div>
+                                        <strong>@coupon.AcquiredTime.ToString("yyyy/MM/dd")</strong>
+                                        <small class="text-muted d-block">@coupon.AcquiredTime.ToString("HH:mm:ss")</small>
+                                        <span class="badge bg-light text-dark">
+                                            @GetTimeAgo(coupon.AcquiredTime)
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    @if (coupon.IsUsed)
+                                    {
+                                        <div>
+                                            <span class="badge bg-danger">已使用</span>
+                                            @if (coupon.UsedTime.HasValue)
+                                            {
+                                                <small class="text-muted d-block">@coupon.UsedTime.Value.ToString("yyyy/MM/dd HH:mm")</small>
+                                            }
+                                            @if (!string.IsNullOrEmpty(coupon.UsedInOrderID))
+                                            {
+                                                <small class="text-info d-block">訂單: @coupon.UsedInOrderID</small>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div>
+                                            <span class="badge bg-success">未使用</span>
+                                            @if (coupon.CouponType != null)
+                                            {
+                                                @if (coupon.CouponType.ValidTo < DateTime.Now)
+                                                {
+                                                    <small class="text-danger d-block">已過期</small>
+                                                }
+                                                else if (coupon.CouponType.ValidFrom > DateTime.Now)
+                                                {
+                                                    <small class="text-warning d-block">未生效</small>
+                                                }
+                                                else
+                                                {
+                                                    <small class="text-success d-block">有效中</small>
+                                                }
+                                            }
+                                        </div>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button type="button" class="btn btn-outline-primary" 
+                                                onclick="showCouponDetails(@coupon.CouponID)" title="查看明細">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        @if (!coupon.IsUsed && coupon.CouponType?.ValidTo >= DateTime.Now)
+                                        {
+                                            <button type="button" class="btn btn-outline-warning" 
+                                                    onclick="markAsUsed(@coupon.CouponID, '@coupon.CouponCode')" title="標記為已使用（預留實作）">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 分頁 -->
+            @if (ViewBag.TotalPages > 1)
+            {
+                <nav aria-label="頁面導航">
+                    <ul class="pagination justify-content-center">
+                        @if (ViewBag.Page > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("Coupons", new { 
+                                    page = 1, 
+                                    pageSize = ViewBag.PageSize, 
+                                    isUsed = ViewBag.IsUsed,
+                                    typeId = ViewBag.TypeId 
+                                })">
+                                    <i class="fas fa-angle-double-left"></i>
+                                </a>
+                            </li>
+                        }
+
+                        @for (int i = Math.Max(1, ViewBag.Page - 2); i <= Math.Min(ViewBag.TotalPages, ViewBag.Page + 2); i++)
+                        {
+                            <li class="page-item @(i == ViewBag.Page ? "active" : "")">
+                                <a class="page-link" href="@Url.Action("Coupons", new { 
+                                    page = i, 
+                                    pageSize = ViewBag.PageSize, 
+                                    isUsed = ViewBag.IsUsed,
+                                    typeId = ViewBag.TypeId 
+                                })">@i</a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            }
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-ticket-alt fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">目前沒有優惠券</h5>
+                <p class="text-muted">請調整搜尋條件或確認資料範圍</p>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- 優惠券明細模態框 -->
+<div class="modal fade" id="couponDetailsModal" tabindex="-1" aria-labelledby="couponDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="couponDetailsModalLabel">優惠券明細</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="couponDetailsContent">
+                <!-- 動態載入優惠券明細 -->
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                alert('代碼已複製到剪貼簿：' + text);
+            });
+        }
+
+        function showCouponDetails(couponId) {
+            // 預留實作：優惠券明細查看功能
+            $('#couponDetailsContent').html(`
+                <div class="text-center py-4">
+                    <i class="fas fa-info-circle fa-3x text-info mb-3"></i>
+                    <h5>優惠券明細功能開發中</h5>
+                    <p class="text-muted">優惠券ID: ${couponId}</p>
+                    <p class="text-muted">此功能將顯示優惠券的完整資訊，包含使用記錄、關聯訂單等詳細資料</p>
+                </div>
+            `);
+            new bootstrap.Modal(document.getElementById('couponDetailsModal')).show();
+        }
+
+        function markAsUsed(couponId, couponCode) {
+            // 預留實作：標記優惠券為已使用功能
+            if (confirm(`確定要將優惠券 ${couponCode} 標記為已使用嗎？\n\n注意：此功能為預留實作，實際標記功能待後續階段開啟。`)) {
+                alert(`優惠券使用標記功能開發中\n優惠券ID: ${couponId}\n優惠券代碼: ${couponCode}`);
+            }
+        }
+    </script>
+}
+
+@functions {
+    string GetTimeAgo(DateTime time)
+    {
+        var timeSpan = DateTime.Now - time;
+        if (timeSpan.TotalDays >= 1)
+            return $"{(int)timeSpan.TotalDays} 天前";
+        if (timeSpan.TotalHours >= 1)
+            return $"{(int)timeSpan.TotalHours} 小時前";
+        if (timeSpan.TotalMinutes >= 1)
+            return $"{(int)timeSpan.TotalMinutes} 分鐘前";
+        return "剛剛";
+    }
+}

@@ -1,0 +1,281 @@
+@{
+    ViewData["Title"] = "寵物系統規則預覽";
+    ViewData["BreadcrumbController"] = "寵物系統";
+    ViewData["BreadcrumbAction"] = "規則預覽";
+    Layout = "~/Areas/MiniGame/Views/Shared/_AdminLayout.cshtml";
+    var petRules = ViewBag.PetRules as dynamic;
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">寵物系統規則預覽</h1>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("Index")" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i>返回寵物列表
+        </a>
+        <a href="@Url.Action("Statistics")" class="btn btn-outline-info btn-sm">
+            <i class="fas fa-chart-pie me-1"></i>寵物統計
+        </a>
+    </div>
+</div>
+
+<div class="alert alert-info" role="alert">
+    <i class="fas fa-info-circle me-2"></i>
+    <strong>說明：</strong>此頁面展示目前寵物系統的規則設定。
+    <strong>唯讀設定來源：appsettings 或常數（未入庫）</strong>。
+    如需修改請聯繫系統開發人員更新配置檔案。
+</div>
+
+<div class="row">
+    <!-- 等級系統 -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">等級系統</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <td class="fw-bold">最高等級：</td>
+                                <td>
+                                    <span class="badge bg-warning text-dark fs-6">Lv.@petRules.MaxLevel</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">每級經驗值需求：</td>
+                                <td>
+                                    <span class="badge bg-info fs-6">@petRules.ExpPerLevel EXP</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">升級獎勵點數：</td>
+                                <td>
+                                    <span class="badge bg-success fs-6">+@petRules.LevelUpReward 點</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="alert alert-light mt-3" role="alert">
+                    <small>
+                        <i class="fas fa-calculator me-1"></i>
+                        <strong>升級公式：</strong>下一級所需 EXP = 當前等級 × @petRules.ExpPerLevel
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 屬性系統 -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-success">屬性系統</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <td class="fw-bold">屬性範圍：</td>
+                                <td>
+                                    <span class="badge bg-secondary fs-6">@petRules.AttributeMin - @petRules.AttributeMax</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">健康危險線：</td>
+                                <td>
+                                    <span class="badge bg-danger fs-6">≤ @petRules.HealthCritical</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">每日衰減：</td>
+                                <td>
+                                    <span class="badge bg-warning text-dark fs-6">-@petRules.DecayRate/天</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h6 class="text-muted mt-3">五維屬性</h6>
+                <div class="d-flex flex-wrap gap-1">
+                    <span class="badge bg-warning">飢餓值</span>
+                    <span class="badge bg-success">心情值</span>
+                    <span class="badge bg-primary">體力值</span>
+                    <span class="badge bg-info">清潔值</span>
+                    <span class="badge bg-danger">健康值</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- 互動獲得 -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-warning">互動獲得</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <td class="fw-bold">
+                                    <i class="fas fa-drumstick-bite text-warning me-2"></i>餵食：
+                                </td>
+                                <td>
+                                    <span class="badge bg-warning text-dark fs-6">+@petRules.FeedGain</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">
+                                    <i class="fas fa-gamepad text-success me-2"></i>遊玩：
+                                </td>
+                                <td>
+                                    <span class="badge bg-success fs-6">+@petRules.PlayGain</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">
+                                    <i class="fas fa-soap text-info me-2"></i>清潔：
+                                </td>
+                                <td>
+                                    <span class="badge bg-info fs-6">+@petRules.CleanGain</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">
+                                    <i class="fas fa-bed text-secondary me-2"></i>休息：
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary fs-6">+@petRules.RestGain</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 顏色變更成本 -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-info">顏色變更成本</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <td class="fw-bold">皮膚顏色變更：</td>
+                                <td>
+                                    <span class="badge bg-primary fs-6">@petRules.SkinColorCost 點</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">背景顏色變更：</td>
+                                <td>
+                                    <span class="badge bg-success fs-6">@petRules.BackgroundColorCost 點</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="alert alert-light mt-3" role="alert">
+                    <small>
+                        <i class="fas fa-coins me-1"></i>
+                        顏色變更需消耗會員錢包點數，變更記錄會保存到 WalletHistory
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 可用顏色展示 -->
+<div class="row">
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">可用皮膚顏色</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-flex flex-wrap gap-2">
+                    @foreach (var color in petRules.AvailableSkinColors)
+                    {
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle me-2" 
+                                 style="width: 30px; height: 30px; background-color: @color; border: 2px solid #dee2e6;">
+                            </div>
+                            <code class="small">@color</code>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-secondary">可用背景顏色</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-flex flex-wrap gap-2">
+                    @foreach (var color in petRules.AvailableBackgroundColors)
+                    {
+                        <div class="d-flex align-items-center">
+                            <div class="rounded me-2" 
+                                 style="width: 30px; height: 20px; background-color: @color; border: 2px solid #dee2e6;">
+                            </div>
+                            <code class="small">@color</code>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 配置資訊 -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-warning">配置資訊</h6>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="border-start border-primary border-4 ps-3">
+                    <h6 class="text-primary">規則版本</h6>
+                    <p class="text-muted mb-0">v@petRules.Version</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="border-start border-success border-4 ps-3">
+                    <h6 class="text-success">配置來源</h6>
+                    <p class="text-muted mb-0">@petRules.ConfigSource</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="border-start border-info border-4 ps-3">
+                    <h6 class="text-info">最後更新</h6>
+                    <p class="text-muted mb-0">@petRules.LastUpdated</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="border-start border-warning border-4 ps-3">
+                    <h6 class="text-warning">自動儲存</h6>
+                    <p class="text-muted mb-0">@petRules.AutoSaveInterval 秒</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

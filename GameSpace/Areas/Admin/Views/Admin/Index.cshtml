@@ -1,0 +1,210 @@
+@{
+    ViewData["Title"] = "管理員首頁";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    var totalUsers = (int)ViewBag.TotalUsers;
+    var totalPets = (int)ViewBag.TotalPets;
+    var totalForums = (int)ViewBag.TotalForums;
+    var totalOrders = (int)ViewBag.TotalOrders;
+    var totalProducts = (int)ViewBag.TotalProducts;
+    var recentUsers = ViewBag.RecentUsers as List<GameSpace.Models.User>;
+    var recentForums = ViewBag.RecentForums as List<GameSpace.Models.Forum>;
+}
+
+<div class="container-fluid">
+    <h1 class="h3 mb-4">管理員首頁</h1>
+
+    <!-- 統計卡片 -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card stats-card shadow h-100">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">總用戶數</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@totalUsers</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card stats-card shadow h-100">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">總寵物數</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@totalPets</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-paw fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card stats-card shadow h-100">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">總討論數</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@totalForums</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-comments fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card stats-card shadow h-100">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">總訂單數</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@totalOrders</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-shopping-cart fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 最近活動 -->
+    <div class="row">
+        <!-- 最近用戶 -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">最近註冊用戶</h6>
+                    <a asp-action="Users" class="btn btn-sm btn-primary">查看全部</a>
+                </div>
+                <div class="card-body">
+                    @if (recentUsers?.Any() == true)
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>用戶名</th>
+                                        <th>註冊時間</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var user in recentUsers)
+                                    {
+                                        <tr>
+                                            <td>@user.Username</td>
+                                            <td>@user.CreatedAt.ToString("yyyy/MM/dd")</td>
+                                            <td>
+                                                <a asp-action="UserDetails" asp-route-id="@user.UserId" class="btn btn-sm btn-outline-primary">查看</a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">暫無用戶</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- 最近討論 -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">最近討論</h6>
+                    <a asp-action="Forums" class="btn btn-sm btn-primary">查看全部</a>
+                </div>
+                <div class="card-body">
+                    @if (recentForums?.Any() == true)
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>標題</th>
+                                        <th>作者</th>
+                                        <th>時間</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var forum in recentForums)
+                                    {
+                                        <tr>
+                                            <td>@(forum.Title.Length > 20 ? forum.Title.Substring(0, 20) + "..." : forum.Title)</td>
+                                            <td>@forum.User?.Username</td>
+                                            <td>@forum.CreatedAt.ToString("MM/dd")</td>
+                                            <td>
+                                                <a asp-action="ForumDetails" asp-route-id="@forum.ForumId" class="btn btn-sm btn-outline-primary">查看</a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">暫無討論</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 快速操作 -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">快速操作</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <a asp-action="Users" class="btn btn-outline-primary w-100">用戶管理</a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a asp-action="Pets" class="btn btn-outline-success w-100">寵物管理</a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a asp-action="Forums" class="btn btn-outline-info w-100">論壇管理</a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a asp-action="Orders" class="btn btn-outline-warning w-100">訂單管理</a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a asp-action="Products" class="btn btn-outline-secondary w-100">商品管理</a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a asp-action="Coupons" class="btn btn-outline-dark w-100">優惠券管理</a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a asp-action="ChatMessages" class="btn btn-outline-danger w-100">聊天管理</a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a asp-action="Settings" class="btn btn-outline-primary w-100">系統設定</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

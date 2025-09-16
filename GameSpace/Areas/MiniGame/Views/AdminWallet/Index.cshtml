@@ -1,0 +1,395 @@
+@model IEnumerable<GameSpace.Models.UserWallet>
+@{
+    ViewData["Title"] = "會員錢包管理";
+    ViewData["BreadcrumbController"] = "錢包系統";
+    ViewData["BreadcrumbAction"] = "錢包列表";
+    Layout = "~/Areas/MiniGame/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">會員錢包管理</h1>
+    <div class="d-flex gap-2">
+        @{
+            ViewData["ExportCsvAction"] = "IndexExportCsv";
+            ViewData["ExportJsonAction"] = "IndexExportJson";
+            ViewData["ExportParams"] = new { 
+                search = ViewBag.Search,
+                pageSize = ViewBag.PageSize
+            };
+        }
+        @await Html.PartialAsync("_ExportButtons")
+    </div>
+</div>
+
+<!-- 用戶點數分佈圖 -->
+<div class="row mb-4">
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">用戶點數分佈</h6>
+            </div>
+            <div class="card-body">
+                <div id="walletBucketsLoading" class="text-center py-3">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">載入中...</span>
+                    </div>
+                    <div class="mt-2 text-muted">載入分佈資料中...</div>
+                </div>
+                
+                <div id="walletBucketsError" class="alert alert-warning d-none">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <span id="walletBucketsErrorMsg">資料載入失敗</span>
+                </div>
+                
+                <div id="walletBucketsContainer" class="d-none">
+                    <canvas id="walletBucketsChart" style="height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 搜尋篩選區 -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">搜尋篩選</h6>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-6">
+                <label for="search" class="form-label">搜尋會員</label>
+                <input type="text" class="form-control" id="search" name="search" 
+                       value="@ViewBag.Search">
+            </div>
+            <div class="col-md-3">
+                <label for="pageSize" class="form-label">每頁筆數</label>
+                <select class="form-select" id="pageSize" name="pageSize">
+                    <option value="20" @(ViewBag.PageSize == 20 ? "selected" : "")>20</option>
+                    <option value="50" @(ViewBag.PageSize == 50 ? "selected" : "")>50</option>
+                    <option value="100" @(ViewBag.PageSize == 100 ? "selected" : "")>100</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <div class="btn-group w-100">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search me-1"></i>搜尋
+                    </button>
+                    <a href="@Url.Action("Index")" class="btn btn-outline-secondary">
+                        <i class="fas fa-times me-1"></i>清除
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 錢包列表 -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">錢包列表</h6>
+        <span class="badge bg-info">共 @ViewBag.TotalCount 筆資料</span>
+    </div>
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>會員ID</th>
+                            <th>會員帳號</th>
+                            <th>會員暱稱</th>
+                            <th>會員點數</th>
+                            <th>點數等級</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var wallet in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="badge bg-secondary">#@wallet.UserId</span>
+                                </td>
+                                <td>
+                                    <strong>@wallet.User?.UserName</strong>
+                                </td>
+                                <td>
+                                    @wallet.User?.UserNickName
+                                </td>
+                                <td class="text-end">
+                                    <span class="badge @GetPointsBadgeClass(wallet.UserPoint) fs-6">
+                                        @wallet.UserPoint.ToString("N0") 點
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge @GetLevelBadgeClass(wallet.UserPoint)">
+                                        @GetPointsLevel(wallet.UserPoint)
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="@Url.Action("Details", new { userId = wallet.UserId })" 
+                                           class="btn btn-outline-primary" title="查看明細">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="@Url.Action("History", new { userId = wallet.UserId })" 
+                                           class="btn btn-outline-info" title="歷史記錄">
+                                            <i class="fas fa-history"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-outline-warning" 
+                                                onclick="adjustPoints(@wallet.UserId, '@wallet.User?.UserName')" title="調整點數">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 分頁 -->
+            @if (ViewBag.TotalPages > 1)
+            {
+                <nav aria-label="頁面導航">
+                    <ul class="pagination justify-content-center">
+                        @if (ViewBag.Page > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("Index", new { page = 1, pageSize = ViewBag.PageSize, search = ViewBag.Search })">
+                                    <i class="fas fa-angle-double-left"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.Page - 1, pageSize = ViewBag.PageSize, search = ViewBag.Search })">
+                                    <i class="fas fa-angle-left"></i>
+                                </a>
+                            </li>
+                        }
+
+                        @for (int i = Math.Max(1, ViewBag.Page - 2); i <= Math.Min(ViewBag.TotalPages, ViewBag.Page + 2); i++)
+                        {
+                            <li class="page-item @(i == ViewBag.Page ? "active" : "")">
+                                <a class="page-link" href="@Url.Action("Index", new { page = i, pageSize = ViewBag.PageSize, search = ViewBag.Search })">@i</a>
+                            </li>
+                        }
+
+                        @if (ViewBag.Page < ViewBag.TotalPages)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.Page + 1, pageSize = ViewBag.PageSize, search = ViewBag.Search })">
+                                    <i class="fas fa-angle-right"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.TotalPages, pageSize = ViewBag.PageSize, search = ViewBag.Search })">
+                                    <i class="fas fa-angle-double-right"></i>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            }
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-wallet fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">目前沒有錢包資料</h5>
+                <p class="text-muted">請確認搜尋條件或聯絡系統管理員</p>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- 調整點數模態框 -->
+<div class="modal fade" id="adjustPointsModal" tabindex="-1" aria-labelledby="adjustPointsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="adjustPointsModalLabel">調整會員點數</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="adjustPointsForm">
+                    <input type="hidden" id="adjustUserId" name="userId">
+                    <div class="mb-3">
+                        <label for="userName" class="form-label">會員帳號</label>
+                        <input type="text" class="form-control" id="userName" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="pointsChange" class="form-label">點數調整</label>
+                        <input type="number" class="form-control" id="pointsChange" name="pointsChange" 
+                               required>
+                        <div class="form-text">例如：+1000 增加1000點，-500 減少500點</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="reason" class="form-label">調整原因</label>
+                        <textarea class="form-control" id="reason" name="reason" rows="3" 
+                                  required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-warning" onclick="submitPointsAdjustment()">確認調整</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        function adjustPoints(userId, userName) {
+            $('#adjustUserId').val(userId);
+            $('#userName').val(userName);
+            $('#pointsChange').val('');
+            $('#reason').val('');
+            $('#adjustPointsModal').modal('show');
+        }
+
+        function submitPointsAdjustment() {
+            // 此功能為預留實作，實際實作需要後端 API 支援
+            alert('點數調整功能預留實作，請聯絡系統管理員');
+            $('#adjustPointsModal').modal('hide');
+        }
+
+
+        // 表格排序功能
+        $(document).ready(function() {
+            $('th').css('cursor', 'pointer').on('click', function() {
+                // 排序功能預留實作
+                console.log('排序功能預留實作');
+            });
+            
+            // 載入用戶點數分佈圖表
+            loadWalletBucketsChart();
+        });
+
+        async function loadWalletBucketsChart() {
+            try {
+                // 顯示載入中
+                document.getElementById('walletBucketsLoading').classList.remove('d-none');
+                document.getElementById('walletBucketsError').classList.add('d-none');
+                document.getElementById('walletBucketsContainer').classList.add('d-none');
+                
+                const response = await fetch('/MiniGame/AdminAnalytics/UserWalletBuckets?thresholds=100,500,1000');
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.status === 'ok' && data.buckets && Array.isArray(data.buckets)) {
+                    renderWalletBucketsChart(data.buckets, data.totalUsers);
+                } else {
+                    throw new Error(data.message || '資料格式錯誤');
+                }
+            } catch (error) {
+                console.error('用戶點數分佈圖載入失敗:', error);
+                showWalletBucketsError(error.message);
+            }
+        }
+
+        function renderWalletBucketsChart(buckets, totalUsers) {
+            const ctx = document.getElementById('walletBucketsChart').getContext('2d');
+            
+            // 準備資料
+            const labels = buckets.map(b => b.label);
+            const counts = buckets.map(b => b.count);
+            
+            // 顏色配置
+            const colors = [
+                '#e74a3b', // 紅色 - 0~99
+                '#f6c23e', // 黃色 - 100~499  
+                '#1cc88a', // 綠色 - 500~999
+                '#4e73df'  // 藍色 - ≥1000
+            ];
+            
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: counts,
+                        backgroundColor: colors,
+                        borderColor: colors,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                usePointStyle: true,
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: function(context) {
+                                    return '點數區間：' + context[0].label;
+                                },
+                                label: function(context) {
+                                    const count = context.parsed;
+                                    const percentage = ((count / totalUsers) * 100).toFixed(1);
+                                    return `用戶數：${count} 人 (${percentage}%)`;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '65%', // 甜甜圈中間空洞大小
+                    elements: {
+                        arc: {
+                            borderWidth: 2
+                        }
+                    }
+                }
+            });
+            
+            // 隱藏載入中，顯示圖表
+            document.getElementById('walletBucketsLoading').classList.add('d-none');
+            document.getElementById('walletBucketsContainer').classList.remove('d-none');
+        }
+
+        function showWalletBucketsError(message) {
+            document.getElementById('walletBucketsLoading').classList.add('d-none');
+            document.getElementById('walletBucketsError').classList.remove('d-none');
+            document.getElementById('walletBucketsErrorMsg').textContent = message;
+        }
+    </script>
+}
+
+@functions {
+    string GetPointsBadgeClass(int points)
+    {
+        if (points >= 10000) return "bg-success";
+        if (points >= 5000) return "bg-info";
+        if (points >= 1000) return "bg-warning";
+        return "bg-secondary";
+    }
+
+    string GetLevelBadgeClass(int points)
+    {
+        if (points >= 10000) return "bg-success";
+        if (points >= 5000) return "bg-info";
+        if (points >= 1000) return "bg-warning";
+        return "bg-secondary";
+    }
+
+    string GetPointsLevel(int points)
+    {
+        if (points >= 10000) return "VIP會員";
+        if (points >= 5000) return "金牌會員";
+        if (points >= 1000) return "銀牌會員";
+        return "一般會員";
+    }
+}

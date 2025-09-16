@@ -1,0 +1,195 @@
+@model GameSpace.Models.EVoucherRedeemLog
+@{
+    ViewData["Title"] = "兌換記錄詳細";
+    ViewData["BreadcrumbController"] = "錢包系統";
+    ViewData["BreadcrumbAction"] = "兌換記錄詳細";
+    Layout = "~/Areas/MiniGame/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- 頁面標題 -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">兌換記錄詳細</h1>
+        <a href="@Url.Action("RedeemLogs")" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> 返回列表
+        </a>
+    </div>
+
+    <div class="row">
+        <!-- 主要資訊卡片 -->
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">兌換記錄基本資訊</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label text-muted">RedeemID</label>
+                                <div class="fw-bold fs-4">
+                                    <span class="badge bg-secondary">#@Model.RedeemID</span>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted">EVoucherID</label>
+                                <div class="fw-bold">
+                                    <span class="badge bg-primary">@Model.EVoucherID</span>
+                                    @if (Model.EVoucherToken?.EVoucher != null)
+                                    {
+                                        <div class="mt-2">
+                                            <code class="bg-light p-2 rounded">@Model.EVoucherToken.EVoucher.EVoucherCode</code>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted">UserID</label>
+                                <div class="fw-bold">
+                                    <span class="badge bg-light text-dark">@Model.UserID</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label text-muted">TokenID</label>
+                                <div>
+                                    @if (Model.TokenID.HasValue)
+                                    {
+                                        <span class="badge bg-info">@Model.TokenID.Value</span>
+                                        @if (Model.EVoucherToken != null)
+                                        {
+                                            <div class="mt-2 bg-light p-2 rounded">
+                                                <code class="text-break">@Model.EVoucherToken.Token</code>
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">無（直接輸入券碼）</span>
+                                    }
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted">ScannedAt</label>
+                                <div class="fw-bold">@Model.ScannedAt.ToString("yyyy-MM-dd HH:mm:ss")</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted">Status</label>
+                                <div>
+                                    @switch (Model.Status)
+                                    {
+                                        case "Approved":
+                                            <span class="badge bg-success fs-6">Approved</span>
+                                            <small class="text-success d-block">兌換成功</small>
+                                            break;
+                                        case "AlreadyUsed":
+                                            <span class="badge bg-primary fs-6">AlreadyUsed</span>
+                                            <small class="text-primary d-block">券已使用</small>
+                                            break;
+                                        case "Expired":
+                                            <span class="badge bg-secondary fs-6">Expired</span>
+                                            <small class="text-muted d-block">Token 已過期</small>
+                                            break;
+                                        case "Revoked":
+                                            <span class="badge bg-warning fs-6">Revoked</span>
+                                            <small class="text-warning d-block">Token 已撤銷</small>
+                                            break;
+                                        case "Rejected":
+                                            <span class="badge bg-danger fs-6">Rejected</span>
+                                            <small class="text-danger d-block">驗證失敗</small>
+                                            break;
+                                        default:
+                                            <span class="badge bg-light text-dark fs-6">@Model.Status</span>
+                                            break;
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 相關資訊卡片 -->
+        <div class="col-lg-4">
+            @if (Model.EVoucherToken?.EVoucher?.EVoucherType != null)
+            {
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">相關禮券資訊</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">禮券類型</label>
+                            <div class="fw-bold">@Model.EVoucherToken.EVoucher.EVoucherType.Name</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">面額</label>
+                            <div class="fw-bold text-success">NT$ @Model.EVoucherToken.EVoucher.EVoucherType.ValueAmount.ToString("N0")</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">禮券獲得時間</label>
+                            <div>@Model.EVoucherToken.EVoucher.AcquiredTime.ToString("yyyy-MM-dd HH:mm:ss")</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">禮券使用狀態</label>
+                            <div>
+                                @if (Model.EVoucherToken.EVoucher.IsUsed)
+                                {
+                                    <span class="badge bg-secondary">已使用</span>
+                                    @if (Model.EVoucherToken.EVoucher.UsedTime.HasValue)
+                                    {
+                                        <small class="text-muted d-block">@Model.EVoucherToken.EVoucher.UsedTime.Value.ToString("yyyy-MM-dd HH:mm")</small>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="badge bg-primary">未使用</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @if (Model.EVoucherToken != null)
+            {
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Token 資訊</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Token 到期時間</label>
+                            <div>
+                                @Model.EVoucherToken.ExpiresAt.ToString("yyyy-MM-dd HH:mm:ss")
+                                @if (Model.EVoucherToken.ExpiresAt < DateTime.UtcNow)
+                                {
+                                    <span class="badge bg-warning ms-2">已過期</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success ms-2">有效</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Token 狀態</label>
+                            <div>
+                                @if (Model.EVoucherToken.IsRevoked)
+                                {
+                                    <span class="badge bg-danger">已撤銷</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success">正常</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,52 @@
+@model List<GameSpace.Models.WalletHistory>
+@{
+    ViewData["Title"] = "錢包歷史";
+}
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">錢包歷史</h1>
+
+    @if (Model?.Any() == true)
+    {
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>時間</th>
+                        <th>類型</th>
+                        <th>描述</th>
+                        <th>點數變化</th>
+                        <th>物品代碼</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var history in Model)
+                    {
+                        <tr>
+                            <td>@history.ChangeTime.ToString("yyyy/MM/dd HH:mm")</td>
+                            <td>
+                                <span class="badge bg-@(history.ChangeType switch {
+                                    "Point" => "primary",
+                                    "Coupon" => "success",
+                                    "EVoucher" => "warning",
+                                    _ => "secondary"
+                                })">@history.ChangeType</span>
+                            </td>
+                            <td>@history.Description</td>
+                            <td class="@(history.PointsChanged > 0 ? "text-success" : "text-danger")">
+                                @(history.PointsChanged > 0 ? "+" : "")@history.PointsChanged
+                            </td>
+                            <td>@(history.ItemCode ?? "-")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="text-center">
+            <p class="text-muted">暫無交易記錄</p>
+        </div>
+    }
+</div>

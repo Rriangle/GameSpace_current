@@ -1,0 +1,76 @@
+@model List<GameSpace.Models.Pet>
+@{
+    ViewData["Title"] = "寵物管理";
+}
+
+<div class="container-fluid">
+    <h1 class="h3 mb-4">寵物管理</h1>
+
+    <div class="card shadow">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">寵物列表</h6>
+        </div>
+        <div class="card-body">
+            @if (Model?.Any() == true)
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>寵物ID</th>
+                                <th>寵物名稱</th>
+                                <th>主人</th>
+                                <th>等級</th>
+                                <th>經驗值</th>
+                                <th>狀態</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var pet in Model)
+                            {
+                                <tr>
+                                    <td>@pet.PetId</td>
+                                    <td>@pet.PetName</td>
+                                    <td>@pet.User?.Username</td>
+                                    <td>
+                                        <span class="badge bg-primary">@pet.Level</span>
+                                    </td>
+                                    <td>@pet.Experience</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <small>飢餓: @pet.Hunger%</small><br>
+                                                <small>心情: @pet.Mood%</small>
+                                            </div>
+                                            <div class="col-6">
+                                                <small>體力: @pet.Stamina%</small><br>
+                                                <small>清潔: @pet.Cleanliness%</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="viewPetDetails(@pet.PetId)">查看詳情</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p class="text-muted text-center">暫無寵物</p>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function viewPetDetails(petId) {
+            // 這裡可以實現查看寵物詳情的邏輯
+            alert('查看寵物詳情功能開發中，寵物ID: ' + petId);
+        }
+    </script>
+}

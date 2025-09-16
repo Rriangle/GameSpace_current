@@ -1,0 +1,322 @@
+file: contributing_agent.yaml
+title: "GameSpace — contributing_agent (Single Source of Truth)"
+version: 1.0
+language_rule:
+  human_readable_outputs: "zh-TW"
+  notes: "程式識別符、檔名、路徑、SQL/CLI 關鍵字不可翻譯"
+
+start_of_run:
+  mandatory_reading_order:
+    - "contributing_agent.yaml"
+    - "old_0905.txt"
+    - "new_0905.txt"
+    - "database.json"
+    - "seedMiniGameArea.json"
+    - "index.txt"
+  relationships_re_read_quotes:
+    - >
+      Rule: old_0905.txt + new_0905.txt together describe ~90% of the business spec.
+      For the remaining ~10% gaps or conflicts, database.json is the final authority for schema,
+      constraints, and table definitions.
+    - >
+      seedMiniGameArea.json is the authoritative baseline for MiniGame Area 的「展示用假資料」：
+      務必使用該檔提供之資料讓頁面看起來真實飽滿；但 seedMiniGameArea.json 不得覆蓋或違反 database.json 的結構/約束。
+      當 MiniGame 的資料層描述與其他來源有含糊之處時，優先以 seedMiniGameArea.json 的資料內容作為展示用基準
+      （前提是完全遵守 database.json 的 schema 與約束）。將你的判斷在 commit message 註記。
+    - >
+      Public (front site): follow index.txt for layout/interaction (Bootstrap-based).
+      Admin (back office): use SB Admin (third-party library; do not modify vendor files).
+  drift_repair:
+    steps:
+      - "Stop adding new scope."
+      - "Identify the drift (what conflicts with which source)."
+      - "Fix to comply with this file + old/new + database.json + seedMiniGameArea.json + index.txt."
+      - "Document in commit message: WHY drifted, HOW corrected."
+      - "Only then resume."
+    block_on_drift: true
+
+console_status:
+  on_start_and_stop_line: "Overall Progress: % | Current Stage: % | Status:"
+  next_run_prompt:
+    allowed_if: "≥1 code diff AND ≥1 commit"
+    format: "one-line English; the next precise step"
+  delta_plan:
+    file: "docs/WIP_RUN.md"
+    print_to_console: false
+    sections: ["Next targets", "Files", "Tests", "Risks/Assumptions"]
+
+master_kickoff:
+  text: >
+    Read and follow contributing_agent.yaml. Continue from last WIP.
+    Work in small chunks (<=3 files, <=400 LOC).
+    Only stop when token budget is nearly exhausted.
+    On START and on STOP, print exactly one line: Overall Progress: % | Current Stage: % | Status: .
+
+delivery_format:
+  style: "Notebook/Diff"
+  new_file_header: "// File: <relative/path>"
+  existing_file_rule: "minimal diff unless full file explicitly requested"
+  no_shell_in_deliverables: true
+  explanation_language: "zh-TW"
+  per_batch_limits: { max_files: 3, max_loc: 400 }
+
+setup_execution:
+  steps:
+    - "Install VS 2022+ and SQL Server 2019/2022."
+    - "Run ./database.json in SSMS → 建立 GameSpaceDatabase 初始資料。"
+    - "Run ./seedMiniGameArea.json → 匯入 MiniGame Area 的展示用假資料（不得違反 database.json 結構/約束）。"
+    - "Open ASP.NET Core MVC solution in VS2022."
+    - "Set appsettings.json DefaultConnection（不得使用 EF Migrations 或修改 schema；schema 以 database.json 為準）。"
+    - "Build & Run（Public 站台 localhost）。"
+    - "Admin seeded: zhang_zhiming_01 / Password001@, li_xiaohua_02 / Password001@."
+    - "Public sample: dragonknight88 / Password001@."
+
+manual_db_run:
+  requirements:
+    entrypoint: "提供可呼叫的 Seeder/Runner（不自動於啟動）"
+    healthcheck: "/healthz/db 回傳 {status:'ok'} 或錯誤"
+    seeding:
+      idempotent: true
+      batch_max_rows: 1000
+      logs:
+        message_language: "zh-TW"
+        field_keys_language: "en"
+    readme_section: "Manual DB initialization & local run"
+    minigame_seed:
+      include_seedMiniGame_sql: true
+      must_fill_demo_data: true
+      comply_schema_from_database_json: true
+
+areas_partition:
+  use_aspnet_mvc_areas: true
+  initial_area: "MiniGame"
+  modules:
+    - "User_Wallet (User_Wallet, CouponType, Coupon, EVoucherType, EVoucher, EVoucherToken, EVoucherRedeemLog, WalletHistory)"
+    - "UserSignInStats"
+    - "Pet"
+    - "MiniGame"
+  paths: "Areas/MiniGame/Controllers|Models|Services|Views/**"
+  layout: "Areas/MiniGame/Views/Shared/_Layout.cshtml"
+  route: "[Area('MiniGame')] → /MiniGame/{controller}/{action}/{id?}"
+  do_not_edit:
+    - "wwwroot/lib/sb-admin/"
+    - "wwwroot/lib/bootstrap/"
+    - "wwwroot/lib/font-awesome/"
+    - "wwwroot/lib/jquery/"
+    - "Views/Shared/_Layout.cshtml"
+    - "other modules’ code, DB migrations, libman.json, any appsettings*"
+  never_mix_across_areas: true
+
+project_completion_mandate:
+  finish_all_areas: true
+  keep_ui_boundaries: true
+
+global_dev_policies:
+  micro_batches: { max_files: 3, max_loc: 400 }
+  encoding: "UTF-8 (prefer no BOM)"
+  no_shell_writes: true
+  cross_platform_write_apis: [".NET File.WriteAllText", "Node fs.writeFileSync"]
+  contract_first: true
+  logging: ["Serilog", "CorrelationId middleware"]
+
+database_truth:
+  schema_source: "database.json (single source of truth)"
+  no_ef_migrations: true
+  seed_usage: "use existing seed as-is; do not overwrite/delete deterministic keys unless fixing a clear error"
+  reads: "AsNoTracking(); project aggregates to read models"
+  fake_data_rules:
+    use_existing_from_database_json: true
+    minigame_seed_baseline:
+      file: "seedMiniGameArea.json"
+      baseline_for_demo: true
+      do_not_overwrite_seed_rows: true
+    generation_order_hint: ["new_0905.txt", "old_0905.txt", "database.json"]
+    demo_realism: "zh-TW text, plausible URLs/images, Zipf/log-normal, 0.5–2% failures/refunds"
+    persist_insert_only: true
+    per_table_target_rows: 200
+    count_seed_into_target: true
+    if_over_200_keep_and_note: "commit DEMO-NOTE"
+    idempotency: "enforce via PK/natural key/UNIQUE"
+    batch_max_rows: 1000
+    constraints_must_pass: ["PK","FK","UNIQUE","CHECK","DEFAULT"]
+
+wip_and_progress:
+  files:
+    wip_run: "docs/WIP_RUN.md (append-only)"
+    progress_json: "docs/PROGRESS.json"
+  progress_json_initial: { overall: 0, stages: {stage0: 0, stage1: 0, stage2: 0, stage3: 0, stage4: 0, stage5: 0, stage6: 0, stage7: 0, stage8: 0}, updatedAt: "" }
+  console_line: "Overall Progress: % | Current Stage: % | Status:"
+  next_run_prompt_condition: "≥1 diff + ≥1 commit"
+
+auto_stage_selection:
+  rule: "Pick first stage with <100; if all 100 keep improving docs/tests/refactors"
+
+stage_gates:
+  - "Build: 0 errors / 0 warnings"
+  - "Tests: all green"
+  - "No TODO|FIXME|TBD|NotImplemented|WIP|placeholder (含字串/註解)"
+  - "Spec compliance: Areas / zh-TW / Notebook-Diff / DB single source / Fake Data / Admin-Public separation / UI affiliation declared"
+  - "Logs & commit in zh-TW（可用英文前綴標籤）"
+  - "Print single-line status"
+
+stages:
+  stage0:
+    name: "Skeleton & CI"
+    tasks:
+      - "Read old/new + database.json + index.txt"
+      - "Create .NET 8 solution skeleton (Domain/Application/Infrastructure/API/MVC)"
+      - "/healthz + Home; Swagger; Serilog; CorrelationId; cross-platform CI"
+      - "Minimal README"
+      - "Tests: smoke /healthz + 1–2 unit"
+  stage1:
+    name: "Data Mapping (Read-first)"
+    tasks:
+      - "Map read models to database.json"
+      - "Read-only repos/queries (EF or raw SQL)"
+      - "Wire Demo provider; minimal GETs"
+      - "Tests: ≥2 DB read integration; update contract snapshots"
+  stage2:
+    name: "Breadth Slice R1 (Read-only parity)"
+    tasks:
+      - "3–4 modules: wallet aggregate, forum list/detail, leaderboard snapshot, +1"
+      - "Minimal MVC/JSON; consistent layout"
+      - "Tests: smoke per slice; ≥1 aggregate read integration"
+  stage3:
+    name: "Breadth Slice R2 (Writes + Tx + Idempotency + Audit)"
+    tasks:
+      - "SignIn: POST /signin (Tx + Idempotency-Key); grant Points/EXP/Coupon; append WalletHistory"
+      - "Pet: minimal updates + leveling logic"
+      - "Redemption: redeem Coupon/EVoucher; write audit"
+      - "Tests: commit/rollback, idempotent retry, edges; risky E2E (SignIn→WalletHistory)"
+  stage4:
+    name: "Admin & Governance"
+    tasks:
+      - "Admin CRUD: CouponType / EVoucherType (respect database.json)"
+      - "Banned-words filter; read-only insights"
+      - "Tests: validators/rules unit; Admin write + RBAC route integration"
+  stage5:
+    name: "Cross-cutting Infra"
+    tasks:
+      - "RBAC, rate-limit, timeout, retry; unified error model (ProblemDetails/Result)"
+      - "Short-TTL cache (wallet/leaderboard hot paths)"
+      - "Tests: cache key math; rate-limit & retry; invalidation/timeout/retry integration"
+  stage6:
+    name: "Testing Policy & Templates"
+    tasks:
+      - "TESTING_POLICY.md (pyramid, DoD per slice)"
+      - "Unit/integration/E2E templates; parallel runs; DTO/OpenAPI snapshot tests"
+      - "CI time budget ≤ 3 minutes per slice"
+  stage7:
+    name: "Performance & Ops Docs"
+    tasks:
+      - "Perf budgets; profile hot paths; light load scripts"
+      - "Watch hotspots: large queries, leaderboard aggregation, image processing"
+      - "Docs: docs/PERF_NOTES.md, docs/OPERATIONS.md"
+  stage8:
+    name: "Final QA & Sign-off"
+    tasks:
+      - "a11y; zh-TW proofreading; production build review; release notes"
+      - "Gate: E2E/Integration/Smoke all green; 0 warnings; tag release"
+
+minigame_initial_scope:
+  a_user_wallet: "points, available Coupons/EVouchers; browse EVoucherToken/EVoucherRedeemLog/WalletHistory (UI focus; no schema edits)"
+  b_user_signin: "daily sign-in list; sign-in action stub (contract-ready)"
+  c_pet: "profile read + attribute adjust stubs (basic animations/micro-interactions, optional sound, a11y; richly commented)"
+  d_minigame: "list + basic CRUD stubs; use Areas/MiniGame/Views/Shared/_Layout.cshtml; do not touch global layouts"
+  reminder: "只是起點，需繼續推進全站所有 Areas"
+
+audits_and_fixes:
+  always_audit:
+    - "Language"
+    - "Notebook/Diff"
+    - "DB single source"
+    - "Fake Data (persisted/200 rows/idempotent)"
+    - "Area boundaries & Admin/Public separation"
+    - "Module UI affiliation"
+    - "Code quality (naming/layering/DI/SoC)"
+    - "Performance (wallet, sign-in write, pet, image)"
+    - "Frontend RWD/usability"
+  issues: "fix promptly; log in zh-TW"
+
+git_ci:
+  branches_policy: "不可於本地或遠端創新分支，保持只有 main 分支"
+  ci_rules:
+    - "Build + tests + analyzers must stay green"
+    - "≤ 3 minutes per slice"
+  commit_template: "[Stage-][/] WHAT → HOW → VERIFY | WHAT: align with ./database.json and this spec | HOW: ≤3 files / ≤400 LOC; respect skeleton & Areas; no shell file-writes | VERIFY: build/tests/manual checks (zh-TW, concise)"
+
+deployment:
+  no_shell_in_docs: true
+  production_rules:
+    - "no schema changes"
+    - "no EF Migrations"
+    - "secrets via secure channels"
+  github_actions:
+    triggers: ["push to main", "release tags"]
+    gates: [".NET 8 build", "tests all green", "analyzers 0 warnings", "NuGet cache"]
+    artifact: "container image (e.g., GCP Artifact Registry)"
+    security: "OIDC to GCP; minimum privileges; never leak secrets"
+  gcp_cloud_run:
+    config: { port: 8080, concurrency: "set", min_instances: "0 or ≥1" }
+    db: "Cloud SQL for SQL Server (Private IP preferred)"
+    health: "/healthz; Serilog visible in Cloud Logging"
+    checks: ["rollback available", "Cloud SQL connectivity", "cold-start/latency budget"]
+  gcp_compute_engine:
+    runtime: ["Kestrel or IIS"]
+    db: "Cloud SQL for SQL Server (Private IP preferred)"
+    monitoring: "Cloud Monitoring/Logging; set alerts"
+  env_vars_and_secrets_doc: "docs/DEPLOYMENT.md table of keys"
+  rollback_and_release: ["fast rollback", "tag releases", "short zh-TW changelog"]
+
+documentation_deliverables:
+  - "README.md"
+  - "docs/DEPLOYMENT.md"
+  - "docs/MODULES.md"
+  - "docs/DATABASE.md"
+  - "docs/OPERATIONS.md"
+  - "docs/PERF_NOTES.md"
+
+safety_prohibited:
+  - "Any schema source besides database.json"
+  - "Any shell in deliverables (incl. redirection)"
+  - "Batch INSERT > 1000"
+  - "One-shot giant edits"
+  - "Translating identifiers/API paths/SQL names"
+  - "Mixing Public (index.txt) and Admin (SB Admin) assets/styles in the same page/Area"
+  - "Editing vendor libraries"
+  - "In-memory or cache-only fake data"
+
+runbook:
+  steps:
+    - "Re-read mandatory files (含 index.txt)"
+    - "Print single-line START"
+    - "Audit（含：Fake Data 規則 / Admin-Public 分離 / 全專案覆蓋 / drift check）"
+    - "If drift → Repair Mode，修正並記錄後繼續"
+    - "若缺資料夾：只建立最小 Area-local 結構"
+    - "依階段推進：每批 ≤3 檔或 ≤400 行；build/test→commit→列印單行狀態"
+    - "停前更新 WIP/PROGRESS；印單行 STOP；若 ≥1 diff + ≥1 commit → 印一行英文 NEXT_RUN_PROMPT"
+
+micro_prompts:
+  stage0: "Create skeleton, health check, Swagger, Serilog, CI, minimal README. .NET 8. Print start/stop line."
+  stage1: "Map to database.json; read-only repos/queries; demo provider; minimal GETs."
+  stage2: "Cut read-only slices; wallet/forum/leaderboard; MVC/JSON; smoke/integration."
+  stage3: "Writes + Tx + Idempotency; SignIn grants; Pet updates; redemption + audit; E2E."
+  stage4: "Admin CRUD (CouponType/eVoucherType); banned-words; insights; tests."
+  stage5: "RBAC/rate-limit/timeout/retry; unified error; short-TTL cache; tests."
+  stage6: "TESTING_POLICY.md; test templates; parallel; snapshot tests."
+  stage7: "Perf budgets; profiling; docs."
+  stage8: "Final QA & Sign-off"
+  stage8: "Final QA & Sign-off"
+  stage8: "Final QA & Sign-off"
+
+self_audit:
+  checks:
+    - "Language rule zh-TW"
+    - "Mandatory reading present（含 seedMiniGameArea.json、index.txt）"
+    - "Authority: old/new 90% + database.json 10%; MiniGame 展示以 seed 為基準且不違反 schema"
+    - "Visual: Public=index.txt; Admin=SB Admin; 禁止混用"
+    - "Fake Data: 200 rows/table; idempotent; seed 計入; >200 保留並 DEMO-NOTE"
+    - "Whole-project mandate"
+    - "No shell in deliverables"
+    - "CI/CD gates"
+    - "Stage gates + NEXT_RUN_PROMPT rule"

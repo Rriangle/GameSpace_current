@@ -1,0 +1,300 @@
+@{
+    ViewData["Title"] = "首頁";
+    var stats = ViewBag.Stats as dynamic;
+}
+
+<!-- 跑馬燈 -->
+<div class="ticker">
+    <div class="track">
+        <span>🎮 歡迎來到 GameSpace 遊戲論壇平台！</span>
+        <span>🐾 飼養可愛的史萊姆寵物，體驗互動樂趣</span>
+        <span>🎯 每日簽到獲得豐富獎勵</span>
+        <span>🏆 參與小遊戲挑戰，提升寵物等級</span>
+        <span>💬 與其他玩家交流心得</span>
+    </div>
+</div>
+
+<!-- 彩色看板 -->
+<div class="tiles">
+    <div class="grid-tiles">
+        <div class="tile colorful">
+            <div class="name">總用戶數</div>
+            <div class="meta">@stats?.TotalUsers 位玩家</div>
+            <div class="mini">👥</div>
+        </div>
+        <div class="tile colorful">
+            <div class="name">總寵物數</div>
+            <div class="meta">@stats?.TotalPets 隻史萊姆</div>
+            <div class="mini">🐾</div>
+        </div>
+        <div class="tile colorful">
+            <div class="name">小遊戲次數</div>
+            <div class="meta">@stats?.TotalMiniGames 次冒險</div>
+            <div class="mini">🎮</div>
+        </div>
+        <div class="tile colorful">
+            <div class="name">優惠券總數</div>
+            <div class="meta">@stats?.TotalCoupons 張優惠券</div>
+            <div class="mini">🎫</div>
+        </div>
+        <div class="tile colorful">
+            <div class="name">論壇文章</div>
+            <div class="meta">1,234 篇討論</div>
+            <div class="mini">💬</div>
+        </div>
+        <div class="tile colorful">
+            <div class="name">社群活動</div>
+            <div class="meta">56 場活動</div>
+            <div class="mini">🎉</div>
+        </div>
+    </div>
+</div>
+
+<!-- 主要內容區域 -->
+<div class="layout">
+    <div class="left">
+        <!-- 熱門標籤 -->
+        <div class="hot">
+            <div class="head">
+                <span class="kicker">🔥 熱門標籤</span>
+            </div>
+            <div class="scroller">
+                <div class="card">
+                    <div class="name">#史萊姆養成</div>
+                    <div class="meta">1,234 篇文章</div>
+                </div>
+                <div class="card">
+                    <div class="name">#小遊戲攻略</div>
+                    <div class="meta">856 篇文章</div>
+                </div>
+                <div class="card">
+                    <div class="name">#每日簽到</div>
+                    <div class="meta">642 篇文章</div>
+                </div>
+                <div class="card">
+                    <div class="name">#商城購物</div>
+                    <div class="meta">423 篇文章</div>
+                </div>
+                <div class="card">
+                    <div class="name">#社群交流</div>
+                    <div class="meta">789 篇文章</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 置頂文章 -->
+        <div class="panel">
+            <div class="hd">
+                <span class="title">📌 置頂文章</span>
+            </div>
+            <div class="pinned">
+                <div class="row">
+                    <div class="av">G</div>
+                    <div>
+                        <div class="name">歡迎來到 GameSpace 平台！</div>
+                        <div class="meta">
+                            <span>管理員</span>
+                            <span>•</span>
+                            <span>2 天前</span>
+                            <span class="chip">公告</span>
+                        </div>
+                    </div>
+                    <div class="ghost">1.2k</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 最新文章 -->
+        <div class="panel">
+            <div class="hd">
+                <span class="title">📝 最新文章</span>
+                <div class="seg">
+                    <button class="on">全部</button>
+                    <button>熱門</button>
+                    <button>最新</button>
+                </div>
+            </div>
+            <div class="feed">
+                <div class="row">
+                    <div class="av">A</div>
+                    <div>
+                        <div class="name">史萊姆養成心得分享</div>
+                        <div class="meta">
+                            <span>玩家A</span>
+                            <span>•</span>
+                            <span>1 小時前</span>
+                            <span class="chip">#史萊姆養成</span>
+                        </div>
+                    </div>
+                    <div class="ghost">156</div>
+                </div>
+                <div class="row">
+                    <div class="av">B</div>
+                    <div>
+                        <div class="name">小遊戲高分技巧</div>
+                        <div class="meta">
+                            <span>玩家B</span>
+                            <span>•</span>
+                            <span>3 小時前</span>
+                            <span class="chip">#小遊戲攻略</span>
+                        </div>
+                    </div>
+                    <div class="ghost">89</div>
+                </div>
+                <div class="row">
+                    <div class="av">C</div>
+                    <div>
+                        <div class="name">每日簽到獎勵統計</div>
+                        <div class="meta">
+                            <span>玩家C</span>
+                            <span>•</span>
+                            <span>5 小時前</span>
+                            <span class="chip">#每日簽到</span>
+                        </div>
+                    </div>
+                    <div class="ghost">234</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="right">
+        <div class="stack">
+            <!-- 我的史萊姆卡片 -->
+            <div class="gs-right-sticky">
+                <div class="gs-pet-card">
+                    <div class="gs-pet-head">
+                        <div class="gs-pet-title">我的史萊姆</div>
+                        <div class="gs-coins">💰 1,234</div>
+                    </div>
+                    <div class="gs-sub">等級 15 • 經驗 2,456/3,000</div>
+                    <div class="gs-pet-canvas-wrap">
+                        <canvas id="gs-pet-canvas"></canvas>
+                    </div>
+                    <div class="gs-stats">
+                        <div class="gs-stat">
+                            <span>飽食</span>
+                            <div class="gs-bar"><i style="width: 85%"></i></div>
+                            <span>85%</span>
+                        </div>
+                        <div class="gs-stat">
+                            <span>心情</span>
+                            <div class="gs-bar"><i style="width: 92%"></i></div>
+                            <span>92%</span>
+                        </div>
+                        <div class="gs-stat">
+                            <span>體力</span>
+                            <div class="gs-bar warn"><i style="width: 45%"></i></div>
+                            <span>45%</span>
+                        </div>
+                        <div class="gs-stat">
+                            <span>清潔</span>
+                            <div class="gs-bar bad"><i style="width: 23%"></i></div>
+                            <span>23%</span>
+                        </div>
+                    </div>
+                    <div class="gs-actions">
+                        <button>🍎</button>
+                        <button>🎮</button>
+                        <button class="gs-accent">💝</button>
+                        <button>🧼</button>
+                        <button>😴</button>
+                    </div>
+                    <ul class="gs-log">
+                        <li>吃了一個蘋果，飽食度 +10</li>
+                        <li class="warn">體力不足，需要休息</li>
+                        <li>完成小遊戲，獲得 50 經驗</li>
+                        <li class="bad">清潔度過低，需要洗澡</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 排行榜 -->
+            <div class="panel">
+                <div class="hd">
+                    <span class="title">🏆 排行榜</span>
+                    <div class="seg">
+                        <button class="on">等級</button>
+                        <button>積分</button>
+                        <button>簽到</button>
+                    </div>
+                </div>
+                <div class="list">
+                    <div class="rrow top top1">
+                        <div class="rank">1</div>
+                        <div>
+                            <div class="title-2">玩家A</div>
+                            <div class="meta">等級 25</div>
+                        </div>
+                        <div class="delta up">+12</div>
+                    </div>
+                    <div class="rrow top top2">
+                        <div class="rank">2</div>
+                        <div>
+                            <div class="title-2">玩家B</div>
+                            <div class="meta">等級 23</div>
+                        </div>
+                        <div class="delta up">+8</div>
+                    </div>
+                    <div class="rrow top top3">
+                        <div class="rank">3</div>
+                        <div>
+                            <div class="title-2">玩家C</div>
+                            <div class="meta">等級 22</div>
+                        </div>
+                        <div class="delta down">-3</div>
+                    </div>
+                    <div class="rrow">
+                        <div class="rank">4</div>
+                        <div>
+                            <div class="title-2">玩家D</div>
+                            <div class="meta">等級 21</div>
+                        </div>
+                        <div class="delta flat">0</div>
+                    </div>
+                    <div class="rrow">
+                        <div class="rank">5</div>
+                        <div>
+                            <div class="title-2">玩家E</div>
+                            <div class="meta">等級 20</div>
+                        </div>
+                        <div class="delta up">+5</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 人氣作者 -->
+            <div class="panel">
+                <div class="hd">
+                    <span class="title">👑 人氣作者</span>
+                </div>
+                <div class="list">
+                    <div class="rrow">
+                        <div class="rank">1</div>
+                        <div>
+                            <div class="title-2">作者A</div>
+                            <div class="meta">1,234 篇文章</div>
+                        </div>
+                        <div class="delta up">+56</div>
+                    </div>
+                    <div class="rrow">
+                        <div class="rank">2</div>
+                        <div>
+                            <div class="title-2">作者B</div>
+                            <div class="meta">987 篇文章</div>
+                        </div>
+                        <div class="delta up">+23</div>
+                    </div>
+                    <div class="rrow">
+                        <div class="rank">3</div>
+                        <div>
+                            <div class="title-2">作者C</div>
+                            <div class="meta">756 篇文章</div>
+                        </div>
+                        <div class="delta down">-12</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

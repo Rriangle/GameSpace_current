@@ -1,0 +1,193 @@
+@model IEnumerable<GameSpace.Models.EVoucherToken>
+@{
+    ViewData["Title"] = "EVoucherToken 清單";
+    ViewData["BreadcrumbController"] = "錢包系統";
+    ViewData["BreadcrumbAction"] = "Token 清單";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid">
+    <!-- 頁面標題與工具列 -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">EVoucherToken 清單</h1>
+        <div class="d-flex gap-2">
+            <a href="@Url.Action("TokensExportCsv", new { search = ViewBag.Search, revoked = ViewBag.Revoked })" 
+               class="btn btn-outline-primary btn-sm">
+                <i class="fas fa-file-csv me-1"></i>CSV 匯出
+            </a>
+            <a href="@Url.Action("TokensExportJson", new { search = ViewBag.Search, revoked = ViewBag.Revoked })" 
+               class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-file-code me-1"></i>JSON 匯出
+            </a>
+            <a href="@Url.Action("EVouchers")" class="btn btn-outline-info">
+                <i class="fas fa-gift me-1"></i>電子禮券
+            </a>
+            <a href="@Url.Action("Index")" class="btn btn-outline-primary">
+                <i class="fas fa-wallet me-1"></i>錢包管理
+            </a>
+        </div>
+    </div>
+
+    <!-- 圖表區域 -->
+    <div class="row mb-4">
+        <div class="col-12">
+            @{
+                ViewData["ChartTitle"] = "每日到期 Token 數";
+                ViewData["ChartEndpoint"] = Url.Action("TokensDaily", "AdminAnalytics", new { 
+                    from = ViewBag.From?.ToString("yyyy-MM-dd"), 
+                    to = ViewBag.To?.ToString("yyyy-MM-dd") 
+                });
+                ViewData["ChartCanvasId"] = "tokensExpiryChart";
+                ViewData["ChartType"] = "bar";
+                ViewData["ChartYSeries"] = "count";
+                ViewData["ChartHeight"] = "300";
+            }
+            @await Html.PartialAsync("_ChartCard")
+        </div>
+    </div>
+
+    <!-- 搜尋/過濾表單 -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">搜尋與篩選</h6>
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-6">
+                    <label for="search" class="form-label">搜尋條件</label>
+                    <input type="text" class="form-control" id="search" name="search" 
+                           value="@ViewBag.Search" placeholder="搜尋 Token 或 EVoucherCode…">
+                </div>
+                <div class="col-md-3">
+                    <label for="revoked" class="form-label">撤銷狀態</label>
+                    <select class="form-select" id="revoked" name="revoked">
+                        <option value="">全部</option>
+                        <option value="false" @(ViewBag.Revoked == false ? "selected" : "")>未撤銷</option>
+                        <option value="true" @(ViewBag.Revoked == true ? "selected" : "")>已撤銷</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="fas fa-search"></i> 查詢
+                    </button>
+                    <a href="@Url.Action("Tokens")" class="btn btn-outline-secondary">
+                        <i class="fas fa-times"></i> 清除
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Token 列表 -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">
+                Token 列表 
+                <span class="badge bg-info">共 @ViewBag.TotalCount 筆</span>
+            </h6>
+        </div>
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>TokenID</th>
+                                <th>Token</th>
+                                <th>EVoucher</th>
+                                <th>ExpiresAt</th>
+                                <th>IsRevoked</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var token in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-secondary">#@token.TokenID</span>
+                                    </td>
+                                    <td>
+                                        <code class="bg-light p-1 rounded">@token.Token</code>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <span class="badge bg-primary">@token.EVoucher.EVoucherCode</span>
+                                            <small class="text-muted d-block">ID: @token.EVoucherID</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <strong>@token.ExpiresAt.ToString("yyyy-MM-dd HH:mm:ss")</strong>
+                                            @if (token.ExpiresAt < DateTime.UtcNow)
+                                            {
+                                                <span class="badge bg-warning d-block mt-1">已過期</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-success d-block mt-1">有效</span>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        @if (token.IsRevoked)
+                                        {
+                                            <span class="badge bg-danger">已撤銷</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-success">正常</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 分頁導航 -->
+                @if (ViewBag.TotalPages > 1)
+                {
+                    <nav aria-label="分頁導航">
+                        <ul class="pagination justify-content-center">
+                            @if (ViewBag.Page > 1)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="@Url.Action("Tokens", new { page = ViewBag.Page - 1, search = ViewBag.Search, revoked = ViewBag.Revoked })">
+                                        上一頁
+                                    </a>
+                                </li>
+                            }
+                            
+                            @for (int i = Math.Max(1, ViewBag.Page - 2); i <= Math.Min(ViewBag.TotalPages, ViewBag.Page + 2); i++)
+                            {
+                                <li class="page-item @(i == ViewBag.Page ? "active" : "")">
+                                    <a class="page-link" href="@Url.Action("Tokens", new { page = i, search = ViewBag.Search, revoked = ViewBag.Revoked })">
+                                        @i
+                                    </a>
+                                </li>
+                            }
+                            
+                            @if (ViewBag.Page < ViewBag.TotalPages)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="@Url.Action("Tokens", new { page = ViewBag.Page + 1, search = ViewBag.Search, revoked = ViewBag.Revoked })">
+                                        下一頁
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                }
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-key fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">沒有找到 Token 記錄</h5>
+                    <p class="text-muted">請調整搜尋條件或檢查資料庫是否有種子資料</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>

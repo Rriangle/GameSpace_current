@@ -1,0 +1,220 @@
+@{
+    ViewData["Title"] = "調整會員點數";
+    ViewData["BreadcrumbController"] = "錢包系統";
+    ViewData["BreadcrumbAction"] = "調整點數";
+    Layout = "~/Areas/MiniGame/Views/Shared/_AdminLayout.cshtml";
+    var userWallet = ViewBag.UserWallet as GameSpace.Models.UserWallet;
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">調整會員點數</h1>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("Index")" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i>返回錢包列表
+        </a>
+        <a href="@Url.Action("History", new { userId = userWallet.UserID })" class="btn btn-outline-info btn-sm">
+            <i class="fas fa-history me-1"></i>查看歷史
+        </a>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="row">
+    <!-- 會員資訊卡片 -->
+    <div class="col-lg-4 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">會員資訊</h6>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <div class="rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" 
+                         style="width: 80px; height: 80px; background-color: #e9ecef; border: 3px solid #dee2e6;">
+                        <i class="fas fa-user fa-2x text-gray-600"></i>
+                    </div>
+                    <h5 class="text-primary mb-1">@userWallet.User.UserNickName</h5>
+                    <p class="text-muted mb-0">@userWallet.User.UserName</p>
+                </div>
+                
+                <hr>
+                
+                <div class="row text-center">
+                    <div class="col-12">
+                        <h4 class="text-success mb-1">@userWallet.UserPoint.ToString("N0")</h4>
+                        <small class="text-muted">當前點數</small>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="small text-muted">
+                    <div class="d-flex justify-content-between">
+                        <span>會員 ID：</span>
+                        <span>@userWallet.UserID</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>錢包 ID：</span>
+                        <span>@userWallet.WalletID</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 調整點數表單 -->
+    <div class="col-lg-8 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">點數調整</h6>
+            </div>
+            <div class="card-body">
+                <form method="post" asp-action="Adjust" asp-route-userId="@userWallet.UserID">
+                    @Html.AntiForgeryToken()
+                    
+                    <div class="alert alert-warning" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>注意：</strong>此操作將直接影響會員的點數餘額，並記錄到錢包歷史中。請謹慎操作。
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="delta" class="form-label">
+                                <i class="fas fa-plus-minus me-1 text-primary"></i>調整數量
+                            </label>
+                            <input type="number" class="form-control" id="delta" name="delta" 
+                                   placeholder="請輸入調整數量（正數增加，負數扣除）" required>
+                            <div class="form-text">
+                                正數表示增加點數，負數表示扣除點數。不能為 0。
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">調整後預估點數</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-calculator text-info"></i>
+                                </span>
+                                <input type="text" class="form-control" id="estimatedPoints" 
+                                       value="@userWallet.UserPoint" readonly>
+                            </div>
+                            <div class="form-text">
+                                將根據調整數量自動計算
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="reason" class="form-label">
+                            <i class="fas fa-comment me-1 text-primary"></i>調整原因
+                        </label>
+                        <textarea class="form-control" id="reason" name="reason" rows="3" 
+                                  placeholder="請詳細說明調整原因，此資訊將記錄到系統日誌中" required></textarea>
+                        <div class="form-text">
+                            調整原因為必填項目，將作為審計記錄保存
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info" role="alert">
+                        <h6 class="alert-heading">
+                            <i class="fas fa-info-circle me-1"></i>防重機制說明
+                        </h6>
+                        <p class="mb-0">
+                            系統會檢查 60 秒內是否有相同的調整記錄（相同會員、相同調整數量、相同原因），
+                            如有重複將拒絕操作以防止誤操作。
+                        </p>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="button" class="btn btn-outline-secondary" onclick="resetForm()">
+                            <i class="fas fa-undo me-1"></i>重設
+                        </button>
+                        <button type="submit" class="btn btn-primary" onclick="return confirmAdjust()">
+                            <i class="fas fa-save me-1"></i>確認調整
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const currentPoints = @userWallet.UserPoint;
+        
+        // 動態計算調整後點數
+        document.getElementById('delta').addEventListener('input', function() {
+            const delta = parseInt(this.value) || 0;
+            const estimated = currentPoints + delta;
+            const estimatedInput = document.getElementById('estimatedPoints');
+            
+            estimatedInput.value = estimated.toLocaleString();
+            
+            // 根據結果改變顏色
+            if (estimated < 0) {
+                estimatedInput.className = 'form-control text-danger';
+            } else if (delta > 0) {
+                estimatedInput.className = 'form-control text-success';
+            } else if (delta < 0) {
+                estimatedInput.className = 'form-control text-warning';
+            } else {
+                estimatedInput.className = 'form-control';
+            }
+        });
+        
+        // 確認調整
+        function confirmAdjust() {
+            const delta = parseInt(document.getElementById('delta').value) || 0;
+            const reason = document.getElementById('reason').value.trim();
+            
+            if (delta === 0) {
+                alert('調整數量不能為 0');
+                return false;
+            }
+            
+            if (!reason) {
+                alert('請填寫調整原因');
+                return false;
+            }
+            
+            const estimated = currentPoints + delta;
+            if (estimated < 0) {
+                alert('調整後點數不能為負數');
+                return false;
+            }
+            
+            const action = delta > 0 ? '增加' : '扣除';
+            const message = `確定要${action} ${Math.abs(delta)} 點數嗎？\n\n` +
+                          `會員：@userWallet.User.UserNickName\n` +
+                          `當前點數：${currentPoints.toLocaleString()}\n` +
+                          `調整數量：${delta > 0 ? '+' : ''}${delta}\n` +
+                          `調整後：${estimated.toLocaleString()}\n` +
+                          `原因：${reason}`;
+            
+            return confirm(message);
+        }
+        
+        // 重設表單
+        function resetForm() {
+            document.getElementById('delta').value = '';
+            document.getElementById('reason').value = '';
+            document.getElementById('estimatedPoints').value = currentPoints.toLocaleString();
+            document.getElementById('estimatedPoints').className = 'form-control';
+        }
+    </script>
+}

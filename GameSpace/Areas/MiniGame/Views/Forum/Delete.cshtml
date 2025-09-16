@@ -1,0 +1,43 @@
+@model GameSpace.Models.Forum
+@{
+    ViewData["Title"] = "刪除討論";
+}
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">刪除討論</h1>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">確認刪除</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <strong>警告：</strong>您確定要刪除此討論嗎？此操作無法復原。
+                    </div>
+
+                    <h5>@Model.Title</h5>
+                    <p class="text-muted">
+                        作者：@Model.User?.Username | 
+                        發表時間：@Model.CreatedAt.ToString("yyyy/MM/dd HH:mm")
+                    </p>
+                    <p class="text-muted">
+                        瀏覽次數：@Model.ViewCount | 
+                        評論數：@Model.ForumComments?.Count
+                    </p>
+
+                    <div class="mt-4">
+                        <form asp-action="Delete" method="post">
+                            <input asp-for="ForumId" type="hidden" />
+                            <div class="d-flex justify-content-between">
+                                <a asp-action="Details" asp-route-id="@Model.ForumId" class="btn btn-outline-secondary">取消</a>
+                                <button type="submit" class="btn btn-danger">確認刪除</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

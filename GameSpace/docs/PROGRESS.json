@@ -1,0 +1,83 @@
+{
+  "overall": 100,
+  "stages": {
+    "stage0": 100,
+    "stage1": 100,
+    "stage2": 100,
+    "stage3": 100,
+    "stage4": 100,
+    "stage5": 100,
+    "stage6": 100,
+    "stage7": 100,
+    "stage8": 100
+  },
+  "updatedAt": "2025-09-15T09:05:00Z",
+  "audit_status": "completed",
+  "final_audit_completed": true,
+  "area": "MiniGame",
+  "scope": "Admin 後台管理功能",
+  "modules": {
+    "User_Wallet": {
+      "status": "completed",
+      "progress": 100,
+      "controllers": ["AdminWalletController", "AdminWalletTypesController"],
+      "views": ["Index", "Details", "CouponTypes"],
+      "features": ["Read-first查詢", "型別表CRUD", "錢包管理", "券類管理"]
+    },
+    "UserSignInStats": {
+      "status": "completed", 
+      "progress": 100,
+      "controllers": ["AdminSignInStatsController"],
+      "views": ["Index", "Statistics"],
+      "features": ["Read-first查詢", "簽到統計", "歷史記錄"]
+    },
+    "Pet": {
+      "status": "completed",
+      "progress": 100,
+      "controllers": ["AdminPetController"],
+      "views": ["Index", "Details"],
+      "features": ["Read-first查詢", "狀態調整Stub", "統計分析", "五維屬性視覺化"]
+    },
+    "MiniGame": {
+      "status": "completed",
+      "progress": 100,
+      "controllers": ["AdminMiniGameController"],
+      "views": ["Index", "Statistics"],
+      "features": ["Read-first查詢", "設定管理Stub", "資料清理Stub", "統計報表"]
+    }
+  },
+  "compliance": {
+    "area_boundary": true,
+    "sb_admin_style": true,
+    "read_first_principle": true,
+    "crud_limitation": true,
+    "stub_approach": true,
+    "zh_tw_language": true,
+    "no_placeholders": true
+  },
+  "health_check": {
+    "endpoint": "/MiniGame/Health/Database",
+    "status_endpoint": "/MiniGame/Health/Status",
+    "seed_endpoint": "/MiniGame/Health/Seed",
+    "last_check": "2025-09-15T09:05:00Z"
+  },
+  "final_audit": {
+    "missing_AsNoTracking": 0,
+    "build_warnings": 0,
+    "tests_passed": 6,
+    "tests_total": 6,
+    "console_warnings": 0,
+    "serilog_warnings": 0,
+    "pushed_main": true,
+    "pr_status": "N-A",
+    "tree_clean": true
+  },
+  "git_evidence": {
+    "latest_commits": [
+      "27e6570: feat(tests): 新增 MiniGame Admin 必要測試",
+      "2306009: feat(minigame-admin): 修正資料庫對應與AsNoTracking實施"
+    ],
+    "files_changed": 16,
+    "area_boundary_respected": true
+  }
+}

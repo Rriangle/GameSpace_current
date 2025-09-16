@@ -1,0 +1,515 @@
+@{
+    ViewData["Title"] = "會員資產管理";
+    ViewData["BreadcrumbController"] = "錢包系統";
+    ViewData["BreadcrumbAction"] = "會員資產";
+    Layout = "~/Areas/MiniGame/Views/Shared/_AdminLayout.cshtml";
+    
+    var user = ViewBag.User as GameSpace.Models.User;
+    var userWallet = ViewBag.UserWallet as GameSpace.Models.UserWallet;
+    var ownedCoupons = ViewBag.OwnedCoupons as List<GameSpace.Models.Coupon>;
+    var ownedEVouchers = ViewBag.OwnedEVouchers as List<GameSpace.Models.EVoucher>;
+    var ownedTokens = ViewBag.OwnedTokens as List<GameSpace.Models.EVoucherToken>;
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">會員資產管理</h1>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("Index")" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i>返回錢包列表
+        </a>
+        <a href="@Url.Action("Adjust", new { userId = user.User_ID })" class="btn btn-outline-primary btn-sm">
+            <i class="fas fa-edit me-1"></i>調整點數
+        </a>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- 會員資訊卡片 -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            會員資訊
+                        </div>
+                        <div class="h6 mb-0 font-weight-bold text-gray-800">
+                            @user.UserNickName
+                        </div>
+                        <div class="text-muted small">@user.UserName (ID: @user.User_ID)</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-user fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            當前點數
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            @(userWallet?.UserPoint.ToString("N0") ?? "0")
+                        </div>
+                        <div class="text-muted small">錢包餘額</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-coins fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            未使用優惠券
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            @ViewBag.CouponsUnusedCount 張
+                        </div>
+                        <div class="text-muted small">總數 @ownedCoupons.Count 張</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-ticket-alt fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            有效電子禮券
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            @ViewBag.EVouchersUnusedCount 張
+                        </div>
+                        <div class="text-muted small">有效 Token @ViewBag.TokensValidCount 個</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-gift fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 日期範圍工具列 -->
+@await Html.PartialAsync("_DateRangeToolbar")
+
+<!-- 發放/撤銷操作區 -->
+<div class="row mb-4">
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-success">發放資產</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <button type="button" class="btn btn-success btn-sm w-100 mb-2" 
+                                data-bs-toggle="modal" data-bs-target="#grantCouponModal">
+                            <i class="fas fa-plus me-1"></i>發放優惠券
+                        </button>
+                    </div>
+                    <div class="col-md-6">
+                        <button type="button" class="btn btn-info btn-sm w-100 mb-2" 
+                                data-bs-toggle="modal" data-bs-target="#grantEVoucherModal">
+                            <i class="fas fa-plus me-1"></i>發放電子禮券
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">匯出功能</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <a href="@Url.Action("CouponsExportCsv", new { 
+                            userId = user.User_ID,
+                            from = ViewBag.From?.ToString("yyyy-MM-dd"),
+                            to = ViewBag.To?.ToString("yyyy-MM-dd")
+                        })" class="btn btn-outline-primary btn-sm w-100 mb-2">
+                            <i class="fas fa-file-csv me-1"></i>優惠券 CSV
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="@Url.Action("EVouchersExportJson", new { 
+                            userId = user.User_ID,
+                            from = ViewBag.From?.ToString("yyyy-MM-dd"),
+                            to = ViewBag.To?.ToString("yyyy-MM-dd")
+                        })" class="btn btn-outline-secondary btn-sm w-100 mb-2">
+                            <i class="fas fa-file-code me-1"></i>電子禮券 JSON
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 優惠券列表 -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">擁有的優惠券</h6>
+    </div>
+    <div class="card-body">
+        @if (ownedCoupons?.Any() == true)
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>優惠券代碼</th>
+                            <th>類型</th>
+                            <th>狀態</th>
+                            <th>發放時間</th>
+                            <th>使用時間</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var coupon in ownedCoupons)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="badge bg-secondary">@coupon.CouponID</span>
+                                </td>
+                                <td>
+                                    <code>@coupon.CouponCode</code>
+                                </td>
+                                <td>@coupon.CouponType?.TypeName</td>
+                                <td>
+                                    @if (coupon.IsUsed)
+                                    {
+                                        <span class="badge bg-success">已使用</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark">未使用</span>
+                                    }
+                                </td>
+                                <td>@coupon.AcquiredTime.ToString("yyyy-MM-dd HH:mm")</td>
+                                <td>
+                                    @if (coupon.UsedTime.HasValue)
+                                    {
+                                        @coupon.UsedTime.Value.ToString("yyyy-MM-dd HH:mm")
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!coupon.IsUsed)
+                                    {
+                                        <button type="button" class="btn btn-danger btn-sm" 
+                                                onclick="revokeCoupon(@coupon.CouponID, '@coupon.CouponCode')">
+                                            <i class="fas fa-trash me-1"></i>撤銷
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">已使用</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-4">
+                <i class="fas fa-ticket-alt fa-3x text-muted mb-3"></i>
+                <h6 class="text-muted">該會員在此期間內沒有優惠券</h6>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- 電子禮券列表 -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-info">擁有的電子禮券</h6>
+    </div>
+    <div class="card-body">
+        @if (ownedEVouchers?.Any() == true)
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>禮券代碼</th>
+                            <th>類型</th>
+                            <th>狀態</th>
+                            <th>發放時間</th>
+                            <th>使用時間</th>
+                            <th>Token 狀態</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var evoucher in ownedEVouchers)
+                        {
+                            var relatedTokens = ownedTokens?.Where(t => t.EVoucherID == evoucher.EVoucherID).ToList() ?? new List<GameSpace.Models.EVoucherToken>();
+                            <tr>
+                                <td>
+                                    <span class="badge bg-secondary">@evoucher.EVoucherID</span>
+                                </td>
+                                <td>
+                                    <code>@evoucher.EVoucherCode</code>
+                                </td>
+                                <td>@evoucher.EVoucherType?.TypeName</td>
+                                <td>
+                                    @if (evoucher.IsUsed)
+                                    {
+                                        <span class="badge bg-success">已使用</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark">未使用</span>
+                                    }
+                                </td>
+                                <td>@evoucher.AcquiredTime.ToString("yyyy-MM-dd HH:mm")</td>
+                                <td>
+                                    @if (evoucher.UsedTime.HasValue)
+                                    {
+                                        @evoucher.UsedTime.Value.ToString("yyyy-MM-dd HH:mm")
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (relatedTokens.Any())
+                                    {
+                                        var validTokens = relatedTokens.Count(t => !t.IsRevoked && t.ExpiresAt > DateTime.UtcNow);
+                                        <span class="badge @(validTokens > 0 ? "bg-success" : "bg-secondary")">
+                                            @validTokens/@relatedTokens.Count
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">無 Token</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!evoucher.IsUsed)
+                                    {
+                                        <button type="button" class="btn btn-danger btn-sm" 
+                                                onclick="revokeEVoucher(@evoucher.EVoucherID, '@evoucher.EVoucherCode')">
+                                            <i class="fas fa-trash me-1"></i>撤銷
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">已使用</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-4">
+                <i class="fas fa-gift fa-3x text-muted mb-3"></i>
+                <h6 class="text-muted">該會員在此期間內沒有電子禮券</h6>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- 發放優惠券 Modal -->
+<div class="modal fade" id="grantCouponModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-action="GrantCoupon">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="userId" value="@user.User_ID">
+                
+                <div class="modal-header">
+                    <h5 class="modal-title">發放優惠券</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="couponTypeId" class="form-label">優惠券類型</label>
+                        <select class="form-select" id="couponTypeId" name="couponTypeId" required>
+                            <option value="">請選擇類型</option>
+                            <!-- 這裡需要載入 CouponTypes，暫時預留 -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="couponCount" class="form-label">發放數量</label>
+                        <input type="number" class="form-control" id="couponCount" name="count" 
+                               min="1" max="100" value="1" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="couponReason" class="form-label">發放原因</label>
+                        <textarea class="form-control" id="couponReason" name="reason" rows="3" 
+                                  placeholder="請說明發放原因" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-success">確認發放</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 發放電子禮券 Modal -->
+<div class="modal fade" id="grantEVoucherModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-action="GrantEVoucher">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="userId" value="@user.User_ID">
+                
+                <div class="modal-header">
+                    <h5 class="modal-title">發放電子禮券</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="eVoucherTypeId" class="form-label">電子禮券類型</label>
+                        <select class="form-select" id="eVoucherTypeId" name="eVoucherTypeId" required>
+                            <option value="">請選擇類型</option>
+                            <!-- 這裡需要載入 EVoucherTypes，暫時預留 -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="eVoucherCount" class="form-label">發放數量</label>
+                        <input type="number" class="form-control" id="eVoucherCount" name="count" 
+                               min="1" max="100" value="1" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="eVoucherReason" class="form-label">發放原因</label>
+                        <textarea class="form-control" id="eVoucherReason" name="reason" rows="3" 
+                                  placeholder="請說明發放原因" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-info">確認發放</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 撤銷確認 Modal -->
+<div class="modal fade" id="revokeModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" id="revokeForm">
+                @Html.AntiForgeryToken()
+                
+                <div class="modal-header">
+                    <h5 class="modal-title text-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>撤銷確認
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <strong>注意：</strong>此操作無法復原，請謹慎操作！
+                    </div>
+                    
+                    <div id="revokeInfo" class="mb-3"></div>
+                    
+                    <div class="mb-3">
+                        <label for="revokeReason" class="form-label">撤銷原因</label>
+                        <textarea class="form-control" id="revokeReason" name="reason" rows="3" 
+                                  placeholder="請詳細說明撤銷原因" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-danger">確認撤銷</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function revokeCoupon(couponId, couponCode) {
+            document.getElementById('revokeForm').action = '@Url.Action("RevokeCoupon")';
+            document.getElementById('revokeForm').innerHTML += 
+                `<input type="hidden" name="couponId" value="${couponId}">`;
+            
+            document.getElementById('revokeInfo').innerHTML = 
+                `<strong>優惠券資訊：</strong><br>` +
+                `ID: ${couponId}<br>` +
+                `代碼: ${couponCode}<br>` +
+                `會員: @user.UserNickName`;
+            
+            document.getElementById('revokeReason').value = '';
+            new bootstrap.Modal(document.getElementById('revokeModal')).show();
+        }
+
+        function revokeEVoucher(eVoucherId, eVoucherCode) {
+            document.getElementById('revokeForm').action = '@Url.Action("RevokeEVoucher")';
+            document.getElementById('revokeForm').innerHTML += 
+                `<input type="hidden" name="eVoucherId" value="${eVoucherId}">`;
+            
+            document.getElementById('revokeInfo').innerHTML = 
+                `<strong>電子禮券資訊：</strong><br>` +
+                `ID: ${eVoucherId}<br>` +
+                `代碼: ${eVoucherCode}<br>` +
+                `會員: @user.UserNickName`;
+            
+            document.getElementById('revokeReason').value = '';
+            new bootstrap.Modal(document.getElementById('revokeModal')).show();
+        }
+    </script>
+}

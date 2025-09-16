@@ -1,0 +1,132 @@
+@{
+    // 從查詢字串取得當前的 from/to 值
+    var currentFrom = ViewContext.HttpContext.Request.Query["from"].ToString();
+    var currentTo = ViewContext.HttpContext.Request.Query["to"].ToString();
+    
+    // 計算預設日期範圍 (使用 Asia/Taipei 時區)
+    var taipeiTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Taipei");
+    var today = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, taipeiTimeZone).Date;
+    var preset7Days = new { from = today.AddDays(-7).ToString("yyyy-MM-dd"), to = today.ToString("yyyy-MM-dd") };
+    var preset14Days = new { from = today.AddDays(-14).ToString("yyyy-MM-dd"), to = today.ToString("yyyy-MM-dd") };
+    var preset30Days = new { from = today.AddDays(-30).ToString("yyyy-MM-dd"), to = today.ToString("yyyy-MM-dd") };
+}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">
+            <i class="fas fa-calendar-alt me-2"></i>日期範圍篩選
+        </h6>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3 align-items-end">
+            <!-- 保留所有其他查詢參數 -->
+            @foreach (var param in ViewContext.HttpContext.Request.Query)
+            {
+                if (param.Key != "from" && param.Key != "to")
+                {
+                    foreach (var value in param.Value)
+                    {
+                        <input type="hidden" name="@param.Key" value="@value" />
+                    }
+                }
+            }
+
+            <!-- 日期範圍輸入 -->
+            <div class="col-md-3">
+                <label for="dateFrom" class="form-label">開始日期</label>
+                <input type="date" class="form-control" id="dateFrom" name="from" 
+                       value="@currentFrom" placeholder="選擇開始日期">
+            </div>
+            
+            <div class="col-md-3">
+                <label for="dateTo" class="form-label">結束日期</label>
+                <input type="date" class="form-control" id="dateTo" name="to" 
+                       value="@currentTo" placeholder="選擇結束日期">
+            </div>
+
+            <!-- 快速預設按鈕 -->
+            <div class="col-md-6">
+                <label class="form-label">快速選擇</label>
+                <div class="btn-group w-100" role="group">
+                    <button type="button" class="btn btn-outline-primary btn-sm" 
+                            onclick="setDateRange('@preset7Days.from', '@preset7Days.to')">
+                        <i class="fas fa-calendar-week me-1"></i>近 7 天
+                    </button>
+                    <button type="button" class="btn btn-outline-info btn-sm" 
+                            onclick="setDateRange('@preset14Days.from', '@preset14Days.to')">
+                        <i class="fas fa-calendar-alt me-1"></i>近 14 天
+                    </button>
+                    <button type="button" class="btn btn-outline-success btn-sm" 
+                            onclick="setDateRange('@preset30Days.from', '@preset30Days.to')">
+                        <i class="fas fa-calendar me-1"></i>近 30 天
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <!-- 操作按鈕列 -->
+        <div class="row mt-3">
+            <div class="col-12">
+                <div class="d-flex gap-2 justify-content-end">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="clearDateRange()">
+                        <i class="fas fa-times me-1"></i>清除篩選
+                    </button>
+                    <button type="submit" form="dateRangeForm" class="btn btn-primary btn-sm">
+                        <i class="fas fa-search me-1"></i>套用篩選
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 設定表單 ID 以便提交按鈕使用
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form[method="get"]');
+        if (form) {
+            form.id = 'dateRangeForm';
+        }
+    });
+
+    // 設定日期範圍預設值
+    function setDateRange(fromDate, toDate) {
+        document.getElementById('dateFrom').value = fromDate;
+        document.getElementById('dateTo').value = toDate;
+        
+        // 自動提交表單
+        document.getElementById('dateRangeForm').submit();
+    }
+
+    // 清除日期範圍
+    function clearDateRange() {
+        document.getElementById('dateFrom').value = '';
+        document.getElementById('dateTo').value = '';
+        
+        // 自動提交表單
+        document.getElementById('dateRangeForm').submit();
+    }
+
+    // 日期驗證
+    document.getElementById('dateFrom').addEventListener('change', function() {
+        const fromDate = new Date(this.value);
+        const toInput = document.getElementById('dateTo');
+        const toDate = new Date(toInput.value);
+        
+        if (toInput.value && fromDate > toDate) {
+            alert('開始日期不能晚於結束日期');
+            this.value = '';
+        }
+    });
+
+    document.getElementById('dateTo').addEventListener('change', function() {
+        const toDate = new Date(this.value);
+        const fromInput = document.getElementById('dateFrom');
+        const fromDate = new Date(fromInput.value);
+        
+        if (fromInput.value && toDate < fromDate) {
+            alert('結束日期不能早於開始日期');
+            this.value = '';
+        }
+    });
+</script>

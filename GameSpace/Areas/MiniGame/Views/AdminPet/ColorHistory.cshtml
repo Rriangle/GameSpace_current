@@ -1,0 +1,186 @@
+@{
+    ViewData["Title"] = "寵物顏色變更歷史";
+    ViewData["BreadcrumbController"] = "寵物系統";
+    ViewData["BreadcrumbAction"] = "顏色歷史";
+    Layout = "~/Areas/MiniGame/Views/Shared/_AdminLayout.cshtml";
+    
+    var user = ViewBag.User as GameSpace.Models.User;
+    var userPet = ViewBag.UserPet as GameSpace.Models.Pet;
+    var colorHistory = ViewBag.ColorHistory as List<GameSpace.Models.WalletHistory>;
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">寵物顏色變更歷史</h1>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("Index")" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i>返回寵物列表
+        </a>
+        @if (userPet != null)
+        {
+            <a href="@Url.Action("Details", new { id = userPet.PetID })" class="btn btn-outline-info btn-sm">
+                <i class="fas fa-eye me-1"></i>查看寵物
+            </a>
+        }
+    </div>
+</div>
+
+<!-- 會員和寵物資訊 -->
+<div class="row mb-4">
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">會員資訊</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="rounded-circle me-3 d-flex align-items-center justify-content-center" 
+                         style="width: 60px; height: 60px; background-color: #e9ecef;">
+                        <i class="fas fa-user fa-2x text-gray-600"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-1">@user.UserNickName</h5>
+                        <p class="text-muted mb-0">@user.UserName (ID: @user.User_ID)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (userPet != null)
+    {
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-success">當前寵物</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="rounded-circle me-3" 
+                             style="width: 60px; height: 60px; background-color: @userPet.SkinColor; border: 3px solid @userPet.BackgroundColor;">
+                        </div>
+                        <div>
+                            <h5 class="mb-1">@userPet.PetName</h5>
+                            <p class="text-muted mb-0">Lv.@userPet.Level (健康值: @userPet.Health)</p>
+                            <div class="mt-1">
+                                <small class="me-2">皮膚：<code>@userPet.SkinColor</code></small>
+                                <small>背景：<code>@userPet.BackgroundColor</code></small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-body text-center py-4">
+                    <i class="fas fa-paw fa-2x text-muted mb-2"></i>
+                    <h6 class="text-muted">該會員尚未擁有寵物</h6>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- 顏色變更歷史 -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">顏色變更歷史記錄</h6>
+    </div>
+    <div class="card-body">
+        @if (colorHistory?.Any() == true)
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>變更時間</th>
+                            <th>變更類型</th>
+                            <th>點數變化</th>
+                            <th>項目代碼</th>
+                            <th>說明</th>
+                            <th>狀態</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var history in colorHistory)
+                        {
+                            <tr>
+                                <td>@history.ChangeTime.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                                <td>
+                                    @if (history.ChangeType == "ADMIN")
+                                    {
+                                        <span class="badge bg-warning text-dark">管理員操作</span>
+                                    }
+                                    else if (history.ChangeType == "PET_COLOR")
+                                    {
+                                        <span class="badge bg-info">顏色變更</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">@history.ChangeType</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (history.PointsChanged > 0)
+                                    {
+                                        <span class="text-success">+@history.PointsChanged</span>
+                                    }
+                                    else if (history.PointsChanged < 0)
+                                    {
+                                        <span class="text-danger">@history.PointsChanged</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">0</span>
+                                    }
+                                </td>
+                                <td>
+                                    <code class="small">@history.ItemCode</code>
+                                </td>
+                                <td>
+                                    <span class="text-truncate" style="max-width: 200px;" title="@history.Description">
+                                        @history.Description
+                                    </span>
+                                </td>
+                                <td>
+                                    @if (history.ItemCode == "PetColorChange")
+                                    {
+                                        <span class="badge bg-primary">皮膚變更</span>
+                                    }
+                                    else if (history.ItemCode == "PetBgColorChange")
+                                    {
+                                        <span class="badge bg-success">背景變更</span>
+                                    }
+                                    else if (history.ItemCode == "WalletAdjust")
+                                    {
+                                        <span class="badge bg-warning text-dark">點數調整</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">其他</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="alert alert-info mt-3" role="alert">
+                <i class="fas fa-info-circle me-1"></i>
+                顯示最近 50 筆與寵物顏色變更相關的記錄，包含點數調整和顏色變更操作。
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-history fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">暫無顏色變更記錄</h5>
+                <p class="text-muted mb-0">該會員尚未進行過寵物顏色變更或相關點數操作</p>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,351 @@
+@{
+    ViewData["Title"] = "總收支明細";
+    ViewData["BreadcrumbController"] = "錢包系統";
+    ViewData["BreadcrumbAction"] = "總收支明細";
+    Layout = "~/Areas/MiniGame/Views/Shared/_AdminLayout.cshtml";
+    
+    var records = ViewBag.Records as List<dynamic>;
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">總收支明細</h1>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("Index")" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i>返回錢包列表
+        </a>
+        @{
+            ViewData["ExportCsvAction"] = "CombinedLedgerExportCsv";
+            ViewData["ExportJsonAction"] = "CombinedLedgerExportJson";
+            ViewData["ExportParams"] = new { 
+                type = ViewBag.Type,
+                userId = ViewBag.UserId,
+                from = ViewBag.From?.ToString("yyyy-MM-dd"),
+                to = ViewBag.To?.ToString("yyyy-MM-dd")
+            };
+        }
+        @await Html.PartialAsync("_ExportButtons")
+    </div>
+</div>
+
+<!-- 統計卡片 -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            點數流入
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            +@ViewBag.TotalInflow.ToString("N0")
+                        </div>
+                        <div class="text-muted small">收入總計</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-arrow-up fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-danger shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                            點數流出
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            -@ViewBag.TotalOutflow.ToString("N0")
+                        </div>
+                        <div class="text-muted small">支出總計</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-arrow-down fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            優惠券發放
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            @ViewBag.CouponCount 張
+                        </div>
+                        <div class="text-muted small">期間內發放</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-ticket-alt fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            電子禮券發放
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            @ViewBag.EVoucherCount 張
+                        </div>
+                        <div class="text-muted small">期間內發放</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-gift fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 圖表區域 -->
+<div class="row mb-4">
+    <div class="col-xl-6 col-lg-12 mb-4">
+        @{
+            ViewData["ChartTitle"] = "每日點數流入/流出";
+            ViewData["ChartEndpoint"] = Url.Action("WalletHistoryDaily", "AdminAnalytics", new { 
+                from = ViewBag.From?.ToString("yyyy-MM-dd"), 
+                to = ViewBag.To?.ToString("yyyy-MM-dd") 
+            });
+            ViewData["ChartCanvasId"] = "walletFlowChart";
+            ViewData["ChartType"] = "mixed";
+            ViewData["ChartYSeries"] = "count,pointsSum";
+            ViewData["ChartHeight"] = "250";
+        }
+        @await Html.PartialAsync("_ChartCard")
+    </div>
+    <div class="col-xl-6 col-lg-12 mb-4">
+        @{
+            ViewData["ChartTitle"] = "資產發放統計";
+            ViewData["ChartEndpoint"] = Url.Action("CouponsDaily", "AdminAnalytics", new { 
+                from = ViewBag.From?.ToString("yyyy-MM-dd"), 
+                to = ViewBag.To?.ToString("yyyy-MM-dd") 
+            });
+            ViewData["ChartCanvasId"] = "assetDistributionChart";
+            ViewData["ChartType"] = "bar";
+            ViewData["ChartYSeries"] = "count";
+            ViewData["ChartHeight"] = "250";
+        }
+        @await Html.PartialAsync("_ChartCard")
+    </div>
+</div>
+
+<!-- 日期範圍工具列 -->
+@await Html.PartialAsync("_DateRangeToolbar")
+
+<!-- 篩選表單 -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">篩選條件</h6>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <!-- 保留日期參數 -->
+            @if (ViewBag.From != null)
+            {
+                <input type="hidden" name="from" value="@ViewBag.From.Value.ToString("yyyy-MM-dd")">
+            }
+            @if (ViewBag.To != null)
+            {
+                <input type="hidden" name="to" value="@ViewBag.To.Value.ToString("yyyy-MM-dd")">
+            }
+
+            <div class="col-md-4">
+                <label for="type" class="form-label">資產類型</label>
+                <select class="form-select" id="type" name="type">
+                    <option value="">全部類型</option>
+                    <option value="Points" @(ViewBag.Type == "Points" ? "selected" : "")>點數異動</option>
+                    <option value="Coupon" @(ViewBag.Type == "Coupon" ? "selected" : "")>優惠券</option>
+                    <option value="EVoucher" @(ViewBag.Type == "EVoucher" ? "selected" : "")>電子禮券</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label for="userId" class="form-label">會員ID</label>
+                <input type="number" class="form-control" id="userId" name="userId" 
+                       value="@ViewBag.UserId" placeholder="篩選特定會員">
+            </div>
+
+            <div class="col-md-4 d-flex align-items-end">
+                <div class="btn-group w-100">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search me-1"></i>套用篩選
+                    </button>
+                    <a href="@Url.Action("CombinedLedger")" class="btn btn-outline-secondary">
+                        <i class="fas fa-times me-1"></i>清除
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 總收支明細表格 -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">
+            總收支明細 
+            <span class="text-muted">(@ViewBag.From.Value.ToString("yyyy-MM-dd") ~ @ViewBag.To.Value.ToString("yyyy-MM-dd"))</span>
+        </h6>
+    </div>
+    <div class="card-body">
+        @if (records?.Any() == true)
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>時間</th>
+                            <th>類型</th>
+                            <th>會員</th>
+                            <th>描述</th>
+                            <th>金額/數量</th>
+                            <th>項目代碼</th>
+                            <th>異動類型</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (dynamic record in records)
+                        {
+                            <tr>
+                                <td>@record.DateTime.ToString("yyyy-MM-dd HH:mm")</td>
+                                <td>
+                                    <span class="badge @record.BadgeClass">
+                                        <i class="@record.IconClass me-1"></i>@record.TypeDisplay
+                                    </span>
+                                </td>
+                                <td>
+                                    <div>
+                                        <strong>@record.UserName</strong>
+                                        <small class="text-muted d-block">ID: @record.UserID</small>
+                                    </div>
+                                </td>
+                                <td>@record.Description</td>
+                                <td>
+                                    @if (record.Type == "Points")
+                                    {
+                                        if (record.Amount > 0)
+                                        {
+                                            <span class="text-success fw-bold">+@record.Amount</span>
+                                        }
+                                        else if (record.Amount < 0)
+                                        {
+                                            <span class="text-danger fw-bold">@record.Amount</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">0</span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="text-info">+1 張</span>
+                                    }
+                                </td>
+                                <td>
+                                    <code class="small">@record.ItemCode</code>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">@record.ChangeType</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 分頁 -->
+            @if (ViewBag.TotalPages > 1)
+            {
+                <nav aria-label="分頁導航">
+                    <ul class="pagination justify-content-center">
+                        @if (ViewBag.Page > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("CombinedLedger", new { 
+                                    page = ViewBag.Page - 1, 
+                                    pageSize = ViewBag.PageSize,
+                                    type = ViewBag.Type,
+                                    userId = ViewBag.UserId,
+                                    from = ViewBag.From?.ToString("yyyy-MM-dd"),
+                                    to = ViewBag.To?.ToString("yyyy-MM-dd")
+                                })">上一頁</a>
+                            </li>
+                        }
+
+                        @for (int i = Math.Max(1, ViewBag.Page - 2); i <= Math.Min(ViewBag.TotalPages, ViewBag.Page + 2); i++)
+                        {
+                            <li class="page-item @(i == ViewBag.Page ? "active" : "")">
+                                <a class="page-link" href="@Url.Action("CombinedLedger", new { 
+                                    page = i, 
+                                    pageSize = ViewBag.PageSize,
+                                    type = ViewBag.Type,
+                                    userId = ViewBag.UserId,
+                                    from = ViewBag.From?.ToString("yyyy-MM-dd"),
+                                    to = ViewBag.To?.ToString("yyyy-MM-dd")
+                                })">@i</a>
+                            </li>
+                        }
+
+                        @if (ViewBag.Page < ViewBag.TotalPages)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("CombinedLedger", new { 
+                                    page = ViewBag.Page + 1, 
+                                    pageSize = ViewBag.PageSize,
+                                    type = ViewBag.Type,
+                                    userId = ViewBag.UserId,
+                                    from = ViewBag.From?.ToString("yyyy-MM-dd"),
+                                    to = ViewBag.To?.ToString("yyyy-MM-dd")
+                                })">下一頁</a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            }
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">暫無收支記錄</h5>
+                <p class="text-muted mb-0">在選定的時間範圍內沒有找到任何收支記錄</p>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/minigame-charts.js"></script>
+    <script>
+        // 頁面載入完成後初始化圖表
+        document.addEventListener('DOMContentLoaded', function() {
+            // 如果有統計資料，可以建立額外的分佈圖表
+            const inflowData = @ViewBag.TotalInflow;
+            const outflowData = @ViewBag.TotalOutflow;
+            const couponData = @ViewBag.CouponCount;
+            const evoucherData = @ViewBag.EVoucherCount;
+            
+            if (inflowData > 0 || outflowData > 0 || couponData > 0 || evoucherData > 0) {
+                // 可以在此處新增額外的統計圖表
+                console.log('總收支統計載入完成');
+            }
+        });
+    </script>
+}

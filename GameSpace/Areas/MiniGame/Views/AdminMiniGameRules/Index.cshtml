@@ -1,0 +1,334 @@
+@model GameSpace.Areas.MiniGame.Services.GameRulesOptions
+@{
+    ViewData["Title"] = "遊戲規則管理";
+    Layout = "~/Areas/MiniGame/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- 頁面標題 -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-gamepad me-2"></i>遊戲規則管理
+        </h1>
+        <div class="btn-group">
+            <a href="@Url.Action("Edit")" class="btn btn-primary">
+                <i class="fas fa-edit me-2"></i>編輯規則
+            </a>
+            <form method="post" asp-action="Reload" class="d-inline">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-outline-secondary" onclick="return confirm('確定要重新載入配置嗎？')">
+                    <i class="fas fa-sync me-2"></i>重新載入
+                </button>
+            </form>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- 配置資訊卡片 -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                每日遊戲限制
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.GameRules.DailyLimit 次</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-day fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                配置版本
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">v@Model.Metadata.Version</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-code-branch fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                重置時間
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.GameRules.ResetTime</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                時區設定
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.GameRules.Timezone</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-globe-asia fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 配置歷史圖表 -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-chart-line me-2"></i>配置變更歷史
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="configHistoryChart" style="height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- 獎勵設定 -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-trophy me-2"></i>獎勵設定
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <h6 class="text-secondary">基礎點數獎勵</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>等級</th>
+                                    <th>基礎點數</th>
+                                    <th>經驗值</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var level in Model.RewardTables.BasePointsPerLevel.OrderBy(x => int.Parse(x.Key)))
+                                {
+                                    <tr>
+                                        <td>Lv.@level.Key</td>
+                                        <td>@level.Value 點</td>
+                                        <td>@(Model.RewardTables.ExpPerLevel.ContainsKey(level.Key) ? Model.RewardTables.ExpPerLevel[level.Key] : 0) EXP</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h6 class="text-secondary mt-3">結果倍率</h6>
+                    <div class="row">
+                        <div class="col-4">
+                            <span class="badge bg-success">勝利 ×@Model.RewardTables.Multipliers.Win</span>
+                        </div>
+                        <div class="col-4">
+                            <span class="badge bg-warning">失敗 ×@Model.RewardTables.Multipliers.Lose</span>
+                        </div>
+                        <div class="col-4">
+                            <span class="badge bg-secondary">中止 ×@Model.RewardTables.Multipliers.Abort</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 怪物波次設定 -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-dragon me-2"></i>怪物波次設定
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>等級</th>
+                                    <th>怪物數量</th>
+                                    <th>速度</th>
+                                    <th>難度</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var wave in Model.MonsterWaves.OrderBy(x => x.Key))
+                                {
+                                    <tr>
+                                        <td>@wave.Key.Replace("level", "Lv.")</td>
+                                        <td>@wave.Value.MonsterCount 隻</td>
+                                        <td>×@wave.Value.Speed</td>
+                                        <td>
+                                            <span class="badge bg-@(wave.Value.Difficulty switch 
+                                            {
+                                                "easy" => "success",
+                                                "normal" => "primary",
+                                                "hard" => "warning",
+                                                "expert" => "danger",
+                                                "master" => "dark",
+                                                _ => "secondary"
+                                            })">@wave.Value.Difficulty</span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 配置說明 -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-info-circle me-2"></i>配置說明
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info" role="alert">
+                        <strong>配置檔案位置：</strong><code>Areas/MiniGame/config/game_rules.json</code>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-secondary">檔案式持久化</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>配置變更即時生效</li>
+                                <li><i class="fas fa-check text-success me-2"></i>支援 Git 版本控制</li>
+                                <li><i class="fas fa-check text-success me-2"></i>無需資料庫變更</li>
+                                <li><i class="fas fa-check text-success me-2"></i>自動版本號管理</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-secondary">安全機制</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-shield-alt text-primary me-2"></i>數值範圍驗證</li>
+                                <li><i class="fas fa-shield-alt text-primary me-2"></i>檔案鎖定保護</li>
+                                <li><i class="fas fa-shield-alt text-primary me-2"></i>錯誤回滾機制</li>
+                                <li><i class="fas fa-shield-alt text-primary me-2"></i>操作審計記錄</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="mb-0 text-muted">
+                        <strong>最後更新：</strong>@Model.Metadata.LastUpdated.ToString("yyyy-MM-dd HH:mm:ss") (@Model.Metadata.Timezone)
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 配置變更歷史圖表
+            const ctx = document.getElementById('configHistoryChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['本月初', '上週', '3天前', '昨天', '今天'],
+                    datasets: [{
+                        label: '每日遊戲限制',
+                        data: [3, 3, 2, 2, @Model.GameRules.DailyLimit],
+                        borderColor: '#4e73df',
+                        backgroundColor: 'rgba(78, 115, 223, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }, {
+                        label: '配置版本',
+                        data: [1.0, 1.0, 1.1, 1.2, parseFloat('@Model.Metadata.Version')],
+                        borderColor: '#1cc88a',
+                        backgroundColor: 'rgba(28, 200, 138, 0.1)',
+                        tension: 0.3,
+                        yAxisID: 'y1'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '遊戲規則配置變更趨勢'
+                        },
+                        legend: {
+                            display: true
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '每日遊戲限制'
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: '配置版本'
+                            },
+                            grid: {
+                                drawOnChartArea: false,
+                            },
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}

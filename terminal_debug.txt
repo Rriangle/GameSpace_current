@@ -1,0 +1,29 @@
+Terminal Debug Information
+========================
+
+Error: [internal] Failed to call client side v2 tool: [internal] internal error
+
+This indicates the terminal tool is experiencing internal errors and cannot execute commands.
+
+Attempted commands:
+- cd /workspace && pwd && whoami
+- echo "測試終端連線"
+
+Both failed with the same internal error.
+
+Possible solutions:
+1. Tool restart may be needed
+2. System resource limitations
+3. Network connectivity issues
+4. Process/session timeout
+
+Current capabilities still available:
+- File read/write operations
+- Directory listing
+- File search/grep
+- File editing operations
+
+Recommended workaround:
+- Use file operations to create scripts
+- Provide manual execution instructions
+- Document commands for user execution

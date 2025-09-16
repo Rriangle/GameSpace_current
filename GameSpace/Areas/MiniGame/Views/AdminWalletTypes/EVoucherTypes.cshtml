@@ -1,0 +1,187 @@
+@model IEnumerable<GameSpace.Models.EVoucherType>
+@{
+    ViewData["Title"] = "電子禮券類型管理";
+    ViewData["BreadcrumbController"] = "券類型設定";
+    ViewData["BreadcrumbAction"] = "禮券類型";
+    Layout = "~/Areas/MiniGame/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">電子禮券類型管理</h1>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("CreateEVoucherType")" class="btn btn-primary btn-sm">
+            <i class="fas fa-plus me-1"></i>新增類型
+        </a>
+    </div>
+</div>
+
+<!-- 電子禮券類型列表 -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">電子禮券類型列表</h6>
+        <span class="badge bg-info">共 @Model.Count() 種類型</span>
+    </div>
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>類型ID</th>
+                            <th>名稱</th>
+                            <th>面額</th>
+                            <th>兌換點數</th>
+                            <th>發行上限</th>
+                            <th>有效期</th>
+                            <th>狀態</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var evoucherType in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="badge bg-secondary">#@evoucherType.EVoucherTypeID</span>
+                                </td>
+                                <td>
+                                    <div>
+                                        <strong>@evoucherType.Name</strong>
+                                        @if (!string.IsNullOrEmpty(evoucherType.Description))
+                                        {
+                                            <small class="text-muted d-block">@evoucherType.Description</small>
+                                        }
+                                    </div>
+                                </td>
+                                <td class="text-end">
+                                    <span class="badge bg-success fs-6">
+                                        $@evoucherType.ValueAmount.ToString("N0")
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <span class="badge bg-warning text-dark">@evoucherType.PointsCost 點</span>
+                                </td>
+                                <td class="text-center">
+                                    @if (evoucherType.TotalAvailable.HasValue)
+                                    {
+                                        <span class="badge bg-info">@evoucherType.TotalAvailable.Value 張</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">無限制</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="small">
+                                        <div>@evoucherType.ValidFrom.ToString("yyyy/MM/dd")</div>
+                                        <div>~ @evoucherType.ValidTo.ToString("yyyy/MM/dd")</div>
+                                        @if (evoucherType.ValidTo < DateTime.Now)
+                                        {
+                                            <span class="badge bg-danger">已過期</span>
+                                        }
+                                        else if (evoucherType.ValidFrom > DateTime.Now)
+                                        {
+                                            <span class="badge bg-warning">未生效</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-success">有效中</span>
+                                        }
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="text-center">
+                                        @{
+                                            var isActive = evoucherType.ValidFrom <= DateTime.Now && evoucherType.ValidTo >= DateTime.Now;
+                                        }
+                                        @if (isActive)
+                                        {
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check-circle me-1"></i>啟用中
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">
+                                                <i class="fas fa-pause-circle me-1"></i>未啟用
+                                            </span>
+                                        }
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="@Url.Action("EditEVoucherType", new { id = evoucherType.EVoucherTypeID })" 
+                                           class="btn btn-outline-warning" title="編輯">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-outline-info" 
+                                                onclick="viewIssuedEVouchers(@evoucherType.EVoucherTypeID)" title="查看已發行禮券">
+                                            <i class="fas fa-list"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-outline-danger" 
+                                                onclick="confirmDelete(@evoucherType.EVoucherTypeID, '@evoucherType.Name')" title="刪除">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-certificate fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">目前沒有電子禮券類型</h5>
+                <p class="text-muted">點擊上方「新增類型」按鈕建立第一個電子禮券類型</p>
+                <a href="@Url.Action("CreateEVoucherType")" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i>新增類型
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- 刪除確認模態框 -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">確認刪除</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>您確定要刪除電子禮券類型 <strong id="deleteTypeName"></strong> 嗎？</p>
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    刪除後將無法復原，且如果已有相關禮券使用此類型，則無法刪除。
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <form id="deleteForm" method="post" style="display: inline;">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-danger">確認刪除</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmDelete(typeId, typeName) {
+            document.getElementById('deleteTypeName').textContent = typeName;
+            document.getElementById('deleteForm').action = '@Url.Action("DeleteEVoucherType")/' + typeId;
+            new bootstrap.Modal(document.getElementById('deleteModal')).show();
+        }
+
+        function viewIssuedEVouchers(typeId) {
+            // 導向電子禮券列表並篩選該類型
+            window.location.href = '@Url.Action("EVouchers")' + '?typeId=' + typeId;
+        }
+    </script>
+}

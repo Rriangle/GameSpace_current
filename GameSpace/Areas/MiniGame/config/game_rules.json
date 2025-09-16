@@ -1,0 +1,103 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "lastUpdated": "2024-01-01T00:00:00Z",
+    "description": "MiniGame 遊戲規則配置檔案",
+    "timezone": "Asia/Taipei"
+  },
+  "gameRules": {
+    "dailyLimit": 3,
+    "resetTime": "00:00",
+    "timezone": "Asia/Taipei",
+    "sessionTimeoutMinutes": 30
+  },
+  "rewardTables": {
+    "basePointsPerLevel": {
+      "1": 10,
+      "2": 15,
+      "3": 20,
+      "4": 25,
+      "5": 30
+    },
+    "expPerLevel": {
+      "1": 5,
+      "2": 8,
+      "3": 12,
+      "4": 15,
+      "5": 20
+    },
+    "multipliers": {
+      "win": 1.5,
+      "lose": 0.5,
+      "abort": 0.0
+    }
+  },
+  "monsterWaves": {
+    "level1": {
+      "monsterCount": 3,
+      "speed": 1.0,
+      "difficulty": "easy"
+    },
+    "level2": {
+      "monsterCount": 5,
+      "speed": 1.2,
+      "difficulty": "normal"
+    },
+    "level3": {
+      "monsterCount": 7,
+      "speed": 1.5,
+      "difficulty": "hard"
+    },
+    "level4": {
+      "monsterCount": 10,
+      "speed": 1.8,
+      "difficulty": "expert"
+    },
+    "level5": {
+      "monsterCount": 15,
+      "speed": 2.0,
+      "difficulty": "master"
+    }
+  },
+  "petRules": {
+    "renameCost": 0,
+    "skinColorChangeCost": 50,
+    "backgroundColorChangeCost": 0,
+    "levelUpExpRequirement": {
+      "1": 100,
+      "2": 200,
+      "3": 400,
+      "4": 800,
+      "5": 1600
+    },
+    "availableColors": {
+      "skinColors": ["#FFB6C1", "#87CEEB", "#98FB98", "#F0E68C", "#DDA0DD"],
+      "backgroundColors": ["#E6F3FF", "#FFE6F0", "#E6FFE6", "#FFFACD", "#F0E6FF"]
+    }
+  },
+  "signInRules": {
+    "baseRewardPoints": 10,
+    "consecutiveBonusMultiplier": 1.1,
+    "maxConsecutiveDays": 7,
+    "resetTime": "00:00",
+    "timezone": "Asia/Taipei"
+  },
+  "validation": {
+    "dailyLimit": {
+      "min": 1,
+      "max": 10
+    },
+    "basePointsPerLevel": {
+      "min": 1,
+      "max": 100
+    },
+    "monsterCount": {
+      "min": 1,
+      "max": 50
+    },
+    "speed": {
+      "min": 0.1,
+      "max": 5.0
+    }
+  }
+}

@@ -1,0 +1,87 @@
+@{
+    // 從 ViewData 取得匯出端點和參數
+    var csvAction = ViewData["ExportCsvAction"]?.ToString() ?? "";
+    var jsonAction = ViewData["ExportJsonAction"]?.ToString() ?? "";
+    var csvController = ViewData["ExportController"]?.ToString() ?? ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var csvParams = ViewData["ExportParams"] as object ?? new { };
+    var buttonSize = ViewData["ExportButtonSize"]?.ToString() ?? "btn-sm";
+    var showLabels = ViewData["ExportShowLabels"]?.ToString()?.ToLower() != "false";
+    
+    // 如果沒有指定 Action，則嘗試推斷
+    if (string.IsNullOrEmpty(csvAction))
+    {
+        var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+        csvAction = currentAction + "ExportCsv";
+        jsonAction = currentAction + "ExportJson";
+    }
+}
+
+@if (!string.IsNullOrEmpty(csvAction) && !string.IsNullOrEmpty(jsonAction))
+{
+    <div class="d-flex gap-2 export-buttons" role="group" aria-label="資料匯出選項">
+        <a href="@Url.Action(csvAction, csvController, csvParams)" 
+           class="btn btn-outline-primary @buttonSize" 
+           title="匯出 CSV 格式檔案，適用於 Excel 和試算表軟體"
+           aria-label="匯出 CSV 格式">
+            <i class="fas fa-file-csv me-1" aria-hidden="true"></i>@(showLabels ? "CSV 匯出" : "")
+        </a>
+        <a href="@Url.Action(jsonAction, csvController, csvParams)" 
+           class="btn btn-outline-secondary @buttonSize" 
+           title="匯出 JSON 格式檔案，適用於程式開發和資料分析"
+           aria-label="匯出 JSON 格式">
+            <i class="fas fa-file-code me-1" aria-hidden="true"></i>@(showLabels ? "JSON 匯出" : "")
+        </a>
+    </div>
+}
+else
+{
+    <!-- 偵錯資訊（僅開發環境顯示） -->
+    @if (ViewContext.HttpContext.RequestServices.GetService<Microsoft.AspNetCore.Hosting.IWebHostEnvironment>()?.IsDevelopment() == true)
+    {
+        <div class="alert alert-warning small">
+            <i class="fas fa-exclamation-triangle me-1"></i>
+            匯出按鈕配置不完整：
+            <ul class="mb-0 small">
+                <li>csvAction: @csvAction</li>
+                <li>jsonAction: @jsonAction</li>
+                <li>controller: @csvController</li>
+            </ul>
+        </div>
+    }
+}
+
+@{
+    // 使用說明註解
+    /*
+    使用方式：
+    
+    1. 基本使用（自動推斷）：
+    @await Html.PartialAsync("_ExportButtons")
+    
+    2. 指定端點：
+    @{
+        ViewData["ExportCsvAction"] = "CustomExportCsv";
+        ViewData["ExportJsonAction"] = "CustomExportJson";
+        ViewData["ExportController"] = "AdminWallet";
+    }
+    @await Html.PartialAsync("_ExportButtons")
+    
+    3. 傳遞參數：
+    @{
+        ViewData["ExportParams"] = new { 
+            search = ViewBag.Search, 
+            status = ViewBag.Status,
+            from = ViewBag.From?.ToString("yyyy-MM-dd"),
+            to = ViewBag.To?.ToString("yyyy-MM-dd")
+        };
+    }
+    @await Html.PartialAsync("_ExportButtons")
+    
+    4. 自訂樣式：
+    @{
+        ViewData["ExportButtonSize"] = "btn-lg";
+        ViewData["ExportShowLabels"] = "false"; // 僅顯示圖示
+    }
+    @await Html.PartialAsync("_ExportButtons")
+    */
+}

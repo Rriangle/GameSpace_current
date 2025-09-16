@@ -1,0 +1,297 @@
+@model GameSpace.Models.UserWallet
+@{
+    ViewData["Title"] = "錢包明細";
+    ViewData["BreadcrumbController"] = "錢包系統";
+    ViewData["BreadcrumbAction"] = "錢包明細";
+    Layout = "~/Areas/MiniGame/Views/Shared/_AdminLayout.cshtml";
+    var histories = ViewBag.Histories as List<GameSpace.Models.WalletHistory>;
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">錢包明細</h1>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("Index")" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i>返回列表
+        </a>
+        <a href="@Url.Action("History", new { userId = Model.UserId })" class="btn btn-primary btn-sm">
+            <i class="fas fa-history me-1"></i>完整歷史
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- 會員基本資訊 -->
+    <div class="col-lg-4 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">會員資訊</h6>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-sm-4 text-muted">會員ID：</div>
+                    <div class="col-sm-8">
+                        <span class="badge bg-secondary">#@Model.UserId</span>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4 text-muted">會員帳號：</div>
+                    <div class="col-sm-8"><strong>@Model.User?.UserName</strong></div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4 text-muted">會員暱稱：</div>
+                    <div class="col-sm-8">@Model.User?.UserNickName</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4 text-muted">會員等級：</div>
+                    <div class="col-sm-8">
+                        <span class="badge @GetLevelBadgeClass(Model.UserPoint)">
+                            @GetPointsLevel(Model.UserPoint)
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 錢包資訊 -->
+    <div class="col-lg-8 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">錢包資訊</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card border-left-primary shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                            當前點數餘額
+                                        </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                            @Model.UserPoint.ToString("N0") 點
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-coins fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-left-success shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                            歷史記錄筆數
+                                        </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                            @(histories?.Count ?? 0) 筆（近期）
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-history fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 最近異動記錄 -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">最近異動記錄（最多20筆）</h6>
+        <a href="@Url.Action("History", new { userId = Model.UserId })" class="btn btn-outline-primary btn-sm">
+            <i class="fas fa-list me-1"></i>查看完整記錄
+        </a>
+    </div>
+    <div class="card-body">
+        @if (histories != null && histories.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>異動時間</th>
+                            <th>異動類型</th>
+                            <th>點數變化</th>
+                            <th>項目代碼</th>
+                            <th>說明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var history in histories)
+                        {
+                            <tr>
+                                <td>
+                                    <small class="text-muted">
+                                        @history.ChangeTime.ToString("yyyy/MM/dd HH:mm:ss")
+                                    </small>
+                                </td>
+                                <td>
+                                    <span class="badge @GetChangeTypeBadgeClass(history.ChangeType)">
+                                        @GetChangeTypeText(history.ChangeType)
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <span class="@(history.PointsChanged >= 0 ? "text-success" : "text-danger")">
+                                        @(history.PointsChanged >= 0 ? "+" : "")@history.PointsChanged.ToString("N0")
+                                    </span>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(history.ItemCode) && history.ItemCode != "0")
+                                    {
+                                        <code>@history.ItemCode</code>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    <small>@history.Description</small>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-4">
+                <i class="fas fa-history fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">暫無異動記錄</h5>
+                <p class="text-muted">此會員尚未有錢包異動記錄</p>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- 快速操作區 -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">快速操作</h6>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <button class="btn btn-warning w-100" onclick="adjustPoints(@Model.UserId, '@Model.User?.UserName')">
+                    <i class="fas fa-edit me-2"></i>調整點數
+                </button>
+            </div>
+            <div class="col-md-4 mb-3">
+                <a href="@Url.Action("Coupons", new { userId = Model.UserId })" class="btn btn-info w-100">
+                    <i class="fas fa-ticket-alt me-2"></i>查看優惠券
+                </a>
+            </div>
+            <div class="col-md-4 mb-3">
+                <a href="@Url.Action("EVouchers", new { userId = Model.UserId })" class="btn btn-success w-100">
+                    <i class="fas fa-gift me-2"></i>查看電子禮券
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 調整點數模態框（重複使用Index頁面的模態框） -->
+<div class="modal fade" id="adjustPointsModal" tabindex="-1" aria-labelledby="adjustPointsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="adjustPointsModalLabel">調整會員點數</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="adjustPointsForm">
+                    <input type="hidden" id="adjustUserId" name="userId">
+                    <div class="mb-3">
+                        <label for="userName" class="form-label">會員帳號</label>
+                        <input type="text" class="form-control" id="userName" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="pointsChange" class="form-label">點數調整</label>
+                        <input type="number" class="form-control" id="pointsChange" name="pointsChange" 
+                               required>
+                        <div class="form-text">例如：+1000 增加1000點，-500 減少500點</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="reason" class="form-label">調整原因</label>
+                        <textarea class="form-control" id="reason" name="reason" rows="3" 
+                                  required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-warning" onclick="submitPointsAdjustment()">確認調整</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function adjustPoints(userId, userName) {
+            $('#adjustUserId').val(userId);
+            $('#userName').val(userName);
+            $('#pointsChange').val('');
+            $('#reason').val('');
+            $('#adjustPointsModal').modal('show');
+        }
+
+        function submitPointsAdjustment() {
+            // 此功能為預留實作，實際實作需要後端 API 支援
+            alert('點數調整功能開發中，請聯絡系統管理員');
+            $('#adjustPointsModal').modal('hide');
+        }
+    </script>
+}
+
+@functions {
+    string GetLevelBadgeClass(int points)
+    {
+        if (points >= 10000) return "bg-success";
+        if (points >= 5000) return "bg-info";
+        if (points >= 1000) return "bg-warning";
+        return "bg-secondary";
+    }
+
+    string GetPointsLevel(int points)
+    {
+        if (points >= 10000) return "VIP會員";
+        if (points >= 5000) return "金牌會員";
+        if (points >= 1000) return "銀牌會員";
+        return "一般會員";
+    }
+
+    string GetChangeTypeBadgeClass(string changeType)
+    {
+        return changeType?.ToLower() switch
+        {
+            "point" => "bg-primary",
+            "coupon" => "bg-warning",
+            "evoucher" => "bg-success",
+            _ => "bg-secondary"
+        };
+    }
+
+    string GetChangeTypeText(string changeType)
+    {
+        return changeType?.ToLower() switch
+        {
+            "point" => "點數",
+            "coupon" => "優惠券",
+            "evoucher" => "電子禮券",
+            _ => changeType ?? "未知"
+        };
+    }
+}

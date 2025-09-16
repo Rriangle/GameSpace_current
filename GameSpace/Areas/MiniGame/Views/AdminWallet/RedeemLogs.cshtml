@@ -1,0 +1,282 @@
+@model IEnumerable<GameSpace.Models.EVoucherRedeemLog>
+@{
+    ViewData["Title"] = "EVoucher 兌換紀錄";
+    ViewData["BreadcrumbController"] = "錢包系統";
+    ViewData["BreadcrumbAction"] = "兌換紀錄";
+    Layout = "~/Areas/MiniGame/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- 頁面標題與工具列 -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">EVoucher 兌換紀錄</h1>
+        <div class="d-flex gap-2">
+            <a href="@Url.Action("RedeemLogsExportCsv", new { search = ViewBag.Search, status = ViewBag.Status, tokenId = ViewBag.TokenId, userId = ViewBag.UserId, evoucherId = ViewBag.EVoucherId, from = ViewBag.From, to = ViewBag.To })" 
+               class="btn btn-outline-primary btn-sm">
+                <i class="fas fa-file-csv me-1"></i>CSV 匯出
+            </a>
+            <a href="@Url.Action("RedeemLogsExportJson", new { search = ViewBag.Search, status = ViewBag.Status, tokenId = ViewBag.TokenId, userId = ViewBag.UserId, evoucherId = ViewBag.EVoucherId, from = ViewBag.From, to = ViewBag.To })" 
+               class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-file-code me-1"></i>JSON 匯出
+            </a>
+            <a href="@Url.Action("EVouchers")" class="btn btn-outline-info">
+                <i class="fas fa-gift me-1"></i>EVouchers
+            </a>
+            <a href="@Url.Action("Tokens")" class="btn btn-outline-secondary">
+                <i class="fas fa-key me-1"></i>Tokens
+            </a>
+            <a href="@Url.Action("Index")" class="btn btn-outline-primary">
+                <i class="fas fa-wallet me-1"></i>Wallet
+            </a>
+        </div>
+    </div>
+
+    <!-- 圖表區域 -->
+    <div class="row mb-4">
+        <div class="col-12">
+            @{
+                ViewData["ChartTitle"] = "每日兌換筆數";
+                var chartEndpointParams = new Dictionary<string, object>();
+                if (ViewBag.From != null) chartEndpointParams["from"] = ViewBag.From.ToString("yyyy-MM-dd");
+                if (ViewBag.To != null) chartEndpointParams["to"] = ViewBag.To.ToString("yyyy-MM-dd");
+                if (!string.IsNullOrEmpty(ViewBag.Status?.ToString())) chartEndpointParams["status"] = ViewBag.Status;
+                
+                ViewData["ChartEndpoint"] = Url.Action("RedeemLogsDaily", "AdminAnalytics", chartEndpointParams);
+                ViewData["ChartCanvasId"] = "redeemLogsChart";
+                ViewData["ChartType"] = "line";
+                ViewData["ChartYSeries"] = "count";
+                ViewData["ChartHeight"] = "300";
+            }
+            @await Html.PartialAsync("_ChartCard")
+        </div>
+    </div>
+
+    <!-- 日期範圍工具列 -->
+    @await Html.PartialAsync("_DateRangeToolbar")
+
+    <!-- 篩選表單 -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">搜尋與篩選</h6>
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label for="search" class="form-label">搜尋</label>
+                    <input type="text" class="form-control" id="search" name="search" 
+                           value="@ViewBag.Search" placeholder="RedeemID / Token / EVoucherCode">
+                </div>
+                <div class="col-md-2">
+                    <label for="status" class="form-label">狀態</label>
+                    <select class="form-select" id="status" name="status">
+                        <option value="">全部</option>
+                        <option value="Approved" @(ViewBag.Status == "Approved" ? "selected" : "")>Approved</option>
+                        <option value="Rejected" @(ViewBag.Status == "Rejected" ? "selected" : "")>Rejected</option>
+                        <option value="Expired" @(ViewBag.Status == "Expired" ? "selected" : "")>Expired</option>
+                        <option value="AlreadyUsed" @(ViewBag.Status == "AlreadyUsed" ? "selected" : "")>AlreadyUsed</option>
+                        <option value="Revoked" @(ViewBag.Status == "Revoked" ? "selected" : "")>Revoked</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="tokenId" class="form-label">TokenID</label>
+                    <input type="number" class="form-control" id="tokenId" name="tokenId" value="@ViewBag.TokenId">
+                </div>
+                <div class="col-md-2">
+                    <label for="userId" class="form-label">UserID</label>
+                    <input type="number" class="form-control" id="userId" name="userId" value="@ViewBag.UserId">
+                </div>
+                <div class="col-md-2">
+                    <label for="evoucherId" class="form-label">EVoucherID</label>
+                    <input type="number" class="form-control" id="evoucherId" name="evoucherId" value="@ViewBag.EVoucherId">
+                </div>
+                <div class="col-md-3">
+                    <label for="from" class="form-label">開始時間</label>
+                    <input type="datetime-local" class="form-control" id="from" name="from" 
+                           value="@(ViewBag.From?.ToString("yyyy-MM-ddTHH:mm"))">
+                </div>
+                <div class="col-md-3">
+                    <label for="to" class="form-label">結束時間</label>
+                    <input type="datetime-local" class="form-control" id="to" name="to" 
+                           value="@(ViewBag.To?.ToString("yyyy-MM-ddTHH:mm"))">
+                </div>
+                <div class="col-md-6 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="fas fa-search"></i> 查詢
+                    </button>
+                    <a href="@Url.Action("RedeemLogs")" class="btn btn-outline-secondary">
+                        <i class="fas fa-times"></i> 清除
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 兌換記錄列表 -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">
+                兌換記錄列表 
+                <span class="badge bg-info">共 @ViewBag.TotalCount 筆</span>
+            </h6>
+        </div>
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>RedeemID</th>
+                                <th>TokenID + Token</th>
+                                <th>EVoucherID + Code</th>
+                                <th>UserID</th>
+                                <th>ScannedAt</th>
+                                <th>Status</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var log in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-secondary">#@log.RedeemID</span>
+                                    </td>
+                                    <td>
+                                        @if (log.TokenID.HasValue && log.EVoucherToken != null)
+                                        {
+                                            <div>
+                                                <span class="badge bg-info">@log.TokenID</span>
+                                                <code class="d-block mt-1 text-truncate" style="max-width: 150px;">@log.EVoucherToken.Token</code>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">直接輸入</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <span class="badge bg-primary">@log.EVoucherID</span>
+                                            @if (log.EVoucherToken?.EVoucher != null)
+                                            {
+                                                <code class="d-block mt-1">@log.EVoucherToken.EVoucher.EVoucherCode</code>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-dark">@log.UserID</span>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <strong>@log.ScannedAt.ToString("yyyy-MM-dd HH:mm:ss")</strong>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @switch (log.Status)
+                                        {
+                                            case "Approved":
+                                                <span class="badge bg-success">Approved</span>
+                                                break;
+                                            case "AlreadyUsed":
+                                                <span class="badge bg-primary">AlreadyUsed</span>
+                                                break;
+                                            case "Expired":
+                                                <span class="badge bg-secondary">Expired</span>
+                                                break;
+                                            case "Revoked":
+                                                <span class="badge bg-warning">Revoked</span>
+                                                break;
+                                            case "Rejected":
+                                                <span class="badge bg-danger">Rejected</span>
+                                                break;
+                                            default:
+                                                <span class="badge bg-light text-dark">@log.Status</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("RedeemLogDetail", new { id = log.RedeemID })" 
+                                           class="btn btn-sm btn-outline-info">
+                                            <i class="fas fa-eye"></i> Details
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 分頁導航 -->
+                @if (ViewBag.TotalPages > 1)
+                {
+                    <nav aria-label="分頁導航">
+                        <ul class="pagination justify-content-center">
+                            @if (ViewBag.Page > 1)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="@Url.Action("RedeemLogs", new { 
+                                        page = ViewBag.Page - 1, 
+                                        search = ViewBag.Search, 
+                                        status = ViewBag.Status, 
+                                        tokenId = ViewBag.TokenId, 
+                                        userId = ViewBag.UserId, 
+                                        evoucherId = ViewBag.EVoucherId, 
+                                        from = ViewBag.From, 
+                                        to = ViewBag.To 
+                                    })">
+                                        上一頁
+                                    </a>
+                                </li>
+                            }
+                            
+                            @for (int i = Math.Max(1, ViewBag.Page - 2); i <= Math.Min(ViewBag.TotalPages, ViewBag.Page + 2); i++)
+                            {
+                                <li class="page-item @(i == ViewBag.Page ? "active" : "")">
+                                    <a class="page-link" href="@Url.Action("RedeemLogs", new { 
+                                        page = i, 
+                                        search = ViewBag.Search, 
+                                        status = ViewBag.Status, 
+                                        tokenId = ViewBag.TokenId, 
+                                        userId = ViewBag.UserId, 
+                                        evoucherId = ViewBag.EVoucherId, 
+                                        from = ViewBag.From, 
+                                        to = ViewBag.To 
+                                    })">
+                                        @i
+                                    </a>
+                                </li>
+                            }
+                            
+                            @if (ViewBag.Page < ViewBag.TotalPages)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="@Url.Action("RedeemLogs", new { 
+                                        page = ViewBag.Page + 1, 
+                                        search = ViewBag.Search, 
+                                        status = ViewBag.Status, 
+                                        tokenId = ViewBag.TokenId, 
+                                        userId = ViewBag.UserId, 
+                                        evoucherId = ViewBag.EVoucherId, 
+                                        from = ViewBag.From, 
+                                        to = ViewBag.To 
+                                    })">
+                                        下一頁
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                }
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-receipt fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">沒有找到兌換記錄</h5>
+                    <p class="text-muted">請調整搜尋條件或檢查資料庫種子資料</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>

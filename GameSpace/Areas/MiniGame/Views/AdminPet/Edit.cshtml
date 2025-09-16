@@ -1,0 +1,284 @@
+@{
+    ViewData["Title"] = "編輯寵物";
+    ViewData["BreadcrumbController"] = "寵物系統";
+    ViewData["BreadcrumbAction"] = "編輯寵物";
+    Layout = "~/Areas/MiniGame/Views/Shared/_AdminLayout.cshtml";
+    var pet = ViewBag.Pet as GameSpace.Models.Pet;
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">編輯寵物</h1>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("Details", new { id = pet.PetID })" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i>返回詳情
+        </a>
+        <a href="@Url.Action("RulePreview")" class="btn btn-outline-info btn-sm">
+            <i class="fas fa-book me-1"></i>查看規則
+        </a>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<form method="post" asp-action="Edit" asp-route-id="@pet.PetID">
+    @Html.AntiForgeryToken()
+    
+    <div class="row">
+        <!-- 基本資訊 -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">基本資訊</h6>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <div class="rounded-circle mx-auto mb-3" id="petPreview"
+                             style="width: 80px; height: 80px; background-color: @pet.SkinColor; border: 3px solid #dee2e6;">
+                        </div>
+                        <small class="text-muted">寵物預覽</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="petName" class="form-label">寵物名稱</label>
+                        <input type="text" class="form-control" id="petName" name="petName" 
+                               value="@pet.PetName" maxlength="20" required>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label for="level" class="form-label">等級</label>
+                            <input type="number" class="form-control" id="level" name="level" 
+                                   value="@pet.Level" min="1" max="100" required>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label for="experience" class="form-label">經驗值</label>
+                            <input type="number" class="form-control" id="experience" name="experience" 
+                                   value="@pet.Experience" min="0" required>
+                        </div>
+                    </div>
+
+                    <div class="small text-muted">
+                        <div class="d-flex justify-content-between">
+                            <span>寵物 ID：</span>
+                            <span>@pet.PetID</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>擁有者：</span>
+                            <span>@pet.User?.UserNickName</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 五維屬性 -->
+        <div class="col-lg-8 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-success">五維屬性編輯</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="hunger" class="form-label">
+                                <i class="fas fa-drumstick-bite text-warning me-1"></i>飢餓值
+                            </label>
+                            <input type="range" class="form-range" id="hunger" name="hunger" 
+                                   value="@pet.Hunger" min="0" max="100" oninput="updateAttributeDisplay('hunger', this.value)">
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">0</small>
+                                <span id="hungerValue" class="badge bg-warning text-dark">@pet.Hunger</span>
+                                <small class="text-muted">100</small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="mood" class="form-label">
+                                <i class="fas fa-smile text-success me-1"></i>心情值
+                            </label>
+                            <input type="range" class="form-range" id="mood" name="mood" 
+                                   value="@pet.Mood" min="0" max="100" oninput="updateAttributeDisplay('mood', this.value)">
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">0</small>
+                                <span id="moodValue" class="badge bg-success">@pet.Mood</span>
+                                <small class="text-muted">100</small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="stamina" class="form-label">
+                                <i class="fas fa-running text-primary me-1"></i>體力值
+                            </label>
+                            <input type="range" class="form-range" id="stamina" name="stamina" 
+                                   value="@pet.Stamina" min="0" max="100" oninput="updateAttributeDisplay('stamina', this.value)">
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">0</small>
+                                <span id="staminaValue" class="badge bg-primary">@pet.Stamina</span>
+                                <small class="text-muted">100</small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="cleanliness" class="form-label">
+                                <i class="fas fa-soap text-info me-1"></i>清潔值
+                            </label>
+                            <input type="range" class="form-range" id="cleanliness" name="cleanliness" 
+                                   value="@pet.Cleanliness" min="0" max="100" oninput="updateAttributeDisplay('cleanliness', this.value)">
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">0</small>
+                                <span id="cleanlinessValue" class="badge bg-info">@pet.Cleanliness</span>
+                                <small class="text-muted">100</small>
+                            </div>
+                        </div>
+
+                        <div class="col-12 mb-3">
+                            <label for="health" class="form-label">
+                                <i class="fas fa-heart text-danger me-1"></i>健康值
+                            </label>
+                            <input type="range" class="form-range" id="health" name="health" 
+                                   value="@pet.Health" min="0" max="100" oninput="updateAttributeDisplay('health', this.value)">
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">0</small>
+                                <span id="healthValue" class="badge bg-danger">@pet.Health</span>
+                                <small class="text-muted">100</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 外觀設定 -->
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-info">外觀設定</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="skinColor" class="form-label">皮膚顏色</label>
+                        <input type="color" class="form-control form-control-color" id="skinColor" name="skinColor" 
+                               value="@pet.SkinColor" onchange="updatePetPreview()">
+                        <div class="form-text">點擊選擇皮膚顏色</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="backgroundColor" class="form-label">背景顏色</label>
+                        <input type="color" class="form-control form-control-color" id="backgroundColor" name="backgroundColor" 
+                               value="@pet.BackgroundColor" onchange="updatePetPreview()">
+                        <div class="form-text">點擊選擇背景顏色</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 操作區域 -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-warning">編輯確認</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="reason" class="form-label">
+                            <i class="fas fa-comment me-1 text-warning"></i>編輯原因
+                        </label>
+                        <textarea class="form-control" id="reason" name="reason" rows="4" 
+                                  placeholder="請詳細說明編輯原因，此資訊將記錄到系統日誌中" required></textarea>
+                    </div>
+
+                    <div class="alert alert-warning" role="alert">
+                        <i class="fas fa-exclamation-triangle me-1"></i>
+                        <strong>注意：</strong>此操作將直接修改寵物資料，請謹慎操作。所有變更都會記錄到系統日誌中。
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-warning" onclick="return confirmEdit()">
+                            <i class="fas fa-save me-1"></i>確認更新
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="resetForm()">
+                            <i class="fas fa-undo me-1"></i>重設
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        function updateAttributeDisplay(attribute, value) {
+            document.getElementById(attribute + 'Value').textContent = value;
+            
+            // 更新徽章顏色
+            const badge = document.getElementById(attribute + 'Value');
+            badge.className = 'badge ' + getAttributeBadgeClass(parseInt(value));
+        }
+
+        function getAttributeBadgeClass(value) {
+            if (value >= 80) return 'bg-success';
+            if (value >= 60) return 'bg-info';
+            if (value >= 40) return 'bg-warning text-dark';
+            if (value >= 20) return 'bg-danger';
+            return 'bg-dark';
+        }
+
+        function updatePetPreview() {
+            const skinColor = document.getElementById('skinColor').value;
+            const backgroundColor = document.getElementById('backgroundColor').value;
+            const preview = document.getElementById('petPreview');
+            
+            preview.style.backgroundColor = skinColor;
+            preview.style.borderColor = backgroundColor;
+        }
+
+        function confirmEdit() {
+            const petName = document.getElementById('petName').value.trim();
+            const reason = document.getElementById('reason').value.trim();
+            
+            if (!petName) {
+                alert('請填寫寵物名稱');
+                return false;
+            }
+            
+            if (!reason) {
+                alert('請填寫編輯原因');
+                return false;
+            }
+            
+            const message = `確定要更新寵物 "${petName}" 的資料嗎？\n\n` +
+                          `編輯原因：${reason}\n\n` +
+                          `注意：此操作無法復原！`;
+            
+            return confirm(message);
+        }
+
+        function resetForm() {
+            if (confirm('確定要重設所有變更嗎？')) {
+                location.reload();
+            }
+        }
+
+        // 初始化預覽
+        document.addEventListener('DOMContentLoaded', function() {
+            updatePetPreview();
+        });
+    </script>
+}

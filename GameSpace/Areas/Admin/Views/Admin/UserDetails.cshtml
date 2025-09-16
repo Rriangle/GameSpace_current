@@ -1,0 +1,178 @@
+@model GameSpace.Models.User
+@{
+    ViewData["Title"] = "用戶詳情";
+}
+
+<div class="container-fluid">
+    <h1 class="h3 mb-4">用戶詳情</h1>
+
+    <div class="row">
+        <!-- 基本資訊 -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">基本資訊</h6>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <td><strong>用戶ID：</strong></td>
+                            <td>@Model.UserId</td>
+                        </tr>
+                        <tr>
+                            <td><strong>用戶名：</strong></td>
+                            <td>@Model.Username</td>
+                        </tr>
+                        <tr>
+                            <td><strong>電子郵件：</strong></td>
+                            <td>@Model.Email</td>
+                        </tr>
+                        <tr>
+                            <td><strong>註冊時間：</strong></td>
+                            <td>@Model.CreatedAt.ToString("yyyy/MM/dd HH:mm")</td>
+                        </tr>
+                        <tr>
+                            <td><strong>最後登入：</strong></td>
+                            <td>@(Model.LastLoginAt?.ToString("yyyy/MM/dd HH:mm") ?? "從未登入")</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 錢包資訊 -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">錢包資訊</h6>
+                </div>
+                <div class="card-body">
+                    @if (Model.UserWallets?.Any() == true)
+                    {
+                        var wallet = Model.UserWallets.First();
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><strong>會員點數：</strong></td>
+                                <td><span class="text-primary fw-bold">@wallet.UserPoint</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>錢包狀態：</strong></td>
+                                <td>
+                                    <span class="badge bg-@(wallet.IsActive ? "success" : "danger")">
+                                        @(wallet.IsActive ? "正常" : "停用")
+                                    </span>
+                                </td>
+                            </tr>
+                        </table>
+                    }
+                    else
+                    {
+                        <p class="text-muted">暫無錢包資訊</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 寵物資訊 -->
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">寵物資訊</h6>
+                </div>
+                <div class="card-body">
+                    @if (Model.Pets?.Any() == true)
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>寵物ID</th>
+                                        <th>寵物名稱</th>
+                                        <th>等級</th>
+                                        <th>經驗值</th>
+                                        <th>飢餓</th>
+                                        <th>心情</th>
+                                        <th>體力</th>
+                                        <th>清潔</th>
+                                        <th>健康</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var pet in Model.Pets)
+                                    {
+                                        <tr>
+                                            <td>@pet.PetId</td>
+                                            <td>@pet.PetName</td>
+                                            <td><span class="badge bg-primary">@pet.Level</span></td>
+                                            <td>@pet.Experience</td>
+                                            <td>
+                                                <div class="progress" style="height: 20px;">
+                                                    <div class="progress-bar bg-danger" style="width: @pet.Hunger%">@pet.Hunger%</div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="progress" style="height: 20px;">
+                                                    <div class="progress-bar bg-info" style="width: @pet.Mood%">@pet.Mood%</div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="progress" style="height: 20px;">
+                                                    <div class="progress-bar bg-warning" style="width: @pet.Stamina%">@pet.Stamina%</div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="progress" style="height: 20px;">
+                                                    <div class="progress-bar bg-primary" style="width: @pet.Cleanliness%">@pet.Cleanliness%</div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="progress" style="height: 20px;">
+                                                    <div class="progress-bar bg-success" style="width: @pet.Health%">@pet.Health%</div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">該用戶尚未領養寵物</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 個人簡介 -->
+    @if (Model.UserIntroductions?.Any() == true)
+    {
+        <div class="row">
+            <div class="col-12 mb-4">
+                <div class="card shadow">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">個人簡介</h6>
+                    </div>
+                    <div class="card-body">
+                        @foreach (var intro in Model.UserIntroductions)
+                        {
+                            <p>@intro.Introduction</p>
+                            <small class="text-muted">
+                                最後更新：@intro.UpdatedAt.ToString("yyyy/MM/dd HH:mm")
+                            </small>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-12 text-center">
+            <a asp-action="Users" class="btn btn-outline-secondary">返回用戶列表</a>
+        </div>
+    </div>
+</div>

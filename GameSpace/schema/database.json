@@ -1,0 +1,7593 @@
+{
+  "meta": {
+    "generated_at": "2025-09-12T14:57:08.715921Z",
+    "source_files": [
+      "/mnt/data/unpacked_sql/database.sql"
+    ],
+    "tables": 75,
+    "columns_total": 527,
+    "pk_count": 55,
+    "fk_count": 151,
+    "unique_count": 14,
+    "check_count": 20,
+    "sequences": []
+  },
+  "tables": [
+    {
+      "schema": "dbo",
+      "name": "banned_words",
+      "columns": [
+        {
+          "name": "word_id",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "word",
+          "datatype": "[nvarchar](50)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "created_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__banned_w__7FFA1D406FBDDC61",
+          "columns": [
+            "word_id"
+          ]
+        },
+        "foreign_keys": [],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "bookmarks",
+      "columns": [
+        {
+          "name": "id",
+          "datatype": "[bigint] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "User_ID",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "target_type",
+          "datatype": "[varchar](50)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "target_id",
+          "datatype": "[bigint]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "created_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__bookmark__3213E83F2689F12E",
+          "columns": [
+            "id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK__bookmarks__User___6BAEFA67",
+            "columns": [
+              "User_ID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK__bookmarks__User___77DFC722",
+            "columns": [
+              "User_ID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "Coupon",
+      "columns": [
+        {
+          "name": "CouponID",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "CouponCode",
+          "datatype": "[varchar](20)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "CouponTypeID",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "UserID",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "IsUsed",
+          "datatype": "[bit]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "AcquiredTime",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "UsedTime",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "UsedInOrderID",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": null,
+        "foreign_keys": [
+          {
+            "name": "FK__Coupon__UsedInOr__6991A7CB",
+            "columns": [
+              "UsedInOrderID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "OrderInfo",
+              "columns": [
+                "order_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__Coupon__UsedInOr__731B1205",
+            "columns": [
+              "UsedInOrderID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "OrderInfo",
+              "columns": [
+                "order_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__Coupon__UsedInOr__73501C2F",
+            "columns": [
+              "UsedInOrderID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "OrderInfo",
+              "columns": [
+                "order_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__Coupon__UserID__689D8392",
+            "columns": [
+              "UserID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK__Coupon__UserID__7226EDCC",
+            "columns": [
+              "UserID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK__Coupon__UserID__725BF7F6",
+            "columns": [
+              "UserID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "CouponType",
+      "columns": [
+        {
+          "name": "CouponTypeID",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "Name",
+          "datatype": "[nvarchar](100)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "DiscountType",
+          "datatype": "[nvarchar](10)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "DiscountValue",
+          "datatype": "[decimal](10, 2)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "MinSpend",
+          "datatype": "[decimal](10, 2)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "ValidFrom",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "ValidTo",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "PointsCost",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "Description",
+          "datatype": "[nvarchar](255)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": null,
+        "foreign_keys": [],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "DM_Conversations",
+      "columns": [
+        {
+          "name": "conversation_id",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "is_manager_dm",
+          "datatype": "[bit]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "party1_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "party2_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "created_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "last_message_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK_DM_Conversations",
+          "columns": [
+            "conversation_id"
+          ]
+        },
+        "foreign_keys": [],
+        "unique": [
+          {
+            "name": "UQ_DM_Conversations_Pair",
+            "columns": [
+              "is_manager_dm",
+              "party1_id",
+              "party2_id"
+            ]
+          }
+        ],
+        "checks": [
+          {
+            "name": "CK_DM_Conversations_PartyOrder",
+            "expression": "([party1_id]<[party2_id])"
+          },
+          {
+            "name": "CK_DM_Conversations_Positive",
+            "expression": "([party1_id]>(0) AND [party2_id]>(0))"
+          },
+          {
+            "name": "CK_DMC_LastMsg_GE_Created",
+            "expression": "([last_message_at] IS NULL OR [last_message_at]>=[created_at])"
+          }
+        ]
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "DM_Messages",
+      "columns": [
+        {
+          "name": "message_id",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "conversation_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "sender_is_party1",
+          "datatype": "[bit]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "message_text",
+          "datatype": "[nvarchar](255)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "is_read",
+          "datatype": "[bit]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "read_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "edited_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK_DM_Messages",
+          "columns": [
+            "message_id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK_DM_Messages_Conversation",
+            "columns": [
+              "conversation_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "DM_Conversations",
+              "columns": [
+                "conversation_id"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": [
+          {
+            "name": "CK_DM_Messages_ReadConsistency",
+            "expression": "([is_read]=(1) AND [read_at] IS NOT NULL OR [is_read]=(0) AND [read_at] IS NULL)"
+          }
+        ]
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "EVoucher",
+      "columns": [
+        {
+          "name": "EVoucherID",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "EVoucherCode",
+          "datatype": "[varchar](50)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "EVoucherTypeID",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "UserID",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "IsUsed",
+          "datatype": "[bit]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "AcquiredTime",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "UsedTime",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": null,
+        "foreign_keys": [
+          {
+            "name": "FK__EVoucher__UserID__6B79F03D",
+            "columns": [
+              "UserID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK__EVoucher__UserID__6D6238AF",
+            "columns": [
+              "UserID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK__EVoucher__UserID__703EA55A",
+            "columns": [
+              "UserID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK__EVoucher__UserID__753864A1",
+            "columns": [
+              "UserID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "EVoucherRedeemLog",
+      "columns": [
+        {
+          "name": "RedeemID",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "EVoucherID",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "TokenID",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "UserID",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "ScannedAt",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "Status",
+          "datatype": "[nvarchar](20)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": null,
+        "foreign_keys": [
+          {
+            "name": "FK__EVoucherR__UserI__61F08603",
+            "columns": [
+              "UserID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK__EVoucherR__UserI__65C116E7",
+            "columns": [
+              "UserID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK__EVoucherR__UserI__66B53B20",
+            "columns": [
+              "UserID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK__EVoucherR__UserI__7908F585",
+            "columns": [
+              "UserID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "EVoucherToken",
+      "columns": [
+        {
+          "name": "TokenID",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "EVoucherID",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "Token",
+          "datatype": "[varchar](64)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "ExpiresAt",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "IsRevoked",
+          "datatype": "[bit]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": null,
+        "foreign_keys": [],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "EVoucherType",
+      "columns": [
+        {
+          "name": "EVoucherTypeID",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "Name",
+          "datatype": "[nvarchar](100)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "ValueAmount",
+          "datatype": "[decimal](10, 2)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "ValidFrom",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "ValidTo",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "PointsCost",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "TotalAvailable",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "Description",
+          "datatype": "[nvarchar](255)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": null,
+        "foreign_keys": [],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "forums",
+      "columns": [
+        {
+          "name": "forum_id",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "game_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "name",
+          "datatype": "[varchar](50)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "description",
+          "datatype": "[nvarchar](300)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "created_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__forums__69A2FA58CFFF3479",
+          "columns": [
+            "forum_id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK__forums__game_id__6501FCD8",
+            "columns": [
+              "game_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "games",
+              "columns": [
+                "game_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__forums__game_id__7F80E8EA",
+            "columns": [
+              "game_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "games",
+              "columns": [
+                "game_id"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "game_metric_daily",
+      "columns": [
+        {
+          "name": "id",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "game_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "metric_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "date",
+          "datatype": "[date]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "value",
+          "datatype": "[decimal](18, 4)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "agg_method",
+          "datatype": "[varchar](20)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "quality",
+          "datatype": "[varchar](20)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "created_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "updated_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__game_met__3213E83F3E2670CA",
+          "columns": [
+            "id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK__game_metr__game___09FE775D",
+            "columns": [
+              "game_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "games",
+              "columns": [
+                "game_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__game_metr__game___5C6CB6D7",
+            "columns": [
+              "game_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "games",
+              "columns": [
+                "game_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__game_metr__metri__0AF29B96",
+            "columns": [
+              "metric_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "metrics",
+              "columns": [
+                "metric_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__game_metr__metri__5D60DB10",
+            "columns": [
+              "metric_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "metrics",
+              "columns": [
+                "metric_id"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "game_source_map",
+      "columns": [
+        {
+          "name": "id",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "game_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "source_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "external_key",
+          "datatype": "[nvarchar](255)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "CreatedAt",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__game_sou__3213E83F28A4459D",
+          "columns": [
+            "id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK__game_sour__game___08162EEB",
+            "columns": [
+              "game_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "games",
+              "columns": [
+                "game_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__game_sour__game___5A846E65",
+            "columns": [
+              "game_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "games",
+              "columns": [
+                "game_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__game_sour__sourc__090A5324",
+            "columns": [
+              "source_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "metric_sources",
+              "columns": [
+                "source_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__game_sour__sourc__5B78929E",
+            "columns": [
+              "source_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "metric_sources",
+              "columns": [
+                "source_id"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "GameProductDetails",
+      "columns": [
+        {
+          "name": "product_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "product_name",
+          "datatype": "[nvarchar](200)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "product_description",
+          "datatype": "[nvarchar](max)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "supplier_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "platform_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "platform_name",
+          "datatype": "[nvarchar](100)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "game_type",
+          "datatype": "[nvarchar](200)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "download_link",
+          "datatype": "[nvarchar](500)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": null,
+        "foreign_keys": [],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "games",
+      "columns": [
+        {
+          "name": "game_id",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "name",
+          "datatype": "[nvarchar](50)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "genre",
+          "datatype": "[nvarchar](50)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "created_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "name_zh",
+          "datatype": "[nvarchar](100)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__games__FFE11FCFDAD0C969",
+          "columns": [
+            "game_id"
+          ]
+        },
+        "foreign_keys": [],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "Group_Block",
+      "columns": [
+        {
+          "name": "block_id",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "group_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "user_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "blocked_by_user_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "reason",
+          "datatype": "[nvarchar](200)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "blocked_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "unblocked_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK_Group_Block",
+          "columns": [
+            "block_id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK_Group_Block_ByUser",
+            "columns": [
+              "blocked_by_user_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK_Group_Block_Group",
+            "columns": [
+              "group_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Groups",
+              "columns": [
+                "group_id"
+              ]
+            }
+          },
+          {
+            "name": "FK_Group_Block_User",
+            "columns": [
+              "user_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "Group_Chat",
+      "columns": [
+        {
+          "name": "message_id",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "group_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "sender_user_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "message_text",
+          "datatype": "[nvarchar](max)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "sent_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK_Group_Chat",
+          "columns": [
+            "message_id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK_Group_Chat_Group",
+            "columns": [
+              "group_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Groups",
+              "columns": [
+                "group_id"
+              ]
+            }
+          },
+          {
+            "name": "FK_Group_Chat_Sender",
+            "columns": [
+              "sender_user_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "Group_Member",
+      "columns": [
+        {
+          "name": "group_member_id",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "group_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "user_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "role_name",
+          "datatype": "[nvarchar](20)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "joined_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "left_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK_Group_Member",
+          "columns": [
+            "group_member_id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK_Group_Member_Group",
+            "columns": [
+              "group_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Groups",
+              "columns": [
+                "group_id"
+              ]
+            }
+          },
+          {
+            "name": "FK_Group_Member_User",
+            "columns": [
+              "user_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "Group_Read_States",
+      "columns": [
+        {
+          "name": "state_id",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "group_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "user_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "last_read_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK_Group_Read_States",
+          "columns": [
+            "state_id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK_Group_Read_States_Group",
+            "columns": [
+              "group_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Groups",
+              "columns": [
+                "group_id"
+              ]
+            }
+          },
+          {
+            "name": "FK_Group_Read_States_User",
+            "columns": [
+              "user_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "Groups",
+      "columns": [
+        {
+          "name": "group_id",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "owner_user_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "group_name",
+          "datatype": "[nvarchar](50)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "description",
+          "datatype": "[nvarchar](200)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "is_private",
+          "datatype": "[bit]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "created_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "updated_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK_Groups",
+          "columns": [
+            "group_id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK_Groups_Owner",
+            "columns": [
+              "owner_user_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "leaderboard_snapshots",
+      "columns": [
+        {
+          "name": "snapshot_id",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "period",
+          "datatype": "[varchar](20)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "ts",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "rank",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "game_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "index_value",
+          "datatype": "[decimal](18, 4)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "created_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__leaderbo__C27CFBF749AA0C32",
+          "columns": [
+            "snapshot_id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK__leaderboa__game___062DE679",
+            "columns": [
+              "game_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "games",
+              "columns": [
+                "game_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__leaderboa__game___5F492382",
+            "columns": [
+              "game_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "games",
+              "columns": [
+                "game_id"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "ManagerData",
+      "columns": [
+        {
+          "name": "Manager_Id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "Manager_Name",
+          "datatype": "[nvarchar](30)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "Manager_Account",
+          "datatype": "[varchar](30)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "Manager_Password",
+          "datatype": "[nvarchar](200)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "Administrator_registration_date",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "Manager_Email",
+          "datatype": "[nvarchar](255)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "Manager_EmailConfirmed",
+          "datatype": "[bit]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "Manager_AccessFailedCount",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "Manager_LockoutEnabled",
+          "datatype": "[bit]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "Manager_LockoutEnd",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__ManagerD__AE5FEFAD638D88FF",
+          "columns": [
+            "Manager_Id"
+          ]
+        },
+        "foreign_keys": [],
+        "unique": [
+          {
+            "name": "UQ__ManagerD__0890969EC9C76047",
+            "columns": [
+              "Manager_Email"
+            ]
+          },
+          {
+            "name": "UQ__ManagerD__62B5E21119A93877",
+            "columns": [
+              "Manager_Account"
+            ]
+          }
+        ],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "ManagerRole",
+      "columns": [
+        {
+          "name": "Manager_Id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "ManagerRole_Id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__ManagerR__6270897EA52FCCCF",
+          "columns": [
+            "Manager_Id",
+            "ManagerRole_Id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK__ManagerRo__Manag__0BE6BFCF",
+            "columns": [
+              "Manager_Id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "ManagerData",
+              "columns": [
+                "Manager_Id"
+              ]
+            }
+          },
+          {
+            "name": "FK__ManagerRo__Manag__0CDAE408",
+            "columns": [
+              "ManagerRole_Id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "ManagerRolePermission",
+              "columns": [
+                "ManagerRole_Id"
+              ]
+            }
+          },
+          {
+            "name": "FK__ManagerRo__Manag__57A801BA",
+            "columns": [
+              "Manager_Id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "ManagerData",
+              "columns": [
+                "Manager_Id"
+              ]
+            }
+          },
+          {
+            "name": "FK__ManagerRo__Manag__589C25F3",
+            "columns": [
+              "ManagerRole_Id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "ManagerRolePermission",
+              "columns": [
+                "ManagerRole_Id"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "ManagerRolePermission",
+      "columns": [
+        {
+          "name": "ManagerRole_Id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "role_name",
+          "datatype": "[nvarchar](50)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "AdministratorPrivilegesManagement",
+          "datatype": "[bit]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "UserStatusManagement",
+          "datatype": "[bit]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "ShoppingPermissionManagement",
+          "datatype": "[bit]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "MessagePermissionManagement",
+          "datatype": "[bit]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "Pet_Rights_Management",
+          "datatype": "[bit]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "customer_service",
+          "datatype": "[bit]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__ManagerR__C2F66D3DC40C7408",
+          "columns": [
+            "ManagerRole_Id"
+          ]
+        },
+        "foreign_keys": [],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "MemberSalesProfile",
+      "columns": [
+        {
+          "name": "User_Id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "BankCode",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "BankAccountNumber",
+          "datatype": "[varchar](30)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "AccountCoverPhoto",
+          "datatype": "[varbinary](max)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__MemberSa__206D9170B9BF5CEA",
+          "columns": [
+            "User_Id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK__MemberSal__User___119F9925",
+            "columns": [
+              "User_Id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK__MemberSal__User___55BFB948",
+            "columns": [
+              "User_Id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "MerchType",
+      "columns": [
+        {
+          "name": "merch_type_id",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "merch_type_name",
+          "datatype": "[nvarchar](50)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": null,
+        "foreign_keys": [],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "metric_sources",
+      "columns": [
+        {
+          "name": "source_id",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "name",
+          "datatype": "[nvarchar](50)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "note",
+          "datatype": "[nvarchar](50)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "created_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__metric_s__3035A9B60C38D610",
+          "columns": [
+            "source_id"
+          ]
+        },
+        "foreign_keys": [],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "metrics",
+      "columns": [
+        {
+          "name": "metric_id",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "source_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "code",
+          "datatype": "[varchar](50)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "unit",
+          "datatype": "[varchar](30)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "description",
+          "datatype": "[nvarchar](50)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "is_active",
+          "datatype": "[bit]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "created_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__metrics__13D5DCA4360F643C",
+          "columns": [
+            "metric_id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK__metrics__source___0DCF0841",
+            "columns": [
+              "source_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "metric_sources",
+              "columns": [
+                "source_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__metrics__source___59904A2C",
+            "columns": [
+              "source_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "metric_sources",
+              "columns": [
+                "source_id"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "MiniGame",
+      "columns": [
+        {
+          "name": "PlayID",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "UserID",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "PetID",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "Level",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "MonsterCount",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "SpeedMultiplier",
+          "datatype": "[decimal](5, 2)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "Result",
+          "datatype": "[nvarchar](10)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "ExpGained",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "ExpGainedTime",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "PointsGained",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "PointsGainedTime",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "CouponGained",
+          "datatype": "[varchar](50)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "CouponGainedTime",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "HungerDelta",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "MoodDelta",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "StaminaDelta",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "CleanlinessDelta",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "StartTime",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "EndTime",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "Aborted",
+          "datatype": "[bit]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": null,
+        "foreign_keys": [
+          {
+            "name": "FK__MiniGame__UserID__6F7F8B4B",
+            "columns": [
+              "UserID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK__MiniGame__UserID__76EBA2E9",
+            "columns": [
+              "UserID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "Mutes",
+      "columns": [
+        {
+          "name": "mute_id",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "word",
+          "datatype": "[nvarchar](50)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "replacement",
+          "datatype": "[nvarchar](50)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "is_active",
+          "datatype": "[bit]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "manager_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "created_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK_Mutes",
+          "columns": [
+            "mute_id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK_Mutes_Manager",
+            "columns": [
+              "manager_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "ManagerData",
+              "columns": [
+                "Manager_Id"
+              ]
+            }
+          }
+        ],
+        "unique": [
+          {
+            "name": "UQ_Mutes_Word",
+            "columns": [
+              "word"
+            ]
+          }
+        ],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "Notification_Actions",
+      "columns": [
+        {
+          "name": "action_id",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "action_name",
+          "datatype": "[nvarchar](50)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "created_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK_Notification_Actions",
+          "columns": [
+            "action_id"
+          ]
+        },
+        "foreign_keys": [],
+        "unique": [
+          {
+            "name": "UQ_Notification_Actions_Name",
+            "columns": [
+              "action_name"
+            ]
+          }
+        ],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "Notification_Recipients",
+      "columns": [
+        {
+          "name": "recipient_id",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "notification_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "user_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "manager_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "read_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK_Notification_Recipients",
+          "columns": [
+            "recipient_id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK_Recipients_Manager",
+            "columns": [
+              "manager_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "ManagerData",
+              "columns": [
+                "Manager_Id"
+              ]
+            }
+          },
+          {
+            "name": "FK_Recipients_Notification",
+            "columns": [
+              "notification_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Notifications",
+              "columns": [
+                "notification_id"
+              ]
+            }
+          },
+          {
+            "name": "FK_Recipients_User",
+            "columns": [
+              "user_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": [
+          {
+            "name": "CK_Notification_Recipients_TargetOneOnly",
+            "expression": "((case when [user_id] IS NULL then (0) else (1) end+case when [manager_id] IS NULL then (0) else (1) end)=(1))"
+          }
+        ]
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "Notification_Sources",
+      "columns": [
+        {
+          "name": "source_id",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "source_name",
+          "datatype": "[nvarchar](50)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "created_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK_Notification_Sources",
+          "columns": [
+            "source_id"
+          ]
+        },
+        "foreign_keys": [],
+        "unique": [
+          {
+            "name": "UQ_Notification_Sources_Name",
+            "columns": [
+              "source_name"
+            ]
+          }
+        ],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "Notifications",
+      "columns": [
+        {
+          "name": "notification_id",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "source_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "action_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "group_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "sender_user_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "sender_manager_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "title",
+          "datatype": "[nvarchar](100)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "message",
+          "datatype": "[nvarchar](255)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "created_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK_Notifications",
+          "columns": [
+            "notification_id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK_Notifications_Action",
+            "columns": [
+              "action_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Notification_Actions",
+              "columns": [
+                "action_id"
+              ]
+            }
+          },
+          {
+            "name": "FK_Notifications_Group",
+            "columns": [
+              "group_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Groups",
+              "columns": [
+                "group_id"
+              ]
+            }
+          },
+          {
+            "name": "FK_Notifications_SenderManager",
+            "columns": [
+              "sender_manager_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "ManagerData",
+              "columns": [
+                "Manager_Id"
+              ]
+            }
+          },
+          {
+            "name": "FK_Notifications_SenderUser",
+            "columns": [
+              "sender_user_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK_Notifications_Source",
+            "columns": [
+              "source_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Notification_Sources",
+              "columns": [
+                "source_id"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": [
+          {
+            "name": "CK_Notifications_SenderOneOnly",
+            "expression": "((case when [sender_user_id] IS NULL then (0) else (1) end+case when [sender_manager_id] IS NULL then (0) else (1) end)<=(1))"
+          }
+        ]
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "Official_Store_Ranking",
+      "columns": [
+        {
+          "name": "ranking_id",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "period_type",
+          "datatype": "[nvarchar](20)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "ranking_date",
+          "datatype": "[date]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "product_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "ranking_metric",
+          "datatype": "[nvarchar](50)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "ranking_position",
+          "datatype": "[tinyint]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "trading_amount",
+          "datatype": "[decimal](10, 2)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "trading_volume",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "ranking_updated_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": null,
+        "foreign_keys": [],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "OrderAddresses",
+      "columns": [
+        {
+          "name": "order_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "recipient",
+          "datatype": "[nvarchar](100)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "phone",
+          "datatype": "[nvarchar](30)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "zipcode",
+          "datatype": "[nvarchar](10)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "address1",
+          "datatype": "[nvarchar](200)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "address2",
+          "datatype": "[nvarchar](200)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "city",
+          "datatype": "[nvarchar](50)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "country",
+          "datatype": "[nvarchar](30)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__OrderAdd__465962297AF1A4A5",
+          "columns": [
+            "order_id"
+          ]
+        },
+        "foreign_keys": [],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "OrderInfo",
+      "columns": [
+        {
+          "name": "order_id",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "order_code",
+          "datatype": "[bigint]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "User_ID",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "order_date",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "order_status",
+          "datatype": "[nvarchar](30)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "payment_status",
+          "datatype": "[nvarchar](30)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "order_total",
+          "datatype": "[decimal](18, 2)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "payment_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "shipped_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "completed_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__OrderInf__46596229C3B9E39E",
+          "columns": [
+            "order_id"
+          ]
+        },
+        "foreign_keys": [],
+        "unique": [],
+        "checks": [
+          {
+            "name": "CK_OrderInfo_Completed_Implies_CompletedAt",
+            "expression": "(([order_status]=N'已出貨' OR [order_status]=N'未出貨') AND [completed_at] IS NULL OR [order_status]=N'已完成' AND [completed_at] IS NOT NULL)"
+          },
+          {
+            "name": "CK_OrderInfo_OrderCode_Range",
+            "expression": "([order_code]>=(100000000001.) AND [order_code]<=(999999999999.))"
+          },
+          {
+            "name": "CK_OrderInfo_OrderStatus",
+            "expression": "([order_status]=N'已完成' OR [order_status]=N'已出貨' OR [order_status]=N'未出貨')"
+          },
+          {
+            "name": "CK_OrderInfo_OrderTotal_NonNegative",
+            "expression": "([order_total]>=(0))"
+          },
+          {
+            "name": "CK_OrderInfo_Paid_Implies_PaymentAt",
+            "expression": "([payment_status]=N'未付款' AND [payment_at] IS NULL OR [payment_status]=N'已付款' AND [payment_at] IS NOT NULL)"
+          },
+          {
+            "name": "CK_OrderInfo_PaymentStatus",
+            "expression": "([payment_status]=N'已付款' OR [payment_status]=N'未付款')"
+          },
+          {
+            "name": "CK_OrderInfo_Shipped_Implies_ShippedAt",
+            "expression": "([order_status]=N'未出貨' AND [shipped_at] IS NULL OR ([order_status]=N'已完成' OR [order_status]=N'已出貨') AND [shipped_at] IS NOT NULL)"
+          },
+          {
+            "name": "CK_OrderInfo_Timeline",
+            "expression": "(([payment_at] IS NULL OR [payment_at]>=[order_date]) AND ([shipped_at] IS NULL OR [shipped_at]>=isnull([payment_at],[order_date])) AND ([completed_at] IS NULL OR [completed_at]>=isnull([shipped_at],isnull([payment_at],[order_date]))))"
+          }
+        ]
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "OrderItems",
+      "columns": [
+        {
+          "name": "item_id",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "order_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "product_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "line_no",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "unit_price",
+          "datatype": "[decimal](18, 2)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "quantity",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "subtotal",
+          "datatype": null,
+          "nullability": null,
+          "default": null,
+          "identity": null,
+          "computed": {
+            "expr": "CONVERT([decimal](18,2),[unit_price]*[quantity])",
+            "persisted": true
+          }
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__OrderIte__52020FDD2D390A7A",
+          "columns": [
+            "item_id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK__OrderItem__order__5A4F643B",
+            "columns": [
+              "order_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "OrderInfo",
+              "columns": [
+                "order_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__OrderItem__order__5C37ACAD",
+            "columns": [
+              "order_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "OrderInfo",
+              "columns": [
+                "order_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__OrderItem__order__5E1FF51F",
+            "columns": [
+              "order_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "OrderInfo",
+              "columns": [
+                "order_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__OrderItem__order__7CD98669",
+            "columns": [
+              "order_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "OrderInfo",
+              "columns": [
+                "order_id"
+              ]
+            }
+          },
+          {
+            "name": "FK_OrderItems_Order",
+            "columns": [
+              "order_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "OrderInfo",
+              "columns": [
+                "order_id"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "OrderStatusHistory",
+      "columns": [
+        {
+          "name": "history_id",
+          "datatype": "[bigint] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "order_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "from_status",
+          "datatype": "[nvarchar](30)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "to_status",
+          "datatype": "[nvarchar](30)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "changed_by",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "changed_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "note",
+          "datatype": "[nvarchar](200)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__OrderSta__096AA2E9A89BA70E",
+          "columns": [
+            "history_id"
+          ]
+        },
+        "foreign_keys": [],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "OtherProductDetails",
+      "columns": [
+        {
+          "name": "product_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "product_name",
+          "datatype": "[nvarchar](200)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "product_description",
+          "datatype": "[nvarchar](max)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "supplier_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "merch_type_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "digital_code",
+          "datatype": "[nvarchar](100)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "size",
+          "datatype": "[nvarchar](50)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "color",
+          "datatype": "[nvarchar](50)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "weight",
+          "datatype": "[nvarchar](50)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "dimensions",
+          "datatype": "[nvarchar](100)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "material",
+          "datatype": "[nvarchar](50)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "stock_quantity",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": null,
+        "foreign_keys": [],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "PaymentTransactions",
+      "columns": [
+        {
+          "name": "payment_id",
+          "datatype": "[bigint] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "payment_code",
+          "datatype": "[bigint]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "order_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "txn_type",
+          "datatype": "[nvarchar](30)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "amount",
+          "datatype": "[decimal](18, 2)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "provider",
+          "datatype": "[nvarchar](50)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "provider_txn",
+          "datatype": "[nvarchar](100)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "status",
+          "datatype": "[nvarchar](30)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "created_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "confirmed_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "meta",
+          "datatype": "[nvarchar](max)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__PaymentT__ED1FC9EA68A49FF1",
+          "columns": [
+            "payment_id"
+          ]
+        },
+        "foreign_keys": [],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "Pet",
+      "columns": [
+        {
+          "name": "PetID",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "UserID",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "PetName",
+          "datatype": "[nvarchar](50)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "Level",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "LevelUpTime",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "Experience",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "Hunger",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "Mood",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "Stamina",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "Cleanliness",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "Health",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "SkinColor",
+          "datatype": "[varchar](10)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "SkinColorChangedTime",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "BackgroundColor",
+          "datatype": "[nvarchar](50)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "BackgroundColorChangedTime",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "PointsChanged_SkinColor",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "PointsChanged_BackgroundColor",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "PointsGained_LevelUp",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "PointsGainedTime_LevelUp",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": null,
+        "foreign_keys": [
+          {
+            "name": "FK__Pet__UserID__6E8B6712",
+            "columns": [
+              "UserID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK__Pet__UserID__75F77EB0",
+            "columns": [
+              "UserID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "PlayerMarketOrderInfo",
+      "columns": [
+        {
+          "name": "p_order_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "p_product_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "seller_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "buyer_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "p_order_date",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "p_order_status",
+          "datatype": "[nvarchar](1)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "p_payment_status",
+          "datatype": "[nvarchar](1)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "p_unit_price",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "p_quantity",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "p_order_total",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "p_order_created_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "p_order_updated_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__PlayerMa__AACAAD70C933BAFC",
+          "columns": [
+            "p_order_id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK__PlayerMar__buyer__0A338187",
+            "columns": [
+              "buyer_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK__PlayerMar__buyer__3AD6B8E2",
+            "columns": [
+              "buyer_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK__PlayerMar__p_pro__084B3915",
+            "columns": [
+              "p_product_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "PlayerMarketProductInfo",
+              "columns": [
+                "p_product_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__PlayerMar__p_pro__46486B8E",
+            "columns": [
+              "p_product_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "PlayerMarketProductInfo",
+              "columns": [
+                "p_product_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__PlayerMar__p_pro__4C0144E4",
+            "columns": [
+              "p_product_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "PlayerMarketProductInfo",
+              "columns": [
+                "p_product_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__PlayerMar__p_pro__4EDDB18F",
+            "columns": [
+              "p_product_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "PlayerMarketProductInfo",
+              "columns": [
+                "p_product_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__PlayerMar__selle__093F5D4E",
+            "columns": [
+              "seller_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK__PlayerMar__selle__39E294A9",
+            "columns": [
+              "seller_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "PlayerMarketOrderTradepage",
+      "columns": [
+        {
+          "name": "p_order_tradepage_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "p_order_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "p_product_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "p_order_platform_fee",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "seller_transferred_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "buyer_received_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "completed_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__PlayerMa__4E2C726D362DA57F",
+          "columns": [
+            "p_order_tradepage_id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK__PlayerMar__p_ord__0B27A5C0",
+            "columns": [
+              "p_order_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "PlayerMarketOrderInfo",
+              "columns": [
+                "p_order_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__PlayerMar__p_ord__3BCADD1B",
+            "columns": [
+              "p_order_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "PlayerMarketOrderInfo",
+              "columns": [
+                "p_order_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__PlayerMar__p_pro__0C1BC9F9",
+            "columns": [
+              "p_product_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "PlayerMarketProductInfo",
+              "columns": [
+                "p_product_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__PlayerMar__p_pro__3CBF0154",
+            "columns": [
+              "p_product_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "PlayerMarketProductInfo",
+              "columns": [
+                "p_product_id"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "PlayerMarketProductImgs",
+      "columns": [
+        {
+          "name": "p_product_img_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "p_product_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "p_product_img_url",
+          "datatype": "[nvarchar](max)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__PlayerMa__75AAE6F0C6CBADFB",
+          "columns": [
+            "p_product_img_id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK__PlayerMar__p_pro__075714DC",
+            "columns": [
+              "p_product_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "PlayerMarketProductInfo",
+              "columns": [
+                "p_product_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__PlayerMar__p_pro__45544755",
+            "columns": [
+              "p_product_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "PlayerMarketProductInfo",
+              "columns": [
+                "p_product_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__PlayerMar__p_pro__4B0D20AB",
+            "columns": [
+              "p_product_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "PlayerMarketProductInfo",
+              "columns": [
+                "p_product_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__PlayerMar__p_pro__4DE98D56",
+            "columns": [
+              "p_product_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "PlayerMarketProductInfo",
+              "columns": [
+                "p_product_id"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "PlayerMarketProductInfo",
+      "columns": [
+        {
+          "name": "p_product_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "p_product_type",
+          "datatype": "[nvarchar](1)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "p_product_title",
+          "datatype": "[nvarchar](1)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "p_product_name",
+          "datatype": "[nvarchar](1)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "p_product_description",
+          "datatype": "[nvarchar](1)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "product_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "seller_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "p_status",
+          "datatype": "[nvarchar](1)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "price",
+          "datatype": "[decimal](18, 0)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "p_product_img_id",
+          "datatype": "[nvarchar](1)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "created_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "updated_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__PlayerMa__A33C81652AD0DD1E",
+          "columns": [
+            "p_product_id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK__PlayerMar__selle__0662F0A3",
+            "columns": [
+              "seller_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK__PlayerMar__selle__4460231C",
+            "columns": [
+              "seller_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK__PlayerMar__selle__4A18FC72",
+            "columns": [
+              "seller_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK__PlayerMar__selle__4CF5691D",
+            "columns": [
+              "seller_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "PlayerMarketRanking",
+      "columns": [
+        {
+          "name": "p_ranking_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "p_period_type",
+          "datatype": "[nvarchar](255)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "p_ranking_date",
+          "datatype": "[date]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "p_product_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "p_ranking_metric",
+          "datatype": "[nvarchar](255)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "p_ranking_position",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "p_trading_amount",
+          "datatype": "[decimal](18, 0)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "p_trading_volume",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "updated_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__PlayerMa__2B50ED32026B4213",
+          "columns": [
+            "p_ranking_id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK__PlayerMar__p_pro__047AA831",
+            "columns": [
+              "p_product_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "PlayerMarketProductInfo",
+              "columns": [
+                "p_product_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__PlayerMar__p_pro__4277DAAA",
+            "columns": [
+              "p_product_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "PlayerMarketProductInfo",
+              "columns": [
+                "p_product_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__PlayerMar__p_pro__4830B400",
+            "columns": [
+              "p_product_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "PlayerMarketProductInfo",
+              "columns": [
+                "p_product_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__PlayerMar__p_pro__50C5FA01",
+            "columns": [
+              "p_product_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "PlayerMarketProductInfo",
+              "columns": [
+                "p_product_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__PlayerMar__p_pro__52AE4273",
+            "columns": [
+              "p_product_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "PlayerMarketProductInfo",
+              "columns": [
+                "p_product_id"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "PlayerMarketTradeMsg",
+      "columns": [
+        {
+          "name": "trade_msg_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "p_order_tradepage_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "msg_from",
+          "datatype": "[nvarchar](1)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "message_text",
+          "datatype": "[nvarchar](1)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "created_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__PlayerMa__C2FA77A23EC155AE",
+          "columns": [
+            "trade_msg_id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK__PlayerMar__p_ord__0D0FEE32",
+            "columns": [
+              "p_order_tradepage_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "PlayerMarketOrderTradepage",
+              "columns": [
+                "p_order_tradepage_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__PlayerMar__p_ord__3DB3258D",
+            "columns": [
+              "p_order_tradepage_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "PlayerMarketOrderTradepage",
+              "columns": [
+                "p_order_tradepage_id"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "popularity_index_daily",
+      "columns": [
+        {
+          "name": "id",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "game_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "date",
+          "datatype": "[date]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "index_value",
+          "datatype": "[decimal](18, 4)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "created_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__populari__3213E83F08C19225",
+          "columns": [
+            "id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK__popularit__game___0539C240",
+            "columns": [
+              "game_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "games",
+              "columns": [
+                "game_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__popularit__game___5E54FF49",
+            "columns": [
+              "game_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "games",
+              "columns": [
+                "game_id"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "post_metric_snapshot",
+      "columns": [
+        {
+          "name": "post_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "game_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "date",
+          "datatype": "[date]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "index_value",
+          "datatype": "[decimal](18, 4)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "details_json",
+          "datatype": "[nvarchar](max)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "created_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__post_met__3ED7876644BB3452",
+          "columns": [
+            "post_id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK__post_metr__game___035179CE",
+            "columns": [
+              "game_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "games",
+              "columns": [
+                "game_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__post_metr__game___6319B466",
+            "columns": [
+              "game_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "games",
+              "columns": [
+                "game_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__post_metr__post___025D5595",
+            "columns": [
+              "post_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "posts",
+              "columns": [
+                "post_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__post_metr__post___6225902D",
+            "columns": [
+              "post_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "posts",
+              "columns": [
+                "post_id"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "post_sources",
+      "columns": [
+        {
+          "name": "id",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "post_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "source_name",
+          "datatype": "[varchar](50)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "url",
+          "datatype": "[varchar](300)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "created_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__post_sou__3213E83FA633BB17",
+          "columns": [
+            "id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK__post_sour__post___04459E07",
+            "columns": [
+              "post_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "posts",
+              "columns": [
+                "post_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__post_sour__post___640DD89F",
+            "columns": [
+              "post_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "posts",
+              "columns": [
+                "post_id"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "posts",
+      "columns": [
+        {
+          "name": "post_id",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "type",
+          "datatype": "[nvarchar](50)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "game_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "title",
+          "datatype": "[nvarchar](50)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "tldr",
+          "datatype": "[nvarchar](50)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "body_md",
+          "datatype": "[nvarchar](3000)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "status",
+          "datatype": "[varchar](50)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "pinned",
+          "datatype": "[bit]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "created_by",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "published_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "created_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "updated_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__posts__3ED78766F2C1BEAE",
+          "columns": [
+            "post_id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK__posts__created_b__0169315C",
+            "columns": [
+              "created_by"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK__posts__created_b__61316BF4",
+            "columns": [
+              "created_by"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK__posts__game_id__07220AB2",
+            "columns": [
+              "game_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "games",
+              "columns": [
+                "game_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__posts__game_id__603D47BB",
+            "columns": [
+              "game_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "games",
+              "columns": [
+                "game_id"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "ProductCode",
+      "columns": [
+        {
+          "name": "product_code",
+          "datatype": "[nvarchar](50)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "product_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": null,
+        "foreign_keys": [],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "ProductImages",
+      "columns": [
+        {
+          "name": "productimg_id",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "product_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "productimg_url",
+          "datatype": "[nvarchar](500)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "productimg_alt_text",
+          "datatype": "[nvarchar](255)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "productimg_updated_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": null,
+        "foreign_keys": [],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "ProductInfo",
+      "columns": [
+        {
+          "name": "product_id",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "product_name",
+          "datatype": "[nvarchar](200)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "product_type",
+          "datatype": "[nvarchar](50)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "price",
+          "datatype": "[decimal](10, 2)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "currency_code",
+          "datatype": "[nvarchar](10)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "Shipment_Quantity",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "product_created_by",
+          "datatype": "[nvarchar](50)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "product_created_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "product_updated_by",
+          "datatype": "[nvarchar](50)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "product_updated_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": null,
+        "foreign_keys": [],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "ProductInfoAuditLog",
+      "columns": [
+        {
+          "name": "log_id",
+          "datatype": "[bigint] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "product_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "action_type",
+          "datatype": "[nvarchar](30)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "field_name",
+          "datatype": "[nvarchar](100)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "old_value",
+          "datatype": "[nvarchar](max)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "new_value",
+          "datatype": "[nvarchar](max)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "Manager_Id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "changed_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": null,
+        "foreign_keys": [
+          {
+            "name": "FK__ProductIn__Manag__038683F8",
+            "columns": [
+              "Manager_Id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "ManagerData",
+              "columns": [
+                "Manager_Id"
+              ]
+            }
+          },
+          {
+            "name": "FK__ProductIn__Manag__4183B671",
+            "columns": [
+              "Manager_Id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "ManagerData",
+              "columns": [
+                "Manager_Id"
+              ]
+            }
+          },
+          {
+            "name": "FK__ProductIn__Manag__473C8FC7",
+            "columns": [
+              "Manager_Id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "ManagerData",
+              "columns": [
+                "Manager_Id"
+              ]
+            }
+          },
+          {
+            "name": "FK__ProductIn__Manag__53A266AC",
+            "columns": [
+              "Manager_Id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "ManagerData",
+              "columns": [
+                "Manager_Id"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "reactions",
+      "columns": [
+        {
+          "name": "id",
+          "datatype": "[bigint] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "User_ID",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "target_type",
+          "datatype": "[varchar](50)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "target_id",
+          "datatype": "[bigint]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "kind",
+          "datatype": "[varchar](50)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "created_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__reaction__3213E83F940B04A4",
+          "columns": [
+            "id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK__reactions__User___6ABAD62E",
+            "columns": [
+              "User_ID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK__reactions__User___7BB05806",
+            "columns": [
+              "User_ID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "Relation",
+      "columns": [
+        {
+          "name": "relation_id",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "user_id_small",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "user_id_large",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "status_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "requested_by",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "friend_nickname",
+          "datatype": "[nvarchar](10)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "created_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "updated_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK_Relation",
+          "columns": [
+            "relation_id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK_Relation_RequestedBy",
+            "columns": [
+              "requested_by"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK_Relation_Status",
+            "columns": [
+              "status_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Relation_Status",
+              "columns": [
+                "status_id"
+              ]
+            }
+          },
+          {
+            "name": "FK_Relation_UserLarge",
+            "columns": [
+              "user_id_large"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK_Relation_UserSmall",
+            "columns": [
+              "user_id_small"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": [
+          {
+            "name": "CK_Relation_UserOrder",
+            "expression": "([user_id_small]<[user_id_large])"
+          }
+        ]
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "Relation_Status",
+      "columns": [
+        {
+          "name": "status_id",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "status_code",
+          "datatype": "[nvarchar](30)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "status_name",
+          "datatype": "[nvarchar](30)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "created_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK_Relation_Status",
+          "columns": [
+            "status_id"
+          ]
+        },
+        "foreign_keys": [],
+        "unique": [
+          {
+            "name": "UQ_Relation_Status_Code",
+            "columns": [
+              "status_code"
+            ]
+          },
+          {
+            "name": "UQ_Relation_Status_Name",
+            "columns": [
+              "status_name"
+            ]
+          }
+        ],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "Shipments",
+      "columns": [
+        {
+          "name": "shipment_id",
+          "datatype": "[bigint] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "shipment_code",
+          "datatype": "[bigint]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "order_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "carrier",
+          "datatype": "[nvarchar](50)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "tracking_no",
+          "datatype": "[nvarchar](100)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "shipped_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "delivered_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "status",
+          "datatype": "[nvarchar](30)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "note",
+          "datatype": "[nvarchar](200)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__Shipment__41466E5960054AD2",
+          "columns": [
+            "shipment_id"
+          ]
+        },
+        "foreign_keys": [],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "StockMovements",
+      "columns": [
+        {
+          "name": "movement_id",
+          "datatype": "[bigint] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "product_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "order_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "change_qty",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "reason",
+          "datatype": "[nvarchar](30)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "created_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "note",
+          "datatype": "[nvarchar](200)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__StockMov__AB1D1022C599FC06",
+          "columns": [
+            "movement_id"
+          ]
+        },
+        "foreign_keys": [],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "Supplier",
+      "columns": [
+        {
+          "name": "supplier_id",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "supplier_name",
+          "datatype": "[nvarchar](100)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": null,
+        "foreign_keys": [],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "Support_Ticket_Assignments",
+      "columns": [
+        {
+          "name": "assignment_id",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "ticket_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "from_manager_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "to_manager_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "assigned_by_manager_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "assigned_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "note",
+          "datatype": "[nvarchar](255)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK_Support_Ticket_Assignments",
+          "columns": [
+            "assignment_id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK_Ticket_Assignments_By",
+            "columns": [
+              "assigned_by_manager_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "ManagerData",
+              "columns": [
+                "Manager_Id"
+              ]
+            }
+          },
+          {
+            "name": "FK_Ticket_Assignments_From",
+            "columns": [
+              "from_manager_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "ManagerData",
+              "columns": [
+                "Manager_Id"
+              ]
+            }
+          },
+          {
+            "name": "FK_Ticket_Assignments_Ticket",
+            "columns": [
+              "ticket_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Support_Tickets",
+              "columns": [
+                "ticket_id"
+              ]
+            }
+          },
+          {
+            "name": "FK_Ticket_Assignments_To",
+            "columns": [
+              "to_manager_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "ManagerData",
+              "columns": [
+                "Manager_Id"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": [
+          {
+            "name": "CK_Support_Ticket_Assignments_NotSame",
+            "expression": "([from_manager_id] IS NULL OR [from_manager_id]<>[to_manager_id])"
+          }
+        ]
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "Support_Ticket_Messages",
+      "columns": [
+        {
+          "name": "message_id",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "ticket_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "sender_user_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "sender_manager_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "message_text",
+          "datatype": "[nvarchar](255)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "sent_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "read_by_user_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "read_by_manager_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK_Support_Ticket_Messages",
+          "columns": [
+            "message_id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK_Support_Ticket_Messages_SenderManager",
+            "columns": [
+              "sender_manager_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "ManagerData",
+              "columns": [
+                "Manager_Id"
+              ]
+            }
+          },
+          {
+            "name": "FK_Support_Ticket_Messages_SenderUser",
+            "columns": [
+              "sender_user_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK_Support_Ticket_Messages_Tickets",
+            "columns": [
+              "ticket_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Support_Tickets",
+              "columns": [
+                "ticket_id"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": [
+          {
+            "name": "CK_Support_Ticket_Messages_Read_GE_Sent",
+            "expression": "(([read_by_user_at] IS NULL OR [read_by_user_at]>=[sent_at]) AND ([read_by_manager_at] IS NULL OR [read_by_manager_at]>=[sent_at]))"
+          },
+          {
+            "name": "CK_Support_Ticket_Messages_Sender_OneOnly",
+            "expression": "((case when [sender_user_id] IS NULL then (0) else (1) end+case when [sender_manager_id] IS NULL then (0) else (1) end)=(1))"
+          }
+        ]
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "Support_Tickets",
+      "columns": [
+        {
+          "name": "ticket_id",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "user_id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "assigned_manager_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "subject",
+          "datatype": "[nvarchar](100)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "is_closed",
+          "datatype": "[bit]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "created_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "closed_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "closed_by_manager_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "last_message_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "close_note",
+          "datatype": "[nvarchar](255)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK_Support_Tickets",
+          "columns": [
+            "ticket_id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK_Support_Tickets_AssignedManager",
+            "columns": [
+              "assigned_manager_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "ManagerData",
+              "columns": [
+                "Manager_Id"
+              ]
+            }
+          },
+          {
+            "name": "FK_Support_Tickets_ClosedBy",
+            "columns": [
+              "closed_by_manager_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "ManagerData",
+              "columns": [
+                "Manager_Id"
+              ]
+            }
+          },
+          {
+            "name": "FK_Support_Tickets_Users",
+            "columns": [
+              "user_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": [
+          {
+            "name": "CK_Support_Tickets_Close_Consistency",
+            "expression": "([is_closed]=(1) AND [closed_at] IS NOT NULL OR [is_closed]=(0) AND [closed_at] IS NULL)"
+          },
+          {
+            "name": "CK_Support_Tickets_LastMsg_GE_Created",
+            "expression": "([last_message_at] IS NULL OR [last_message_at]>=[created_at])"
+          }
+        ]
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "thread_posts",
+      "columns": [
+        {
+          "name": "id",
+          "datatype": "[bigint] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "thread_id",
+          "datatype": "[bigint]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "author_User_ID",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "content_md",
+          "datatype": "[nvarchar](3000)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "parent_post_id",
+          "datatype": "[bigint]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "status",
+          "datatype": "[varchar](50)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "created_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "updated_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__thread_p__3213E83F966AF56F",
+          "columns": [
+            "id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK__thread_po__autho__68D28DBC",
+            "columns": [
+              "author_User_ID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK__thread_po__autho__7E8CC4B1",
+            "columns": [
+              "author_User_ID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK__thread_po__paren__69C6B1F5",
+            "columns": [
+              "parent_post_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "thread_posts",
+              "columns": [
+                "id"
+              ]
+            }
+          },
+          {
+            "name": "FK__thread_po__paren__7ABC33CD",
+            "columns": [
+              "parent_post_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "thread_posts",
+              "columns": [
+                "id"
+              ]
+            }
+          },
+          {
+            "name": "FK__thread_po__threa__67DE6983",
+            "columns": [
+              "thread_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "threads",
+              "columns": [
+                "thread_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__thread_po__threa__7D98A078",
+            "columns": [
+              "thread_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "threads",
+              "columns": [
+                "thread_id"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "threads",
+      "columns": [
+        {
+          "name": "thread_id",
+          "datatype": "[bigint] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "forum_id",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "author_User_ID",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "title",
+          "datatype": "[nvarchar](50)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "status",
+          "datatype": "[varchar](50)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "created_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "updated_at",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__threads__7411E2F035E8CC2A",
+          "columns": [
+            "thread_id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK__threads__author___66EA454A",
+            "columns": [
+              "author_User_ID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK__threads__author___7CA47C3F",
+            "columns": [
+              "author_User_ID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK__threads__forum_i__00750D23",
+            "columns": [
+              "forum_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "forums",
+              "columns": [
+                "forum_id"
+              ]
+            }
+          },
+          {
+            "name": "FK__threads__forum_i__65F62111",
+            "columns": [
+              "forum_id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "forums",
+              "columns": [
+                "forum_id"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "User_Introduce",
+      "columns": [
+        {
+          "name": "User_ID",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "User_NickName",
+          "datatype": "[nvarchar](50)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "Gender",
+          "datatype": "[char](1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "IdNumber",
+          "datatype": "[varchar](30)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "Cellphone",
+          "datatype": "[varchar](30)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "Email",
+          "datatype": "[nvarchar](50)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "Address",
+          "datatype": "[nvarchar](100)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "DateOfBirth",
+          "datatype": "[date]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "Create_Account",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "User_Picture",
+          "datatype": "[varbinary](max)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "User_Introduce",
+          "datatype": "[nvarchar](200)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__User_Int__206D91909E25154A",
+          "columns": [
+            "User_ID"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK__User_Intr__User___0FB750B3",
+            "columns": [
+              "User_ID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK__User_Intr__User___53D770D6",
+            "columns": [
+              "User_ID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          }
+        ],
+        "unique": [
+          {
+            "name": "UQ__User_Int__62DF8033EDDD19FD",
+            "columns": [
+              "IdNumber"
+            ]
+          },
+          {
+            "name": "UQ__User_Int__A9D10534CAA16AC5",
+            "columns": [
+              "Email"
+            ]
+          },
+          {
+            "name": "UQ__User_Int__CDE19CF29F238F26",
+            "columns": [
+              "Cellphone"
+            ]
+          },
+          {
+            "name": "UQ__User_Int__DAFD02CF797EB192",
+            "columns": [
+              "User_NickName"
+            ]
+          }
+        ],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "User_Rights",
+      "columns": [
+        {
+          "name": "User_Id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "User_Status",
+          "datatype": "[bit]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "ShoppingPermission",
+          "datatype": "[bit]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "MessagePermission",
+          "datatype": "[bit]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "SalesAuthority",
+          "datatype": "[bit]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__User_Rig__206D91702DB5DE3E",
+          "columns": [
+            "User_Id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK__User_Righ__User___10AB74EC",
+            "columns": [
+              "User_Id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK__User_Righ__User___54CB950F",
+            "columns": [
+              "User_Id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "User_Sales_Information",
+      "columns": [
+        {
+          "name": "User_Id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "UserSales_Wallet",
+          "datatype": "[int]",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__User_Sal__206D9170797CCA09",
+          "columns": [
+            "User_Id"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK__User_Sale__User___1293BD5E",
+            "columns": [
+              "User_Id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK__User_Sale__User___56B3DD81",
+            "columns": [
+              "User_Id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "User_Wallet",
+      "columns": [
+        {
+          "name": "User_Id",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "User_Point",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": null,
+        "foreign_keys": [
+          {
+            "name": "FK__User_Wall__User___6CA31EA0",
+            "columns": [
+              "User_Id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK__User_Wall__User___78D3EB5B",
+            "columns": [
+              "User_Id"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "Users",
+      "columns": [
+        {
+          "name": "User_ID",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "User_name",
+          "datatype": "[nvarchar](30)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "User_Account",
+          "datatype": "[nvarchar](30)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "User_Password",
+          "datatype": "[nvarchar](30)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "User_EmailConfirmed",
+          "datatype": "[bit]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "User_PhoneNumberConfirmed",
+          "datatype": "[bit]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "User_TwoFactorEnabled",
+          "datatype": "[bit]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "User_AccessFailedCount",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "User_LockoutEnabled",
+          "datatype": "[bit]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "User_LockoutEnd",
+          "datatype": "[datetime2](7)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__Users__206D9190FA40893F",
+          "columns": [
+            "User_ID"
+          ]
+        },
+        "foreign_keys": [],
+        "unique": [
+          {
+            "name": "UQ__Users__5F1A108682A83552",
+            "columns": [
+              "User_name"
+            ]
+          },
+          {
+            "name": "UQ__Users__899F4A91E5EF8DB8",
+            "columns": [
+              "User_Account"
+            ]
+          }
+        ],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "UserSignInStats",
+      "columns": [
+        {
+          "name": "LogID",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "SignTime",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "UserID",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "PointsGained",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "PointsGainedTime",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "ExpGained",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "ExpGainedTime",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "CouponGained",
+          "datatype": "[varchar](50)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "CouponGainedTime",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": null,
+        "foreign_keys": [
+          {
+            "name": "FK__UserSignI__UserI__6D9742D9",
+            "columns": [
+              "UserID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK__UserSignI__UserI__79C80F94",
+            "columns": [
+              "UserID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "UserTokens",
+      "columns": [
+        {
+          "name": "Token_ID",
+          "datatype": "[int] IDENTITY(1,1)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "User_ID",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "Provider",
+          "datatype": "[nvarchar](50)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "Name",
+          "datatype": "[nvarchar](50)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "Value",
+          "datatype": "[nvarchar](255)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "ExpireAt",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": {
+          "name": "PK__UserToke__AA16D540EFFF863A",
+          "columns": [
+            "Token_ID"
+          ]
+        },
+        "foreign_keys": [
+          {
+            "name": "FK__UserToken__User___0EC32C7A",
+            "columns": [
+              "User_ID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK__UserToken__User___4D2A7347",
+            "columns": [
+              "User_ID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK__UserToken__User___52E34C9D",
+            "columns": [
+              "User_ID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    },
+    {
+      "schema": "dbo",
+      "name": "WalletHistory",
+      "columns": [
+        {
+          "name": "LogID",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "UserID",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "ChangeType",
+          "datatype": "[nvarchar](10)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "PointsChanged",
+          "datatype": "[int]",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "ItemCode",
+          "datatype": "[varchar](50)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "Description",
+          "datatype": "[nvarchar](255)",
+          "nullability": "NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        },
+        {
+          "name": "ChangeTime",
+          "datatype": "[datetime2](7)",
+          "nullability": "NOT NULL",
+          "default": null,
+          "identity": null,
+          "computed": null
+        }
+      ],
+      "constraints": {
+        "primary_key": null,
+        "foreign_keys": [
+          {
+            "name": "FK__WalletHis__UserI__62E4AA3C",
+            "columns": [
+              "UserID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK__WalletHis__UserI__67A95F59",
+            "columns": [
+              "UserID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          },
+          {
+            "name": "FK__WalletHis__UserI__79FD19BE",
+            "columns": [
+              "UserID"
+            ],
+            "references": {
+              "schema": "dbo",
+              "table": "Users",
+              "columns": [
+                "User_ID"
+              ]
+            }
+          }
+        ],
+        "unique": [],
+        "checks": []
+      }
+    }
+  ]
+}

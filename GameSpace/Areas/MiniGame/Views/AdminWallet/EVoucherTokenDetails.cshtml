@@ -1,0 +1,193 @@
+@model GameSpace.Models.EVoucherToken
+@{
+    ViewData["Title"] = "電子禮券 Token 詳細";
+    ViewData["BreadcrumbController"] = "錢包系統";
+    ViewData["BreadcrumbAction"] = "Token 詳細";
+    Layout = "~/Areas/MiniGame/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">電子禮券 Token 詳細</h1>
+        <a href="@Url.Action("EVoucherTokens")" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> 返回列表
+        </a>
+    </div>
+
+    <div class="row">
+        <!-- Token 基本資訊 -->
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Token 基本資訊</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label text-muted">Token ID</label>
+                                <div class="fw-bold">@Model.TokenID</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted">電子禮券 ID</label>
+                                <div class="fw-bold">
+                                    <a href="@Url.Action("Details", new { id = Model.EVoucherID })" class="text-decoration-none">
+                                        @Model.EVoucherID
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted">禮券代碼</label>
+                                <div>
+                                    <code class="bg-light p-2 rounded">@Model.EVoucher.EVoucherCode</code>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label text-muted">持有者</label>
+                                <div class="fw-bold">
+                                    @Model.EVoucher.User.UserName
+                                    <small class="text-muted d-block">@Model.EVoucher.User.UserNickName</small>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted">到期時間</label>
+                                <div class="fw-bold">
+                                    @Model.ExpiresAt.ToString("yyyy/MM/dd HH:mm:ss")
+                                    @if (Model.ExpiresAt < DateTime.UtcNow)
+                                    {
+                                        <span class="badge bg-danger ms-2">已過期</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success ms-2">有效</span>
+                                    }
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted">撤銷狀態</label>
+                                <div>
+                                    @if (Model.IsRevoked)
+                                    {
+                                        <span class="badge bg-danger">已撤銷</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">正常</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted">Token 值</label>
+                        <div class="bg-light p-3 rounded">
+                            <code class="text-break">@Model.Token</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 相關禮券資訊 -->
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">相關禮券資訊</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label text-muted">禮券類型</label>
+                        <div class="fw-bold">@Model.EVoucher.EVoucherType.Name</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted">面額</label>
+                        <div class="fw-bold text-success">NT$ @Model.EVoucher.EVoucherType.ValueAmount.ToString("N0")</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted">獲得時間</label>
+                        <div>@Model.EVoucher.AcquiredTime.ToString("yyyy/MM/dd HH:mm")</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted">使用狀態</label>
+                        <div>
+                            @if (Model.EVoucher.IsUsed)
+                            {
+                                <span class="badge bg-secondary">已使用</span>
+                                @if (Model.EVoucher.UsedTime.HasValue)
+                                {
+                                    <small class="text-muted d-block">@Model.EVoucher.UsedTime.Value.ToString("yyyy/MM/dd HH:mm")</small>
+                                }
+                            }
+                            else
+                            {
+                                <span class="badge bg-primary">未使用</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 兌換記錄 -->
+    @if (ViewBag.RedeemLogs != null && ((List<GameSpace.Models.EVoucherRedeemLog>)ViewBag.RedeemLogs).Any())
+    {
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">相關兌換記錄</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>記錄 ID</th>
+                                <th>掃描時間</th>
+                                <th>狀態</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var log in (List<GameSpace.Models.EVoucherRedeemLog>)ViewBag.RedeemLogs)
+                            {
+                                <tr>
+                                    <td>
+                                        <a href="@Url.Action("EVoucherRedeemLogDetails", new { id = log.RedeemID })" class="text-decoration-none">
+                                            @log.RedeemID
+                                        </a>
+                                    </td>
+                                    <td>@log.ScannedAt.ToString("yyyy/MM/dd HH:mm:ss")</td>
+                                    <td>
+                                        @switch (log.Status)
+                                        {
+                                            case "Approved":
+                                                <span class="badge bg-success">已核准</span>
+                                                break;
+                                            case "Rejected":
+                                                <span class="badge bg-danger">已拒絕</span>
+                                                break;
+                                            case "Expired":
+                                                <span class="badge bg-warning">已過期</span>
+                                                break;
+                                            case "AlreadyUsed":
+                                                <span class="badge bg-secondary">已使用</span>
+                                                break;
+                                            case "Revoked":
+                                                <span class="badge bg-dark">已撤銷</span>
+                                                break;
+                                            default:
+                                                <span class="badge bg-light text-dark">@log.Status</span>
+                                                break;
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</div>

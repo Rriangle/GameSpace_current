@@ -1,0 +1,189 @@
+@{
+    // 從 ViewData 取得圖表配置
+    var chartId = ViewData["ChartId"]?.ToString() ?? $"chart_{Guid.NewGuid():N}";
+    var chartTitle = ViewData["ChartTitle"]?.ToString() ?? "資料圖表";
+    var chartDescription = ViewData["ChartDescription"]?.ToString() ?? "顯示統計資料的視覺化圖表";
+    var chartHeight = ViewData["ChartHeight"]?.ToString() ?? "300px";
+    var chartType = ViewData["ChartType"]?.ToString() ?? "line";
+    var showFallbackTable = ViewData["ShowFallbackTable"]?.ToString()?.ToLower() != "false";
+    var chartData = ViewData["ChartData"] ?? new object();
+}
+
+<div class="card shadow">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary" id="@(chartId)_title">
+            <i class="fas fa-chart-area me-2"></i>@chartTitle
+        </h6>
+    </div>
+    <div class="card-body">
+        <!-- 圖表容器 -->
+        <div class="chart-container" style="position: relative; height: @chartHeight;">
+            <canvas id="@chartId" 
+                    role="img" 
+                    aria-labelledby="@(chartId)_title" 
+                    aria-describedby="@(chartId)_desc">
+                <!-- 無障礙性降級內容 -->
+                <p>您的瀏覽器不支援圖表顯示。請使用下方的資料表格或匯出功能查看詳細資料。</p>
+            </canvas>
+        </div>
+
+        <!-- 圖表描述 (螢幕閱讀器) -->
+        <p id="@(chartId)_desc" class="sr-only">
+            @chartDescription
+            如需詳細數據，請使用頁面上的匯出功能下載原始資料。
+        </p>
+
+        @if (showFallbackTable)
+        {
+            <!-- 無障礙性降級表格 -->
+            <div class="chart-fallback mt-3" style="display: none;" id="@(chartId)_fallback">
+                <h6 class="text-muted">資料表格 (圖表降級)</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered" role="table" aria-label="@chartTitle 資料表格">
+                        <thead>
+                            <tr role="row">
+                                <th role="columnheader">項目</th>
+                                <th role="columnheader">數值</th>
+                            </tr>
+                        </thead>
+                        <tbody id="@(chartId)_table_body">
+                            <!-- 由 JavaScript 動態填充 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+
+        <!-- 圖表控制項 -->
+        <div class="chart-controls mt-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="chart-legend" id="@(chartId)_legend">
+                    <!-- 由 Chart.js 自動生成 -->
+                </div>
+                <div class="chart-actions">
+                    @if (showFallbackTable)
+                    {
+                        <button type="button" class="btn btn-outline-secondary btn-sm" 
+                                onclick="toggleChartFallback('@chartId')"
+                                aria-controls="@(chartId)_fallback"
+                                aria-expanded="false">
+                            <i class="fas fa-table me-1"></i>顯示資料表格
+                        </button>
+                    }
+                    <button type="button" class="btn btn-outline-info btn-sm" 
+                            onclick="refreshChart('@chartId')"
+                            title="重新載入圖表資料">
+                        <i class="fas fa-sync me-1"></i>重新整理
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 圖表降級表格切換
+    function toggleChartFallback(chartId) {
+        const fallback = document.getElementById(chartId + '_fallback');
+        const button = event.target.closest('button');
+        
+        if (fallback.style.display === 'none') {
+            fallback.style.display = 'block';
+            button.innerHTML = '<i class="fas fa-chart-area me-1"></i>顯示圖表';
+            button.setAttribute('aria-expanded', 'true');
+        } else {
+            fallback.style.display = 'none';
+            button.innerHTML = '<i class="fas fa-table me-1"></i>顯示資料表格';
+            button.setAttribute('aria-expanded', 'false');
+        }
+    }
+
+    // 重新整理圖表
+    function refreshChart(chartId) {
+        const canvas = document.getElementById(chartId);
+        if (canvas && window.Chart) {
+            const chart = Chart.getChart(canvas);
+            if (chart) {
+                chart.update();
+            }
+        }
+    }
+
+    // 初始化圖表無障礙性
+    document.addEventListener('DOMContentLoaded', function() {
+        const chartId = '@chartId';
+        const canvas = document.getElementById(chartId);
+        
+        if (canvas) {
+            // 監聽圖表載入完成事件
+            canvas.addEventListener('chartjs-render-complete', function() {
+                // 填充降級表格資料
+                if (@showFallbackTable.ToString().ToLower()) {
+                    populateFallbackTable(chartId);
+                }
+            });
+        }
+    });
+
+    // 填充降級表格資料
+    function populateFallbackTable(chartId) {
+        const canvas = document.getElementById(chartId);
+        const tableBody = document.getElementById(chartId + '_table_body');
+        
+        if (canvas && tableBody && window.Chart) {
+            const chart = Chart.getChart(canvas);
+            if (chart && chart.data) {
+                tableBody.innerHTML = '';
+                
+                chart.data.labels.forEach((label, index) => {
+                    chart.data.datasets.forEach(dataset => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${label} (${dataset.label})</td>
+                            <td>${dataset.data[index] || 0}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                });
+            }
+        }
+    }
+</script>
+
+@{
+    // 使用說明註解
+    /*
+    使用方式：
+    
+    1. 基本使用：
+    @{
+        ViewData["ChartId"] = "salesChart";
+        ViewData["ChartTitle"] = "銷售統計";
+        ViewData["ChartDescription"] = "顯示過去 30 天的銷售趨勢";
+    }
+    @await Html.PartialAsync("Partials/_MiniChart")
+    
+    2. 自訂高度和類型：
+    @{
+        ViewData["ChartHeight"] = "400px";
+        ViewData["ChartType"] = "bar";
+        ViewData["ShowFallbackTable"] = "true";
+    }
+    @await Html.PartialAsync("Partials/_MiniChart")
+    
+    3. 配合 Chart.js 使用：
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('@chartId').getContext('2d');
+            new Chart(ctx, {
+                type: '@chartType',
+                data: @Html.Raw(Json.Serialize(chartData)),
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        });
+    </script>
+    */
+}

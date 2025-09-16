@@ -1,0 +1,219 @@
+@{
+    ViewData["Title"] = "電子禮券出示";
+    Layout = "~/Areas/MiniGame/Views/Shared/_Layout.cshtml";
+    var evoucher = ViewBag.EVoucher as GameSpace.Models.EVoucher;
+    var token = ViewBag.Token as GameSpace.Models.EVoucherToken;
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-gift me-2"></i>電子禮券出示
+                    </h4>
+                </div>
+                <div class="card-body text-center">
+                    <!-- 禮券資訊 -->
+                    <div class="mb-4">
+                        <h5 class="text-primary">@evoucher.EVoucherType.TypeName</h5>
+                        <p class="text-muted mb-2">禮券代碼：<code>@evoucher.EVoucherCode</code></p>
+                        <p class="text-success h6">價值：NT$ @evoucher.EVoucherType.ValueAmount</p>
+                    </div>
+
+                    <!-- QR Code 區域 -->
+                    <div class="mb-4">
+                        <div class="border rounded p-3 bg-light">
+                            <div id="qrcode" class="mb-3"></div>
+                            <div class="alert alert-info mb-3">
+                                <i class="fas fa-clock me-2"></i>
+                                <strong>有效期限：</strong>
+                                <span id="countdown" class="fw-bold text-danger"></span>
+                            </div>
+                            <div class="small text-muted">
+                                請向店員出示此 QR Code 進行核銷<br>
+                                Token: <code>@token.Token</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Barcode 區域 -->
+                    <div class="mb-4">
+                        <div class="border rounded p-3 bg-light">
+                            <div id="barcode" class="mb-2"></div>
+                            <div class="small text-muted">或出示此條碼</div>
+                        </div>
+                    </div>
+
+                    <!-- 操作按鈕 -->
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-success" onclick="refreshToken()">
+                            <i class="fas fa-sync-alt me-2"></i>重新產生兌換碼
+                        </button>
+                        <a href="@Url.Action("EVouchers")" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>返回禮券列表
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 核銷測試區域（僅開發測試用） -->
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="mb-0">
+                        <i class="fas fa-tools me-2"></i>核銷測試（開發用）
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form id="redeemForm">
+                        @Html.AntiForgeryToken()
+                        <div class="mb-3">
+                            <label for="testToken" class="form-label">Token</label>
+                            <input type="text" class="form-control" id="testToken" value="@token.Token" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="testLocation" class="form-label">核銷地點</label>
+                            <input type="text" class="form-control" id="testLocation" placeholder="例如：台北101店" value="測試店面">
+                        </div>
+                        <button type="submit" class="btn btn-warning w-100">
+                            <i class="fas fa-qrcode me-2"></i>模擬掃碼核銷
+                        </button>
+                    </form>
+                    <div id="redeemResult" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- QR Code 生成 -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <!-- Barcode 生成 -->
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    
+    <script>
+        const token = '@token.Token';
+        const expiresAt = new Date('@token.ExpiresAt.ToString("yyyy-MM-ddTHH:mm:ss.fffZ")');
+        
+        // 生成 QR Code
+        QRCode.toCanvas(document.getElementById('qrcode'), token, {
+            width: 200,
+            margin: 2,
+            color: {
+                dark: '#000000',
+                light: '#FFFFFF'
+            }
+        }, function (error) {
+            if (error) console.error('QR Code 生成失敗:', error);
+        });
+
+        // 生成 Barcode
+        JsBarcode("#barcode", token, {
+            format: "CODE128",
+            width: 2,
+            height: 50,
+            displayValue: true,
+            fontSize: 12,
+            margin: 10
+        });
+
+        // 倒數計時
+        function updateCountdown() {
+            const now = new Date();
+            const diff = expiresAt - now;
+            
+            if (diff <= 0) {
+                document.getElementById('countdown').textContent = '已過期';
+                document.getElementById('countdown').className = 'fw-bold text-danger';
+                return;
+            }
+            
+            const minutes = Math.floor(diff / 60000);
+            const seconds = Math.floor((diff % 60000) / 1000);
+            
+            document.getElementById('countdown').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (minutes < 1) {
+                document.getElementById('countdown').className = 'fw-bold text-danger';
+            } else if (minutes < 2) {
+                document.getElementById('countdown').className = 'fw-bold text-warning';
+            } else {
+                document.getElementById('countdown').className = 'fw-bold text-success';
+            }
+        }
+
+        // 每秒更新倒數
+        updateCountdown();
+        const countdownInterval = setInterval(updateCountdown, 1000);
+
+        // 重新產生 Token
+        function refreshToken() {
+            if (confirm('確定要重新產生兌換碼嗎？目前的兌換碼將失效。')) {
+                location.reload();
+            }
+        }
+
+        // 核銷測試表單
+        document.getElementById('redeemForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('token', document.getElementById('testToken').value);
+            formData.append('location', document.getElementById('testLocation').value);
+            formData.append('__RequestVerificationToken', document.querySelector('input[name="__RequestVerificationToken"]').value);
+            
+            try {
+                const response = await fetch('@Url.Action("RedeemEVoucher")', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                const resultDiv = document.getElementById('redeemResult');
+                
+                if (result.success) {
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <strong>核銷成功！</strong><br>
+                            ${result.message}<br>
+                            <small>狀態：${result.status}</small>
+                        </div>
+                    `;
+                    
+                    // 停止倒數計時
+                    clearInterval(countdownInterval);
+                    document.getElementById('countdown').textContent = '已核銷';
+                    document.getElementById('countdown').className = 'fw-bold text-success';
+                    
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            <strong>核銷失敗！</strong><br>
+                            ${result.message}<br>
+                            <small>狀態：${result.status || 'Error'}</small>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('redeemResult').innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        <strong>系統錯誤！</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+            }
+        });
+    </script>
+}

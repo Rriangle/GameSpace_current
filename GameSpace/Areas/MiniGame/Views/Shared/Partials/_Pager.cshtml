@@ -1,0 +1,176 @@
+@{
+    // 從 ViewBag 或 ViewData 取得分頁資訊
+    var currentPage = ViewBag.Page ?? ViewData["Page"] ?? 1;
+    var totalPages = ViewBag.TotalPages ?? ViewData["TotalPages"] ?? 1;
+    var pageSize = ViewBag.PageSize ?? ViewData["PageSize"] ?? 20;
+    var totalRecords = ViewBag.Total ?? ViewData["Total"] ?? 0;
+    
+    // 分頁顯示範圍 (顯示當前頁前後各 2 頁)
+    var startPage = Math.Max(1, (int)currentPage - 2);
+    var endPage = Math.Min((int)totalPages, (int)currentPage + 2);
+    
+    // 取得當前所有查詢參數 (除了 page)
+    var queryParams = new Dictionary<string, string>();
+    foreach (var param in ViewContext.HttpContext.Request.Query)
+    {
+        if (param.Key.ToLower() != "page")
+        {
+            queryParams[param.Key] = param.Value.ToString();
+        }
+    }
+}
+
+@if ((int)totalPages > 1)
+{
+    <nav aria-label="分頁導航" class="mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <!-- 分頁資訊 -->
+            <div class="pagination-info">
+                <span class="text-muted">
+                    顯示第 @(((int)currentPage - 1) * (int)pageSize + 1) - @(Math.Min((int)currentPage * (int)pageSize, (int)totalRecords)) 筆，
+                    共 @totalRecords 筆記錄
+                </span>
+            </div>
+
+            <!-- 頁面大小選擇器 -->
+            <div class="page-size-selector">
+                <form method="get" class="d-flex align-items-center gap-2">
+                    <!-- 保留所有查詢參數 -->
+                    @foreach (var param in queryParams)
+                    {
+                        <input type="hidden" name="@param.Key" value="@param.Value" />
+                    }
+                    
+                    <label for="pageSize" class="form-label mb-0 text-nowrap">每頁顯示:</label>
+                    <select name="pageSize" id="pageSize" class="form-select form-select-sm" 
+                            onchange="this.form.submit()" 
+                            aria-label="選擇每頁顯示筆數">
+                        <option value="10" @(pageSize.Equals(10) ? "selected" : "")>10 筆</option>
+                        <option value="20" @(pageSize.Equals(20) ? "selected" : "")>20 筆</option>
+                        <option value="50" @(pageSize.Equals(50) ? "selected" : "")>50 筆</option>
+                        <option value="100" @(pageSize.Equals(100) ? "selected" : "")>100 筆</option>
+                    </select>
+                </form>
+            </div>
+        </div>
+
+        <!-- 分頁導航 -->
+        <ul class="pagination pagination-sm justify-content-center mb-0">
+            <!-- 第一頁 -->
+            @if ((int)currentPage > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link" 
+                       href="@Url.Action(ViewContext.RouteData.Values["action"]?.ToString(), queryParams.Concat(new[] { new KeyValuePair<string, string>("page", "1") }).ToDictionary(x => x.Key, x => x.Value))"
+                       aria-label="前往第一頁">
+                        <i class="fas fa-angle-double-left"></i>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" 
+                       href="@Url.Action(ViewContext.RouteData.Values["action"]?.ToString(), queryParams.Concat(new[] { new KeyValuePair<string, string>("page", ((int)currentPage - 1).ToString()) }).ToDictionary(x => x.Key, x => x.Value))"
+                       aria-label="前往上一頁">
+                        <i class="fas fa-angle-left"></i>
+                    </a>
+                </li>
+            }
+
+            <!-- 頁碼 -->
+            @for (int i = startPage; i <= endPage; i++)
+            {
+                <li class="page-item @(i == (int)currentPage ? "active" : "")">
+                    @if (i == (int)currentPage)
+                    {
+                        <span class="page-link" aria-current="page" aria-label="目前頁面，第 @i 頁">
+                            @i
+                        </span>
+                    }
+                    else
+                    {
+                        <a class="page-link" 
+                           href="@Url.Action(ViewContext.RouteData.Values["action"]?.ToString(), queryParams.Concat(new[] { new KeyValuePair<string, string>("page", i.ToString()) }).ToDictionary(x => x.Key, x => x.Value))"
+                           aria-label="前往第 @i 頁">
+                            @i
+                        </a>
+                    }
+                </li>
+            }
+
+            <!-- 最後一頁 -->
+            @if ((int)currentPage < (int)totalPages)
+            {
+                <li class="page-item">
+                    <a class="page-link" 
+                       href="@Url.Action(ViewContext.RouteData.Values["action"]?.ToString(), queryParams.Concat(new[] { new KeyValuePair<string, string>("page", ((int)currentPage + 1).ToString()) }).ToDictionary(x => x.Key, x => x.Value))"
+                       aria-label="前往下一頁">
+                        <i class="fas fa-angle-right"></i>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" 
+                       href="@Url.Action(ViewContext.RouteData.Values["action"]?.ToString(), queryParams.Concat(new[] { new KeyValuePair<string, string>("page", totalPages.ToString()) }).ToDictionary(x => x.Key, x => x.Value))"
+                       aria-label="前往最後一頁">
+                        <i class="fas fa-angle-double-right"></i>
+                    </a>
+                </li>
+            }
+        </ul>
+
+        <!-- 快速跳頁 -->
+        @if ((int)totalPages > 10)
+        {
+            <div class="quick-jump mt-3 text-center">
+                <form method="get" class="d-inline-flex align-items-center gap-2">
+                    <!-- 保留所有查詢參數 -->
+                    @foreach (var param in queryParams)
+                    {
+                        <input type="hidden" name="@param.Key" value="@param.Value" />
+                    }
+                    
+                    <label for="jumpPage" class="form-label mb-0">跳至第</label>
+                    <input type="number" name="page" id="jumpPage" class="form-control form-control-sm" 
+                           style="width: 80px;" min="1" max="@totalPages" 
+                           placeholder="@currentPage"
+                           aria-label="輸入要跳轉的頁碼">
+                    <span class="text-muted">頁</span>
+                    <button type="submit" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-arrow-right me-1"></i>前往
+                    </button>
+                </form>
+            </div>
+        }
+    </nav>
+}
+else if ((int)totalRecords > 0)
+{
+    <!-- 單頁資料資訊 -->
+    <div class="pagination-info text-center text-muted mt-3">
+        <i class="fas fa-info-circle me-1"></i>
+        共 @totalRecords 筆記錄
+    </div>
+}
+
+@{
+    // 使用說明註解
+    /*
+    使用方式：
+    
+    1. 基本使用（從 ViewBag 自動取得）：
+    @await Html.PartialAsync("Partials/_Pager")
+    
+    2. 手動指定分頁資訊：
+    @{
+        ViewData["Page"] = 1;
+        ViewData["TotalPages"] = 10;
+        ViewData["PageSize"] = 20;
+        ViewData["Total"] = 200;
+    }
+    @await Html.PartialAsync("Partials/_Pager")
+    
+    控制器中設定：
+    ViewBag.Page = page;
+    ViewBag.TotalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
+    ViewBag.PageSize = pageSize;
+    ViewBag.Total = totalRecords;
+    */
+}
