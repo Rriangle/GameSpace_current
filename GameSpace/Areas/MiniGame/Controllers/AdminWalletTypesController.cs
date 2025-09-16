@@ -13,8 +13,7 @@ namespace GameSpace.Areas.MiniGame.Controllers
     /// 基於 Pet_Rights_Management 權限控制存取
     /// </summary>
     [Area("MiniGame")]
-    [Authorize(Roles = "Admin")]
-    [MiniGameAdminAuthorize]
+    [MiniGameAdminOnly]
     public class AdminWalletTypesController : Controller
     {
         private readonly GameSpaceDbContext _context;
