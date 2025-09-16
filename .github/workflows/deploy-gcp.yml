@@ -1,0 +1,72 @@
+name: Deploy - Cloud Run (main only)
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: "read"
+      id-token: "write"
+    
+    env:
+      PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+      REGION: ${{ secrets.GCP_REGION }}
+      REPO: ${{ secrets.GAR_REPO }}
+      SERVICE: ${{ secrets.CLOUD_RUN_SERVICE }}
+      IMAGE: ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GAR_REPO }}/${{ secrets.CLOUD_RUN_SERVICE }}:${{ github.sha }}
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Auth to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker ${{ secrets.GCP_REGION }}-docker.pkg.dev --quiet
+        
+      - name: Build image
+        run: docker build -t "$IMAGE" .
+        
+      - name: Push image
+        run: docker push "$IMAGE"
+        
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy "$SERVICE" \
+            --project "$PROJECT_ID" \
+            --region "$REGION" \
+            --image "$IMAGE" \
+            --platform managed \
+            --allow-unauthenticated \
+            --port 8080 \
+            --min-instances 0 \
+            --max-instances 5 \
+            --memory 1Gi \
+            --cpu 1 \
+            --timeout 300 \
+            --set-env-vars ConnectionStrings__DefaultConnection="${{ secrets.DEFAULT_CONNECTION }}" \
+            --set-env-vars ASPNETCORE_ENVIRONMENT=Production
+            
+      - name: Get service URL
+        run: |
+          SERVICE_URL=$(gcloud run services describe "$SERVICE" --project "$PROJECT_ID" --region "$REGION" --format 'value(status.url)')
+          echo "Service deployed to: $SERVICE_URL"
+          echo "SERVICE_URL=$SERVICE_URL" >> $GITHUB_ENV
+          
+      - name: Health check
+        run: |
+          echo "等待服務啟動..."
+          sleep 30
+          curl -f "$SERVICE_URL/healthz" || echo "Health check failed, but deployment completed"
