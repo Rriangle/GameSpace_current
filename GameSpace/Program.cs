@@ -3,6 +3,7 @@ using GameSpace.Services;
 using GameSpace.Middleware;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Serilog;
@@ -86,8 +87,22 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
     options.Secure = CookieSecurePolicy.Always;
 });
 
-// 設定 JWT 認證
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+// 設定認證 (JWT + Cookie for Dev)
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultScheme = "Smart";
+        options.DefaultChallengeScheme = "Smart";
+    })
+    .AddPolicyScheme("Smart", "Bearer or Cookie", options =>
+    {
+        options.ForwardDefaultSelector = context =>
+        {
+            var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
+            if (authHeader?.StartsWith("Bearer ") == true)
+                return JwtBearerDefaults.AuthenticationScheme;
+            return CookieAuthenticationDefaults.AuthenticationScheme;
+        };
+    })
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
@@ -101,6 +116,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateLifetime = true,
             ClockSkew = TimeSpan.Zero
         };
+    })
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/MiniGame/DevAuth/LoginAsManager";
+        options.LogoutPath = "/MiniGame/DevAuth/Logout";
+        options.AccessDeniedPath = "/MiniGame/Home/AccessDenied";
+        options.ExpireTimeSpan = TimeSpan.FromHours(8);
+        options.SlidingExpiration = true;
     });
 
 builder.Services.AddAuthorization();

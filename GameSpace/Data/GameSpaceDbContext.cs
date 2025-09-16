@@ -197,25 +197,25 @@ namespace GameSpace.Data
 
             // 寵物相關索引
             modelBuilder.Entity<Pet>()
-                .HasIndex(p => p.UserId)
-                .HasDatabaseName("IX_Pets_UserId");
+                .HasIndex(p => p.UserID)
+                .HasDatabaseName("IX_Pets_UserID");
 
             modelBuilder.Entity<Pet>()
-                .HasIndex(p => new { p.UserId, p.Level })
-                .HasDatabaseName("IX_Pets_UserId_Level");
+                .HasIndex(p => new { p.UserID, p.Level })
+                .HasDatabaseName("IX_Pets_UserID_Level");
 
             // 小遊戲相關索引
             modelBuilder.Entity<MiniGame>()
-                .HasIndex(mg => mg.UserId)
-                .HasDatabaseName("IX_MiniGames_UserId");
+                .HasIndex(mg => mg.UserID)
+                .HasDatabaseName("IX_MiniGames_UserID");
 
             modelBuilder.Entity<MiniGame>()
-                .HasIndex(mg => mg.PetId)
-                .HasDatabaseName("IX_MiniGames_PetId");
+                .HasIndex(mg => mg.PetID)
+                .HasDatabaseName("IX_MiniGames_PetID");
 
             modelBuilder.Entity<MiniGame>()
-                .HasIndex(mg => new { mg.UserId, mg.StartTime })
-                .HasDatabaseName("IX_MiniGames_UserId_StartTime");
+                .HasIndex(mg => new { mg.UserID, mg.StartTime })
+                .HasDatabaseName("IX_MiniGames_UserID_StartTime");
 
             modelBuilder.Entity<MiniGame>()
                 .HasIndex(mg => mg.Result)
@@ -223,12 +223,12 @@ namespace GameSpace.Data
 
             // 簽到相關索引
             modelBuilder.Entity<UserSignInStats>()
-                .HasIndex(us => us.UserId)
-                .HasDatabaseName("IX_UserSignInStats_UserId");
+                .HasIndex(us => us.UserID)
+                .HasDatabaseName("IX_UserSignInStats_UserID");
 
             modelBuilder.Entity<UserSignInStats>()
-                .HasIndex(us => new { us.UserId, us.SignTime })
-                .HasDatabaseName("IX_UserSignInStats_UserId_SignTime");
+                .HasIndex(us => new { us.UserID, us.SignTime })
+                .HasDatabaseName("IX_UserSignInStats_UserID_SignTime");
 
             modelBuilder.Entity<UserSignInStats>()
                 .HasIndex(us => us.SignTime)
@@ -236,12 +236,12 @@ namespace GameSpace.Data
 
             // 錢包相關索引
             modelBuilder.Entity<WalletHistory>()
-                .HasIndex(wh => wh.UserId)
-                .HasDatabaseName("IX_WalletHistories_UserId");
+                .HasIndex(wh => wh.UserID)
+                .HasDatabaseName("IX_WalletHistories_UserID");
 
             modelBuilder.Entity<WalletHistory>()
-                .HasIndex(wh => new { wh.UserId, wh.ChangeTime })
-                .HasDatabaseName("IX_WalletHistories_UserId_ChangeTime");
+                .HasIndex(wh => new { wh.UserID, wh.ChangeTime })
+                .HasDatabaseName("IX_WalletHistories_UserID_ChangeTime");
 
             modelBuilder.Entity<WalletHistory>()
                 .HasIndex(wh => wh.ChangeType)
