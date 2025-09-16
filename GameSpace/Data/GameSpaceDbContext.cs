@@ -42,7 +42,7 @@ namespace GameSpace.Data
 
         // 論壇相關
         public DbSet<Forum> Forums { get; set; }
-        public DbSet<Thread> Threads { get; set; }
+        public DbSet<Models.Thread> Threads { get; set; }
         public DbSet<ThreadPost> ThreadPosts { get; set; }
         public DbSet<Post> Posts { get; set; }
 

@@ -1,0 +1,9 @@
+/workspace/GameSpace/obj/Debug/net8.0/GameSpace.csproj.AssemblyReference.cache
+/workspace/GameSpace/obj/Debug/net8.0/GameSpace.GeneratedMSBuildEditorConfig.editorconfig
+/workspace/GameSpace/obj/Debug/net8.0/GameSpace.AssemblyInfoInputs.cache
+/workspace/GameSpace/obj/Debug/net8.0/GameSpace.AssemblyInfo.cs
+/workspace/GameSpace/obj/Debug/net8.0/GameSpace.csproj.CoreCompileInputs.cache
+/workspace/GameSpace/obj/Debug/net8.0/GameSpace.MvcApplicationPartsAssemblyInfo.cache
+/workspace/GameSpace/obj/Debug/net8.0/GameSpace.RazorAssemblyInfo.cache
+/workspace/GameSpace/obj/Debug/net8.0/GameSpace.RazorAssemblyInfo.cs
+/workspace/GameSpace/obj/Debug/net8.0/GameSpace.sourcelink.json

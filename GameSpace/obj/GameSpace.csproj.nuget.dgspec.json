@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/workspace/GameSpace_current/GameSpace/GameSpace.csproj": {}
+    "/workspace/GameSpace/GameSpace.csproj": {}
   },
   "projects": {
-    "/workspace/GameSpace_current/GameSpace/GameSpace.csproj": {
+    "/workspace/GameSpace/GameSpace.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/workspace/GameSpace_current/GameSpace/GameSpace.csproj",
+        "projectUniqueName": "/workspace/GameSpace/GameSpace.csproj",
         "projectName": "GameSpace",
-        "projectPath": "/workspace/GameSpace_current/GameSpace/GameSpace.csproj",
+        "projectPath": "/workspace/GameSpace/GameSpace.csproj",
         "packagesPath": "/home/ubuntu/.nuget/packages/",
-        "outputPath": "/workspace/GameSpace_current/GameSpace/obj/",
+        "outputPath": "/workspace/GameSpace/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/ubuntu/.nuget/NuGet/NuGet.Config"
@@ -29,6 +29,7 @@
           }
         },
         "warningProperties": {
+          "allWarningsAsErrors": true,
           "warnAsError": [
             "NU1605"
           ]
@@ -65,7 +66,7 @@
             },
             "Microsoft.Extensions.Caching.Memory": {
               "target": "Package",
-              "version": "[8.0.0, )"
+              "version": "[8.0.1, )"
             },
             "Microsoft.Extensions.Caching.StackExchangeRedis": {
               "target": "Package",
@@ -89,7 +90,7 @@
             },
             "System.IdentityModel.Tokens.Jwt": {
               "target": "Package",
-              "version": "[7.0.3, )"
+              "version": "[8.0.2, )"
             }
           },
           "imports": [
