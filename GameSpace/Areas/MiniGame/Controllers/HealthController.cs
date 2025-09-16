@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using GameSpace.Data;
+using GameSpace.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace GameSpace.Areas.MiniGame.Controllers
@@ -407,5 +408,74 @@ namespace GameSpace.Areas.MiniGame.Controllers
 
             return Json(diagnostics);
         }
+
+        /// <summary>
+        /// 從 seedMiniGameArea.json 匯入種子資料
+        /// POST /MiniGame/Health/SeedFromJson
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> SeedFromJson([FromBody] SeedFromJsonRequest? request = null)
+        {
+            var logger = HttpContext.RequestServices.GetRequiredService<ILogger<JsonSeedImporter>>();
+            
+            try
+            {
+                var seedPath = request?.Path ?? 
+                    Path.Combine(HttpContext.RequestServices.GetRequiredService<IHostEnvironment>().ContentRootPath, 
+                    "seeds", "seedMiniGameArea.json");
+
+                if (!System.IO.File.Exists(seedPath))
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = $"種子檔案不存在: {seedPath}",
+                        timestamp = DateTime.UtcNow
+                    });
+                }
+
+                var importer = new JsonSeedImporter(_context, logger);
+                await importer.ImportAsync(seedPath);
+
+                return Json(new
+                {
+                    success = true,
+                    message = "種子資料匯入完成",
+                    seedPath = seedPath,
+                    timestamp = DateTime.UtcNow
+                });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "種子資料匯入失敗");
+                return Json(new
+                {
+                    success = false,
+                    message = "種子資料匯入失敗: " + ex.Message,
+                    timestamp = DateTime.UtcNow
+                });
+            }
+        }
+
+        /// <summary>
+        /// 舊的隨機種子生成端點 - 已停用
+        /// </summary>
+        [HttpPost]
+        [Obsolete("已停用隨機種子生成，請使用 SeedFromJson")]
+        public IActionResult Seed()
+        {
+            return StatusCode(410, new
+            {
+                success = false,
+                message = "此端點已停用，請使用 POST /MiniGame/Health/SeedFromJson 從 seedMiniGameArea.json 匯入資料",
+                alternativeEndpoint = "/MiniGame/Health/SeedFromJson",
+                timestamp = DateTime.UtcNow
+            });
+        }
+    }
+
+    public class SeedFromJsonRequest
+    {
+        public string? Path { get; set; }
     }
 }

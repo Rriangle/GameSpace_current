@@ -154,15 +154,221 @@ namespace GameSpace.Services
             _logger.LogInformation("匯入 {Count} 筆 UserWallet 記錄", entities.Count);
         }
 
-        // 其他匯入方法的簡化版本...
-        private async Task ImportCoupons(List<CouponDto>? data) { /* 實作類似邏輯 */ }
-        private async Task ImportEVouchers(List<EVoucherDto>? data) { /* 實作類似邏輯 */ }
-        private async Task ImportEVoucherTokens(List<EVoucherTokenDto>? data) { /* 實作類似邏輯 */ }
-        private async Task ImportEVoucherRedeemLogs(List<EVoucherRedeemLogDto>? data) { /* 實作類似邏輯 */ }
-        private async Task ImportUserSignInStats(List<UserSignInStatsDto>? data) { /* 實作類似邏輯 */ }
-        private async Task ImportWalletHistories(List<WalletHistoryDto>? data) { /* 實作類似邏輯 */ }
-        private async Task ImportPets(List<PetDto>? data) { /* 實作類似邏輯 */ }
-        private async Task ImportMiniGames(List<MiniGameDto>? data) { /* 實作類似邏輯 */ }
+        private async Task ImportCoupons(List<CouponDto>? data)
+        {
+            if (data?.Any() != true) return;
+
+            var hasData = await _context.Coupons.AsNoTracking().AnyAsync();
+            if (hasData)
+            {
+                _logger.LogInformation("Coupon 資料表已有資料，跳過匯入");
+                return;
+            }
+
+            var entities = data.Select(d => new Coupon
+            {
+                CouponID = d.CouponID,
+                CouponCode = d.CouponCode ?? "",
+                CouponTypeID = d.CouponTypeID,
+                UserID = d.UserID,
+                IsUsed = d.IsUsed,
+                AcquiredTime = d.AcquiredTime,
+                UsedTime = d.UsedTime
+            }).ToList();
+
+            _context.Coupons.AddRange(entities);
+            await _context.SaveChangesAsync();
+            _logger.LogInformation("匯入 {Count} 筆 Coupon 記錄", entities.Count);
+        }
+
+        private async Task ImportEVouchers(List<EVoucherDto>? data)
+        {
+            if (data?.Any() != true) return;
+
+            var hasData = await _context.EVouchers.AsNoTracking().AnyAsync();
+            if (hasData)
+            {
+                _logger.LogInformation("EVoucher 資料表已有資料，跳過匯入");
+                return;
+            }
+
+            var entities = data.Select(d => new EVoucher
+            {
+                EVoucherID = d.EVoucherID,
+                EVoucherCode = d.EVoucherCode ?? "",
+                EVoucherTypeID = d.EVoucherTypeID,
+                UserID = d.UserID,
+                IsUsed = d.IsUsed,
+                AcquiredTime = d.AcquiredTime,
+                UsedTime = d.UsedTime
+            }).ToList();
+
+            _context.EVouchers.AddRange(entities);
+            await _context.SaveChangesAsync();
+            _logger.LogInformation("匯入 {Count} 筆 EVoucher 記錄", entities.Count);
+        }
+
+        private async Task ImportEVoucherTokens(List<EVoucherTokenDto>? data)
+        {
+            if (data?.Any() != true) return;
+
+            var hasData = await _context.EVoucherTokens.AsNoTracking().AnyAsync();
+            if (hasData)
+            {
+                _logger.LogInformation("EVoucherToken 資料表已有資料，跳過匯入");
+                return;
+            }
+
+            var entities = data.Select(d => new EVoucherToken
+            {
+                TokenID = d.TokenID,
+                EVoucherID = d.EVoucherID,
+                Token = d.Token ?? "",
+                IsRevoked = d.IsRevoked,
+                ExpiresAt = d.ExpiresAt
+            }).ToList();
+
+            _context.EVoucherTokens.AddRange(entities);
+            await _context.SaveChangesAsync();
+            _logger.LogInformation("匯入 {Count} 筆 EVoucherToken 記錄", entities.Count);
+        }
+
+        private async Task ImportEVoucherRedeemLogs(List<EVoucherRedeemLogDto>? data)
+        {
+            if (data?.Any() != true) return;
+
+            var hasData = await _context.EVoucherRedeemLogs.AsNoTracking().AnyAsync();
+            if (hasData)
+            {
+                _logger.LogInformation("EVoucherRedeemLog 資料表已有資料，跳過匯入");
+                return;
+            }
+
+            var entities = data.Select(d => new EVoucherRedeemLog
+            {
+                RedeemLogID = d.RedeemLogID,
+                EVoucherID = d.EVoucherID,
+                TokenID = d.TokenID,
+                UserID = d.UserID,
+                ScannedAt = d.ScannedAt,
+                Status = d.Status ?? ""
+            }).ToList();
+
+            _context.EVoucherRedeemLogs.AddRange(entities);
+            await _context.SaveChangesAsync();
+            _logger.LogInformation("匯入 {Count} 筆 EVoucherRedeemLog 記錄", entities.Count);
+        }
+
+        private async Task ImportUserSignInStats(List<UserSignInStatsDto>? data)
+        {
+            if (data?.Any() != true) return;
+
+            var hasData = await _context.UserSignInStats.AsNoTracking().AnyAsync();
+            if (hasData)
+            {
+                _logger.LogInformation("UserSignInStats 資料表已有資料，跳過匯入");
+                return;
+            }
+
+            var entities = data.Select(d => new UserSignInStats
+            {
+                UserID = d.UserID,
+                ConsecutiveDays = d.ConsecutiveDays,
+                TotalSignIns = d.TotalSignIns,
+                LastSignInDate = d.LastSignInDate
+            }).ToList();
+
+            _context.UserSignInStats.AddRange(entities);
+            await _context.SaveChangesAsync();
+            _logger.LogInformation("匯入 {Count} 筆 UserSignInStats 記錄", entities.Count);
+        }
+
+        private async Task ImportWalletHistories(List<WalletHistoryDto>? data)
+        {
+            if (data?.Any() != true) return;
+
+            var hasData = await _context.WalletHistories.AsNoTracking().AnyAsync();
+            if (hasData)
+            {
+                _logger.LogInformation("WalletHistory 資料表已有資料，跳過匯入");
+                return;
+            }
+
+            var entities = data.Select(d => new WalletHistory
+            {
+                UserID = d.UserID,
+                ChangeType = d.ChangeType ?? "",
+                PointsChanged = d.PointsChanged,
+                ItemCode = d.ItemCode,
+                Description = d.Description ?? "",
+                ChangeTime = d.ChangeTime
+            }).ToList();
+
+            _context.WalletHistories.AddRange(entities);
+            await _context.SaveChangesAsync();
+            _logger.LogInformation("匯入 {Count} 筆 WalletHistory 記錄", entities.Count);
+        }
+
+        private async Task ImportPets(List<PetDto>? data)
+        {
+            if (data?.Any() != true) return;
+
+            var hasData = await _context.Pets.AsNoTracking().AnyAsync();
+            if (hasData)
+            {
+                _logger.LogInformation("Pet 資料表已有資料，跳過匯入");
+                return;
+            }
+
+            var entities = data.Select(d => new Pet
+            {
+                UserID = d.UserID,
+                PetName = d.PetName ?? "",
+                Level = d.Level,
+                Experience = d.Experience,
+                Health = d.Health,
+                Hunger = d.Hunger,
+                Happiness = d.Happiness,
+                Energy = d.Energy,
+                Cleanliness = d.Cleanliness,
+                SkinColor = d.SkinColor ?? "#FFFFFF",
+                BackgroundTheme = d.BackgroundTheme ?? "default"
+            }).ToList();
+
+            _context.Pets.AddRange(entities);
+            await _context.SaveChangesAsync();
+            _logger.LogInformation("匯入 {Count} 筆 Pet 記錄", entities.Count);
+        }
+
+        private async Task ImportMiniGames(List<MiniGameDto>? data)
+        {
+            if (data?.Any() != true) return;
+
+            var hasData = await _context.MiniGames.AsNoTracking().AnyAsync();
+            if (hasData)
+            {
+                _logger.LogInformation("MiniGame 資料表已有資料，跳過匯入");
+                return;
+            }
+
+            var entities = data.Select(d => new MiniGame
+            {
+                UserID = d.UserID,
+                PetID = d.PetID,
+                Level = d.Level,
+                MonsterCount = d.MonsterCount,
+                SpeedMultiplier = d.SpeedMultiplier,
+                Result = d.Result ?? "",
+                ExpGained = d.ExpGained,
+                PointsGained = d.PointsGained,
+                StartTime = d.StartTime,
+                EndTime = d.EndTime
+            }).ToList();
+
+            _context.MiniGames.AddRange(entities);
+            await _context.SaveChangesAsync();
+            _logger.LogInformation("匯入 {Count} 筆 MiniGame 記錄", entities.Count);
+        }
     }
 
     // DTO 類別定義
@@ -209,13 +415,94 @@ namespace GameSpace.Services
         public int UserPoint { get; set; }
     }
 
-    // 其他DTO類別的簡化定義...
-    public class CouponDto { public int CouponID { get; set; } /* 其他屬性 */ }
-    public class EVoucherDto { public int EVoucherID { get; set; } /* 其他屬性 */ }
-    public class EVoucherTokenDto { public int TokenID { get; set; } /* 其他屬性 */ }
-    public class EVoucherRedeemLogDto { public int LogID { get; set; } /* 其他屬性 */ }
-    public class UserSignInStatsDto { public int UserID { get; set; } /* 其他屬性 */ }
-    public class WalletHistoryDto { public int HistoryID { get; set; } /* 其他屬性 */ }
-    public class PetDto { public int PetID { get; set; } /* 其他屬性 */ }
-    public class MiniGameDto { public int PlayID { get; set; } /* 其他屬性 */ }
+    public class CouponDto
+    {
+        public int CouponID { get; set; }
+        public string? CouponCode { get; set; }
+        public int CouponTypeID { get; set; }
+        public int UserID { get; set; }
+        public bool IsUsed { get; set; }
+        public DateTime AcquiredTime { get; set; }
+        public DateTime? UsedTime { get; set; }
+    }
+
+    public class EVoucherDto
+    {
+        public int EVoucherID { get; set; }
+        public string? EVoucherCode { get; set; }
+        public int EVoucherTypeID { get; set; }
+        public int UserID { get; set; }
+        public bool IsUsed { get; set; }
+        public DateTime AcquiredTime { get; set; }
+        public DateTime? UsedTime { get; set; }
+    }
+
+    public class EVoucherTokenDto
+    {
+        public int TokenID { get; set; }
+        public int EVoucherID { get; set; }
+        public string? Token { get; set; }
+        public bool IsRevoked { get; set; }
+        public DateTime ExpiresAt { get; set; }
+    }
+
+    public class EVoucherRedeemLogDto
+    {
+        public int RedeemLogID { get; set; }
+        public int EVoucherID { get; set; }
+        public int? TokenID { get; set; }
+        public int UserID { get; set; }
+        public DateTime ScannedAt { get; set; }
+        public string? Status { get; set; }
+    }
+
+    public class UserSignInStatsDto
+    {
+        public int UserID { get; set; }
+        public int ConsecutiveDays { get; set; }
+        public int TotalSignIns { get; set; }
+        public DateTime? LastSignInDate { get; set; }
+    }
+
+    public class WalletHistoryDto
+    {
+        public int HistoryID { get; set; }
+        public int UserID { get; set; }
+        public string? ChangeType { get; set; }
+        public int PointsChanged { get; set; }
+        public string? ItemCode { get; set; }
+        public string? Description { get; set; }
+        public DateTime ChangeTime { get; set; }
+    }
+
+    public class PetDto
+    {
+        public int PetID { get; set; }
+        public int UserID { get; set; }
+        public string? PetName { get; set; }
+        public int Level { get; set; }
+        public int Experience { get; set; }
+        public int Health { get; set; }
+        public int Hunger { get; set; }
+        public int Happiness { get; set; }
+        public int Energy { get; set; }
+        public int Cleanliness { get; set; }
+        public string? SkinColor { get; set; }
+        public string? BackgroundTheme { get; set; }
+    }
+
+    public class MiniGameDto
+    {
+        public int PlayID { get; set; }
+        public int UserID { get; set; }
+        public int PetID { get; set; }
+        public int Level { get; set; }
+        public int MonsterCount { get; set; }
+        public decimal SpeedMultiplier { get; set; }
+        public string? Result { get; set; }
+        public int ExpGained { get; set; }
+        public int PointsGained { get; set; }
+        public DateTime StartTime { get; set; }
+        public DateTime? EndTime { get; set; }
+    }
 }
